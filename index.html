@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>THE REPUBLIC — Hub</title>
+<link rel="icon" type="image/svg+xml" href="favicon-index.svg">
+<style>
+:root{--bg:#0B0E10;--bg2:#12171B;--amber:#CC5500;--gold:#D8A25A;--blue:#1F4E7A;--rust:#B33A2B;--paper:#E7E1D6;--dim:#6B7280}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;font-family:'Courier New',monospace;background:var(--bg);color:var(--paper)}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.06) 2px,rgba(0,0,0,.06) 4px);pointer-events:none;z-index:9999}
+.app{display:flex;flex-direction:column;height:100%}
+header{background:linear-gradient(var(--bg2),var(--bg));border-bottom:1px solid rgba(204,85,0,.3);padding:12px 16px}
+.logo{font-family:Georgia,serif;font-size:18px;font-weight:700;color:var(--amber);text-shadow:0 0 20px rgba(204,85,0,.4);margin-bottom:8px}
+.search{width:100%;padding:10px;background:var(--bg);border:1px solid rgba(204,85,0,.3);border-radius:4px;color:var(--paper);font:inherit;margin-top:8px}
+.search:focus{outline:none;border-color:var(--amber);box-shadow:0 0 0 2px rgba(204,85,0,.2)}
+main{flex:1;overflow:hidden;position:relative}
+.view{position:absolute;inset:0;overflow-y:auto;padding:12px;display:none;-webkit-overflow-scrolling:touch}
+.view.active{display:block}
+.card{background:var(--bg2);border:1px solid rgba(204,85,0,.2);border-radius:6px;padding:14px;margin-bottom:10px;cursor:pointer;transition:border-color .2s}
+.card:active{border-color:var(--amber)}
+.card-head{display:flex;justify-content:space-between;font-size:10px;color:var(--dim);margin-bottom:6px}
+.card-count{background:rgba(204,85,0,.2);color:var(--amber);padding:2px 6px;border-radius:2px}
+.card-title{font-family:Georgia,serif;font-size:13px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+/* Hub nav links */
+.hub-nav{display:flex;gap:6px;flex-wrap:wrap;padding:10px 16px;background:var(--bg);border-bottom:1px solid rgba(204,85,0,.2)}
+.hub-link{font-size:9px;padding:6px 10px;background:var(--bg2);border:1px solid rgba(204,85,0,.3);border-radius:3px;color:var(--gold);text-decoration:none;text-transform:uppercase;letter-spacing:.05em;transition:all .15s;white-space:nowrap}
+.hub-link:hover,.hub-link:active{background:rgba(204,85,0,.15);border-color:var(--amber);color:var(--amber)}
+.hub-link.current{background:var(--amber);color:var(--bg);border-color:var(--amber)}
+.hub-stats{display:flex;gap:16px;padding:8px 16px;background:var(--bg2);border-bottom:1px solid rgba(204,85,0,.2);font-size:10px;color:var(--dim)}
+.hub-stat{display:flex;gap:4px}
+.hub-stat b{color:var(--amber)}
+.card-src{font-size:9px;color:var(--gold);margin-top:6px}
+.sheet{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:100;display:none;align-items:flex-end}
+.sheet.open{display:flex}
+.sheet-content{background:var(--bg);width:100%;max-height:90vh;border-radius:16px 16px 0 0;overflow:hidden;display:flex;flex-direction:column}
+.sheet-header{padding:16px;border-bottom:1px solid rgba(204,85,0,.2);display:flex;justify-content:space-between;align-items:center}
+.sheet-title{font-family:Georgia,serif;color:var(--amber);font-size:14px}
+.sheet-close{background:none;border:none;color:var(--dim);font-size:24px;cursor:pointer;padding:0 8px}
+.sheet-body{flex:1;overflow-y:auto;padding:16px}
+.prompt-box{background:var(--bg2);border:1px solid rgba(204,85,0,.3);border-radius:6px;padding:12px;margin-bottom:16px}
+.prompt-label{font-size:10px;color:var(--amber);text-transform:uppercase;margin-bottom:6px}
+.prompt-text{font-size:11px;line-height:1.5;white-space:pre-wrap;max-height:150px;overflow-y:auto}
+.comp-title{font-size:12px;color:var(--gold);margin-bottom:10px}
+.comp-card{background:var(--bg);border:1px solid rgba(216,162,90,.2);border-radius:6px;padding:12px;margin-bottom:10px}
+.comp-card.pinned{border-color:var(--amber);box-shadow:0 0 10px rgba(204,85,0,.2)}
+.comp-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.1)}
+.comp-src{font-size:10px;color:var(--gold)}
+.comp-actions{display:flex;gap:6px}
+.btn{font-size:9px;padding:4px 8px;border-radius:2px;cursor:pointer;border:1px solid;transition:all .2s}
+.btn-copy{background:rgba(31,78,122,.2);border-color:var(--blue);color:var(--blue)}
+.btn-copy:active{background:var(--blue);color:var(--paper)}
+.btn-pin{background:rgba(204,85,0,.2);border-color:var(--amber);color:var(--amber)}
+.btn-pin:active,.btn-pin.on{background:var(--amber);color:var(--bg)}
+.comp-text{font-size:10px;line-height:1.5;white-space:pre-wrap;max-height:200px;overflow-y:auto}
+.compare-empty{text-align:center;padding:60px 20px;color:var(--dim)}
+.compare-grid{display:flex;flex-direction:column;gap:12px}
+.compare-item{background:var(--bg2);border:1px solid rgba(204,85,0,.3);border-radius:6px;padding:12px}
+.compare-item h4{font-size:11px;color:var(--gold);margin-bottom:8px}
+.compare-item pre{font-size:10px;line-height:1.5;white-space:pre-wrap;max-height:300px;overflow-y:auto}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.stat{background:var(--bg2);border:1px solid rgba(204,85,0,.2);border-radius:6px;padding:14px;text-align:center}
+.stat-val{font-family:Georgia,serif;font-size:28px;color:var(--amber);text-shadow:0 0 15px rgba(204,85,0,.3)}
+.stat-label{font-size:9px;color:var(--dim);text-transform:uppercase;margin-top:4px}
+.bar{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.bar-name{font-size:10px;color:var(--gold);width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-track{flex:1;height:6px;background:var(--bg);border-radius:3px}
+.bar-fill{height:100%;background:linear-gradient(90deg,var(--amber),var(--gold));border-radius:3px}
+.bar-num{font-size:10px;color:var(--dim);width:30px;text-align:right}
+nav{background:var(--bg2);border-top:1px solid rgba(204,85,0,.3);display:flex;padding:8px 0;padding-bottom:calc(8px + env(safe-area-inset-bottom))}
+nav button{flex:1;background:none;border:none;color:var(--dim);font-size:10px;padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px}
+nav button.active{color:var(--amber)}
+nav svg{width:22px;height:22px;fill:currentColor}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--amber);color:var(--bg);padding:10px 20px;border-radius:4px;font-size:11px;opacity:0;transition:all .3s;z-index:200}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.export-btn{width:100%;padding:12px;background:var(--amber);border:none;border-radius:4px;color:var(--bg);font:inherit;font-size:12px;cursor:pointer;margin-top:16px}
+.export-btn:active{opacity:.8}
+.loading{text-align:center;padding:40px;color:var(--dim)}
+@media(min-width:600px){.compare-grid{flex-direction:row}.compare-item{flex:1}.stats{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+<div class="logo">★ THE REPUBLIC</div>
+<input type="text" class="search" id="search" placeholder="Search cases...">
+</header>
+<nav class="hub-nav">
+<a href="index-splash.html" class="hub-link">Splash</a>
+<a href="index.html" class="hub-link current">Ledger</a>
+<a href="screenplay-assembly.html" class="hub-link">Assembly</a>
+<a href="screenplay.html" class="hub-link">Screenplay</a>
+<a href="onyx-rep.html" class="hub-link">Onyx</a>
+<a href="republic-viewer.html" class="hub-link">Viewer</a>
+<a href="compare.html" class="hub-link">Compare</a>
+<a href="generate-scripts.html" class="hub-link">Generate</a>
+<a href="megamap.html" class="hub-link">Megamap</a>
+<a href="treatment.html" class="hub-link">Treatment</a>
+</nav>
+<div class="hub-stats">
+<span class="hub-stat">Cases: <b id="h-cases">0</b></span>
+<span class="hub-stat">Statements: <b id="h-stmts">0</b></span>
+<span class="hub-stat">Sources: <b id="h-sources">0</b></span>
+</div>
+<main>
+<div class="view active" id="v-cases">
+<div id="cases"><div class="loading">Loading ledger...</div></div>
+</div>
+<div class="view" id="v-compare">
+<h3 style="color:var(--amber);font-family:Georgia,serif;margin-bottom:16px">Cross-Examination</h3>
+<div id="compare-content"></div>
+<button class="export-btn" id="clear-compare">Clear Comparison</button>
+</div>
+<div class="view" id="v-insights">
+<h3 style="color:var(--amber);font-family:Georgia,serif;margin-bottom:16px">Census</h3>
+<div class="stats">
+<div class="stat"><div class="stat-val" id="s-cases">0</div><div class="stat-label">Cases</div></div>
+<div class="stat"><div class="stat-val" id="s-comp">0</div><div class="stat-label">Statements</div></div>
+<div class="stat"><div class="stat-val" id="s-src">0</div><div class="stat-label">Sources</div></div>
+<div class="stat"><div class="stat-val" id="s-avg">0</div><div class="stat-label">Avg/Case</div></div>
+</div>
+<div id="bars"></div>
+<button class="export-btn" id="export">Export Grouped Ledger</button>
+</div>
+</main>
+<nav>
+<button class="active" data-v="v-cases"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>Cases</button>
+<button data-v="v-compare"><svg viewBox="0 0 24 24"><path d="M10 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h5v-2H5V5h5V3zm4 0v2h5v14h-5v2h5c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-5z"/></svg>Compare</button>
+<button data-v="v-insights"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>Insights</button>
+</nav>
+</div>
+<div class="sheet" id="sheet">
+<div class="sheet-content">
+<div class="sheet-header"><span class="sheet-title">Case Detail</span><button class="sheet-close" id="close-sheet">×</button></div>
+<div class="sheet-body" id="sheet-body"></div>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
+const state={sources:[],cases:new Map(),pins:[]};
+const FILES=['ma-52.json','character-comp-52.json','world-prompt-52.json','matrix-editor-52.json','legos-cog-arch-52.json','legos-gpt-52.json','slugline-seq-52.json'];
+
+function hash(s){let h=0;for(let i=0;i<s.length;i++)h=((h<<5)-h)+s.charCodeAt(i)|0;return'C'+Math.abs(h).toString(16).toUpperCase().slice(0,8)}
+
+function extract(data,fname){
+  const pairs=[];
+  const title=data.metadata?.title||fname;
+  if(data.messages&&Array.isArray(data.messages)){
+    for(let i=0;i<data.messages.length;i++){
+      const m=data.messages[i];
+      if(m.role==='Prompt'&&m.say){
+        const prompt=m.say;
+        let comp='';
+        if(data.messages[i+1]?.role==='Response')comp=data.messages[i+1].say||'';
+        pairs.push({prompt,comp,key:hash(prompt.trim().replace(/\s+/g,' '))});
+      }
+    }
+  }
+  if(Array.isArray(data)){
+    for(const r of data){
+      const p=r.prompt||r.input||r.request?.prompt||(r.messages?r.messages.map(m=>`${m.role}:${m.content}`).join('\n'):'');
+      const c=r.completion||r.response||r.output||r.choices?.[0]?.message?.content||r.choices?.[0]?.text||'';
+      if(p)pairs.push({prompt:p,comp:c,key:hash(p.trim().replace(/\s+/g,' '))});
+    }
+  }
+  return{fname,title,pairs};
+}
+
+function build(){
+  state.cases.clear();
+  for(const src of state.sources){
+    for(const p of src.pairs){
+      if(!state.cases.has(p.key))state.cases.set(p.key,{prompt:p.prompt,comps:[]});
+      state.cases.get(p.key).comps.push({src:src.title,fname:src.fname,text:p.comp});
+    }
+  }
+}
+
+function renderChips(){
+  // Update hub stats instead of chips
+  let tc=0;state.cases.forEach(c=>tc+=c.comps.length);
+  $('#h-cases').textContent=state.cases.size;
+  $('#h-stmts').textContent=tc;
+  $('#h-sources').textContent=state.sources.length;
+}
+
+function renderCases(filter=''){
+  const fl=filter.toLowerCase();
+  let html='',i=0;
+  for(const[k,c]of state.cases){
+    if(fl&&!c.prompt.toLowerCase().includes(fl))continue;
+    i++;
+    const title=c.prompt.split('\n').find(l=>l.trim())||'Untitled';
+    const srcs=[...new Set(c.comps.map(x=>x.src))].slice(0,3).join(', ');
+    html+=`<div class="card" data-k="${k}"><div class="card-head"><span>CASE #${String(i).padStart(3,'0')}</span><span class="card-count">${c.comps.length}</span></div><div class="card-title">${esc(title.slice(0,100))}</div><div class="card-src">${esc(srcs)}</div></div>`;
+  }
+  if(!html)html='<div class="loading">No cases. Import JSON files.</div>';
+  $('#cases').innerHTML=html;
+  $$('.card').forEach(el=>el.onclick=()=>openSheet(el.dataset.k));
+}
+
+function openSheet(k){
+  const c=state.cases.get(k);if(!c)return;
+  let html=`<div class="prompt-box"><div class="prompt-label">★ Prompt <button class="btn btn-copy" data-copy="prompt">Copy</button></div><div class="prompt-text" id="p-text">${esc(c.prompt)}</div></div>`;
+  html+=`<div class="comp-title">Witness Statements (${c.comps.length})</div>`;
+  c.comps.forEach((x,i)=>{
+    const pinned=state.pins.some(p=>p.k===k&&p.i===i);
+    html+=`<div class="comp-card ${pinned?'pinned':''}"><div class="comp-head"><span class="comp-src">${esc(x.src)}</span><div class="comp-actions"><button class="btn btn-copy" data-copy="comp" data-i="${i}">Copy</button><button class="btn btn-pin ${pinned?'on':''}" data-k="${k}" data-i="${i}">${pinned?'✓ Pinned':'+ Pin'}</button></div></div><div class="comp-text">${esc(x.text)}</div></div>`;
+  });
+  $('#sheet-body').innerHTML=html;
+  $('#sheet').classList.add('open');
+  $('#sheet-body').querySelectorAll('.btn-copy').forEach(b=>b.onclick=e=>{
+    e.stopPropagation();
+    const t=b.dataset.copy==='prompt'?c.prompt:c.comps[+b.dataset.i].text;
+    navigator.clipboard.writeText(t);toast('Copied!');
+  });
+  $('#sheet-body').querySelectorAll('.btn-pin').forEach(b=>b.onclick=e=>{
+    e.stopPropagation();
+    togglePin(b.dataset.k,+b.dataset.i);
+    openSheet(k);
+  });
+}
+
+function togglePin(k,i){
+  const idx=state.pins.findIndex(p=>p.k===k&&p.i===i);
+  if(idx>=0){state.pins.splice(idx,1);toast('Unpinned');}
+  else if(state.pins.length<3){state.pins.push({k,i});toast('Pinned for compare');}
+  else toast('Max 3 pins');
+  renderCompare();
+}
+
+function renderCompare(){
+  if(!state.pins.length){$('#compare-content').innerHTML='<div class="compare-empty">Pin completions from cases to compare side-by-side.</div>';return;}
+  let html='<div class="compare-grid">';
+  for(const p of state.pins){
+    const c=state.cases.get(p.k);if(!c)continue;
+    const x=c.comps[p.i];
+    html+=`<div class="compare-item"><h4>${esc(x.src)}</h4><pre>${esc(x.text)}</pre></div>`;
+  }
+  html+='</div>';
+  $('#compare-content').innerHTML=html;
+}
+
+function renderInsights(){
+  let tc=0;state.cases.forEach(c=>tc+=c.comps.length);
+  $('#s-cases').textContent=state.cases.size;
+  $('#s-comp').textContent=tc;
+  $('#s-src').textContent=state.sources.length;
+  $('#s-avg').textContent=state.cases.size?(tc/state.cases.size).toFixed(1):'0';
+  const max=Math.max(...state.sources.map(s=>s.pairs.length),1);
+  $('#bars').innerHTML=state.sources.map(s=>`<div class="bar"><span class="bar-name">${esc(s.title.slice(0,15))}</span><div class="bar-track"><div class="bar-fill" style="width:${(s.pairs.length/max)*100}%"></div></div><span class="bar-num">${s.pairs.length}</span></div>`).join('');
+}
+
+function exportLedger(){
+  const out={exported:new Date().toISOString(),cases:[]};
+  for(const[k,c]of state.cases)out.cases.push({id:k,prompt:c.prompt,completions:c.comps});
+  const blob=new Blob([JSON.stringify(out,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ledger-export.json';a.click();
+  toast('Exported!');
+}
+
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1500);}
+
+async function autoLoad(){
+  $('#cases').innerHTML='<div class="loading">Loading ledgers...</div>';
+  for(const fn of FILES){
+    try{
+      const res=await fetch(fn);
+      if(!res.ok)continue;
+      const data=await res.json();
+      const ex=extract(data,fn);
+      if(ex.pairs.length)state.sources.push(ex);
+    }catch(e){}
+  }
+  build();renderChips();renderCases();renderInsights();renderCompare();
+}
+
+$('#search').oninput=e=>renderCases(e.target.value);
+$('#close-sheet').onclick=()=>$('#sheet').classList.remove('open');
+$('#sheet').onclick=e=>{if(e.target===$('#sheet'))$('#sheet').classList.remove('open');};
+$('#clear-compare').onclick=()=>{state.pins=[];renderCompare();toast('Cleared');};
+$('#export').onclick=exportLedger;
+$$('nav button').forEach(b=>b.onclick=()=>{
+  $$('nav button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  $$('.view').forEach(v=>v.classList.remove('active'));
+  $('#'+b.dataset.v).classList.add('active');
+});
+
+autoLoad();
+</script>
+</body>
+</html>

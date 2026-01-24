@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0B0E10">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>THE REPUBLIC — Prompt Ledger</title>
+<link rel="icon" type="image/svg+xml" href="favicon-viewer.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&family=Roboto+Slab:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --charcoal-bedrock: #0B0E10;
+      --desert-charcoal: #12171B;
+      --burnt-amber: #CC5500;
+      --dust-gold: #D8A25A;
+      --lone-star-blue: #1F4E7A;
+      --warning-rust: #B33A2B;
+      --ledger-paper: #E7E1D6;
+      --text-dim: #6B7280;
+      --text-muted: #9CA3AF;
+      --scanline-opacity: 0.06;
+      --grain-opacity: 0.04;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--charcoal-bedrock);
+      color: var(--ledger-paper);
+      line-height: 1.5;
+      position: relative;
+    }
+
+    /* Scanlines overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, var(--scanline-opacity)) 2px,
+        rgba(0, 0, 0, var(--scanline-opacity)) 4px
+      );
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* Grain overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      opacity: var(--grain-opacity);
+      pointer-events: none;
+      z-index: 9998;
+    }
+
+    /* App container */
+    .app {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      position: relative;
+    }
+
+    /* Header - Surveyor (Reason) */
+    .header {
+      background: linear-gradient(180deg, var(--desert-charcoal) 0%, var(--charcoal-bedrock) 100%);
+      border-bottom: 1px solid rgba(204, 85, 0, 0.3);
+      padding: 12px 16px;
+      position: relative;
+      z-index: 100;
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .logo {
+      font-family: 'Roboto Slab', serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--burnt-amber);
+      text-shadow: 0 0 20px rgba(204, 85, 0, 0.4);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-star {
+      width: 24px;
+      height: 24px;
+      fill: var(--burnt-amber);
+      filter: drop-shadow(0 0 8px rgba(204, 85, 0, 0.6));
+    }
+
+    .status-badge {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      padding: 4px 8px;
+      background: rgba(204, 85, 0, 0.2);
+      border: 1px solid var(--burnt-amber);
+      border-radius: 2px;
+      color: var(--burnt-amber);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .ticker {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      color: var(--dust-gold);
+      opacity: 0.7;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .ticker-content {
+      display: inline-block;
+      animation: ticker 30s linear infinite;
+    }
+
+    @keyframes ticker {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+
+    /* Search bar */
+    .search-container {
+      margin-top: 8px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 10px 12px;
+      background: var(--charcoal-bedrock);
+      border: 1px solid rgba(204, 85, 0, 0.3);
+      border-radius: 4px;
+      color: var(--ledger-paper);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--burnt-amber);
+      box-shadow: 0 0 0 2px rgba(204, 85, 0, 0.2);
+    }
+
+    .search-input::placeholder {
+      color: var(--text-dim);
+    }
+
+    /* Main content area */
+    .main {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Views container */
+    .views {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .view {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      overflow-y: auto;
+      padding: 16px;
+      display: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .view.active {
+      display: block;
+    }
+
+    /* Import view */
+    .import-zone {
+      border: 2px dashed rgba(204, 85, 0, 0.4);
+      border-radius: 8px;
+      padding: 40px 20px;
+      text-align: center;
+      background: rgba(204, 85, 0, 0.05);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .import-zone:hover, .import-zone.dragover {
+      border-color: var(--burnt-amber);
+      background: rgba(204, 85, 0, 0.1);
+    }
+
+    .import-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 16px;
+      fill: var(--burnt-amber);
+      opacity: 0.6;
+    }
+
+    .import-title {
+      font-family: 'Roboto Slab', serif;
+      font-size: 16px;
+      color: var(--burnt-amber);
+      margin-bottom: 8px;
+    }
+
+    .import-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    /* Loaded files list */
+    .loaded-files {
+      margin-top: 20px;
+    }
+
+    .loaded-files-title {
+      font-family: 'Roboto Slab', serif;
+      font-size: 14px;
+      color: var(--dust-gold);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .file-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: var(--desert-charcoal);
+      border: 1px solid rgba(204, 85, 0, 0.2);
+      border-radius: 4px;
+      margin: 4px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+    }
+
+    .file-chip-count {
+      background: var(--burnt-amber);
+      color: var(--charcoal-bedrock);
+      padding: 2px 6px;
+      border-radius: 2px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    /* Cases list */
+    .cases-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .case-card {
+      background: var(--desert-charcoal);
+      border: 1px solid rgba(204, 85, 0, 0.2);
+      border-radius: 6px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .case-card:hover, .case-card:active {
+      border-color: var(--burnt-amber);
+      transform: translateY(-1px);
+    }
+
+    .case-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
+    .case-id {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+
+    .case-count {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      padding: 2px 8px;
+      background: rgba(204, 85, 0, 0.2);
+      border-radius: 2px;
+      color: var(--burnt-amber);
+    }
+
+    .case-title {
+      font-family: 'Roboto Slab', serif;
+      font-size: 14px;
+      color: var(--ledger-paper);
+      margin-bottom: 8px;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .case-sources {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .source-tag {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      padding: 2px 6px;
+      background: var(--charcoal-bedrock);
+      border-radius: 2px;
+      color: var(--dust-gold);
+    }
+
+    /* Case detail view */
+    .case-detail-header {
+      margin-bottom: 20px;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      color: var(--burnt-amber);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px 0;
+      margin-bottom: 12px;
+    }
+
+    .prompt-box {
+      background: var(--desert-charcoal);
+      border: 1px solid rgba(204, 85, 0, 0.3);
+      border-radius: 6px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .prompt-label {
+      font-family: 'Roboto Slab', serif;
+      font-size: 11px;
+      color: var(--burnt-amber);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .prompt-text {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      line-height: 1.6;
+      color: var(--ledger-paper);
+      white-space: pre-wrap;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .completions-title {
+      font-family: 'Roboto Slab', serif;
+      font-size: 14px;
+      color: var(--dust-gold);
+      margin-bottom: 12px;
+    }
+
+    .completion-card {
+      background: var(--charcoal-bedrock);
+      border: 1px solid rgba(216, 162, 90, 0.2);
+      border-radius: 6px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .completion-source {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .completion-source-name {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: var(--dust-gold);
+    }
+
+    .completion-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .action-btn {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      padding: 4px 8px;
+      background: rgba(31, 78, 122, 0.3);
+      border: 1px solid var(--lone-star-blue);
+      border-radius: 2px;
+      color: var(--lone-star-blue);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .action-btn:hover {
+      background: var(--lone-star-blue);
+      color: var(--ledger-paper);
+    }
+
+    .action-btn.compare-btn {
+      background: rgba(204, 85, 0, 0.2);
+      border-color: var(--burnt-amber);
+      color: var(--burnt-amber);
+    }
+
+    .action-btn.compare-btn:hover, .action-btn.compare-btn.selected {
+      background: var(--burnt-amber);
+      color: var(--charcoal-bedrock);
+    }
+
+    .completion-text {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      line-height: 1.6;
+      color: var(--ledger-paper);
+      white-space: pre-wrap;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    /* Compare view */
+    .compare-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .compare-title {
+      font-family: 'Roboto Slab', serif;
+      font-size: 16px;
+      color: var(--burnt-amber);
+    }
+
+    .compare-clear {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      padding: 6px 12px;
+      background: rgba(179, 58, 43, 0.2);
+      border: 1px solid var(--warning-rust);
+      border-radius: 2px;
+      color: var(--warning-rust);
+      cursor: pointer;
+    }
+
+    .compare-empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+    }
+
+    .compare-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    @media (min-width: 768px) {
+      .compare-grid {
+        flex-direction: row;
+      }
+      .compare-item {
+        flex: 1;
+      }
+    }
+
+    .compare-item {
+      background: var(--desert-charcoal);
+      border: 1px solid rgba(204, 85, 0, 0.3);
+      border-radius: 6px;
+      padding: 16px;
+    }
+
+    .compare-item-header {
+      font-family: 'Roboto Slab', serif;
+      font-size: 12px;
+      color: var(--dust-gold);
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .compare-item-text {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      line-height: 1.6;
+      color: var(--ledger-paper);
+      white-space: pre-wrap;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    /* Census/Insights view */
+    .census-section {
+      margin-bottom: 24px;
+    }
+
+    .census-title {
+      font-family: 'Roboto Slab', serif;
+      font-size: 16px;
+      color: var(--burnt-amber);
+      margin-bottom: 16px;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    @media (min-width: 768px) {
+      .stat-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .stat-card {
+      background: var(--desert-charcoal);
+      border: 1px solid rgba(204, 85, 0, 0.2);
+      border-radius: 6px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-family: 'Roboto Slab', serif;
+      font-size: 28px;
+      color: var(--burnt-amber);
+      text-shadow: 0 0 20px rgba(204, 85, 0, 0.3);
+    }
+
+    .stat-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 4px;
+    }
+
+    .source-breakdown {
+      margin-top: 16px;
+    }
+
+    .source-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .source-bar-name {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: var(--dust-gold);
+      width: 120px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .source-bar-track {
+      flex: 1;
+      height: 8px;
+      background: var(--charcoal-bedrock);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .source-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--burnt-amber), var(--dust-gold));
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+
+    .source-bar-count {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: var(--text-muted);
+      width: 40px;
+      text-align: right;
+    }
+
+    /* Bottom navigation - Ranger (Spirit) */
+    .nav {
+      background: var(--desert-charcoal);
+      border-top: 1px solid rgba(204, 85, 0, 0.3);
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 0;
+      padding-bottom: calc(8px + env(safe-area-inset-bottom));
+    }
+
+    .nav-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 16px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: color 0.2s;
+    }
+
+    .nav-btn.active {
+      color: var(--burnt-amber);
+    }
+
+    .nav-btn:hover {
+      color: var(--dust-gold);
+    }
+
+    .nav-icon {
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
+    }
+
+    .nav-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Phosphor glow effect for key elements */
+    .glow {
+      text-shadow: 0 0 10px currentColor;
+    }
+
+    /* Loading state */
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+    }
+
+    .loading-spinner {
+      width: 32px;
+      height: 32px;
+      border: 2px solid var(--desert-charcoal);
+      border-top-color: var(--burnt-amber);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .empty-icon {
+      width: 64px;
+      height: 64px;
+      fill: var(--text-dim);
+      margin-bottom: 16px;
+    }
+
+    .empty-title {
+      font-family: 'Roboto Slab', serif;
+      font-size: 16px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .empty-subtitle {
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+
+    /* Toast notifications */
+    .toast {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--burnt-amber);
+      color: var(--charcoal-bedrock);
+      padding: 12px 24px;
+      border-radius: 4px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--charcoal-bedrock);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--burnt-amber);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--dust-gold);
+    }
+
+    /* Barbed wire decorative element */
+    .barbed-wire {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      color: var(--text-dim);
+      text-align: center;
+      padding: 8px 0;
+      opacity: 0.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Header: Surveyor (Reason) -->
+    <header class="header">
+      <div class="header-top">
+        <div class="logo">
+          <svg class="logo-star" viewBox="0 0 24 24">
+            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+          </svg>
+          THE REPBUILIC
+        </div>
+        <span class="status-badge" id="statusBadge">NO LEDGER</span>
+      </div>
+      <div class="ticker">
+        <span class="ticker-content">
+          ★ JUSTICE IS HARMONY OF PARTS ★ ORDER IN THE DUST ★ THE NOBLE LIE IS POLICY ★ STAMP THE RECORD ★ RUN THE AUDIT ★
+        </span>
+      </div>
+      <div class="search-container">
+        <input type="text" class="search-input" id="searchInput" placeholder="Search cases...">
+      </div>
+    </header>
+
+    <!-- Main Content: Frontier (Appetite) -->
+    <main class="main">
+      <div class="views">
+        <!-- Import View -->
+        <div class="view active" id="importView">
+          <div class="import-zone" id="importZone">
+            <svg class="import-icon" viewBox="0 0 24 24">
+              <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
+            </svg>
+            <div class="import-title">Bring the Ledger</div>
+            <div class="import-subtitle">Drop JSON files or tap to select</div>
+            <input type="file" class="file-input" id="fileInput" multiple accept=".json">
+          </div>
+          <div class="loaded-files" id="loadedFiles" style="display: none;">
+            <div class="loaded-files-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/>
+              </svg>
+              Sources Loaded
+            </div>
+            <div id="fileChips"></div>
+          </div>
+          <div class="barbed-wire">X---X---X---X---X---X---X---X---X</div>
+        </div>
+
+        <!-- Cases View -->
+        <div class="view" id="casesView">
+          <div class="cases-list" id="casesList"></div>
+        </div>
+
+        <!-- Case Detail View -->
+        <div class="view" id="caseDetailView">
+          <div class="case-detail-header">
+            <button class="back-btn" id="backToCase">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+              </svg>
+              Back to Cases
+            </button>
+          </div>
+          <div class="prompt-box">
+            <div class="prompt-label">★ The Prompt</div>
+            <div class="prompt-text" id="detailPromptText"></div>
+          </div>
+          <div class="completions-title">Witness Statements (<span id="completionCount">0</span>)</div>
+          <div id="completionsList"></div>
+        </div>
+
+        <!-- Compare View -->
+        <div class="view" id="compareView">
+          <div class="compare-header">
+            <div class="compare-title">Cross-Examination</div>
+            <button class="compare-clear" id="clearCompare">Clear All</button>
+          </div>
+          <div class="compare-empty" id="compareEmpty">
+            <svg class="empty-icon" viewBox="0 0 24 24">
+              <path d="M10 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h5v-2H5V5h5V3zm4 0v2h5v14h-5v2h5c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-5z"/>
+            </svg>
+            <div class="empty-title">No Statements Selected</div>
+            <div class="empty-subtitle">Select completions from cases to compare</div>
+          </div>
+          <div class="compare-grid" id="compareGrid" style="display: none;"></div>
+        </div>
+
+        <!-- Census View -->
+        <div class="view" id="censusView">
+          <div class="census-section">
+            <div class="census-title">Census Overview</div>
+            <div class="stat-grid">
+              <div class="stat-card">
+                <div class="stat-value" id="statCases">0</div>
+                <div class="stat-label">Cases</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="statCompletions">0</div>
+                <div class="stat-label">Statements</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="statSources">0</div>
+                <div class="stat-label">Sources</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-value" id="statAvgComp">0</div>
+                <div class="stat-label">Avg/Case</div>
+              </div>
+            </div>
+          </div>
+          <div class="census-section">
+            <div class="census-title">Source Distribution</div>
+            <div class="source-breakdown" id="sourceBreakdown"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Bottom Nav: Ranger (Spirit) -->
+    <nav class="nav">
+      <button class="nav-btn" data-view="importView">
+        <svg class="nav-icon" viewBox="0 0 24 24">
+          <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
+        </svg>
+        <span class="nav-label">Import</span>
+      </button>
+      <button class="nav-btn" data-view="casesView">
+        <svg class="nav-icon" viewBox="0 0 24 24">
+          <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7v5h5v11H6z"/>
+        </svg>
+        <span class="nav-label">Cases</span>
+      </button>
+      <button class="nav-btn" data-view="compareView">
+        <svg class="nav-icon" viewBox="0 0 24 24">
+          <path d="M10 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h5v-2H5V5h5V3zm4 0v2h5v14h-5v2h5c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-5z"/>
+        </svg>
+        <span class="nav-label">Compare</span>
+      </button>
+      <button class="nav-btn" data-view="censusView">
+        <svg class="nav-icon" viewBox="0 0 24 24">
+          <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+        </svg>
+        <span class="nav-label">Census</span>
+      </button>
+    </nav>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // Republic Viewer Engine
+    const Republic = {
+      sources: [],
+      cases: new Map(),
+      compareList: [],
+      currentCase: null,
+      
+      // JSON files to auto-load
+      FILES: ['ma-52.json','character-comp-52.json','world-prompt-52.json','matrix-editor-52.json','legos-cog-arch-52.json','legos-gpt-52.json','slugline-seq-52.json'],
+      
+      // Initialize
+      init() {
+        this.bindEvents();
+        this.autoLoadFiles();
+      },
+      
+      // Auto-load existing JSON files
+      async autoLoadFiles() {
+        let loaded = 0;
+        for (const fn of this.FILES) {
+          try {
+            const res = await fetch(fn);
+            if (!res.ok) continue;
+            const data = await res.json();
+            this.processFile(fn, data);
+            loaded++;
+          } catch (e) {}
+        }
+        if (loaded > 0) {
+          this.buildCases();
+          this.renderLoadedFiles();
+          this.renderCases();
+          this.renderCensus();
+          this.updateStatus();
+          this.showView('casesView');
+          this.setActiveNav('casesView');
+        } else {
+          this.setActiveNav('importView');
+        }
+      },
+      
+      // Event bindings
+      bindEvents() {
+        // File input
+        const fileInput = document.getElementById('fileInput');
+        const importZone = document.getElementById('importZone');
+        
+        importZone.addEventListener('click', () => fileInput.click());
+        importZone.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          importZone.classList.add('dragover');
+        });
+        importZone.addEventListener('dragleave', () => {
+          importZone.classList.remove('dragover');
+        });
+        importZone.addEventListener('drop', (e) => {
+          e.preventDefault();
+          importZone.classList.remove('dragover');
+          this.handleFiles(e.dataTransfer.files);
+        });
+        fileInput.addEventListener('change', (e) => {
+          this.handleFiles(e.target.files);
+        });
+        
+        // Navigation
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const view = btn.dataset.view;
+            this.showView(view);
+            this.setActiveNav(view);
+          });
+        });
+        
+        // Back button
+        document.getElementById('backToCase').addEventListener('click', () => {
+          this.showView('casesView');
+          this.setActiveNav('casesView');
+        });
+        
+        // Clear compare
+        document.getElementById('clearCompare').addEventListener('click', () => {
+          this.compareList = [];
+          this.renderCompare();
+          this.showToast('Comparison cleared');
+        });
+        
+        // Search
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+          this.filterCases(e.target.value);
+        });
+      },
+      
+      // Handle file uploads
+      async handleFiles(files) {
+        for (const file of files) {
+          if (file.type === 'application/json' || file.name.endsWith('.json')) {
+            try {
+              const text = await file.text();
+              const data = JSON.parse(text);
+              this.processFile(file.name, data);
+            } catch (err) {
+              this.showToast('Error parsing ' + file.name);
+            }
+          }
+        }
+        this.buildCases();
+        this.renderLoadedFiles();
+        this.renderCases();
+        this.renderCensus();
+        this.updateStatus();
+        
+        if (this.sources.length > 0) {
+          this.showView('casesView');
+          this.setActiveNav('casesView');
+        }
+      },
+      
+      // Process a JSON file
+      processFile(filename, data) {
+        // Check if already loaded
+        if (this.sources.find(s => s.filename === filename)) {
+          this.showToast(filename + ' already loaded');
+          return;
+        }
+        
+        const source = {
+          filename: filename,
+          title: data.metadata?.title || filename,
+          link: data.metadata?.link || '',
+          messages: [],
+          promptCount: 0
+        };
+        
+        // Extract prompt/response pairs
+        if (data.messages && Array.isArray(data.messages)) {
+          for (let i = 0; i < data.messages.length; i++) {
+            const msg = data.messages[i];
+            if (msg.role === 'Prompt' && msg.say) {
+              const prompt = msg.say;
+              let response = '';
+              
+              // Look for next Response
+              if (i + 1 < data.messages.length && data.messages[i + 1].role === 'Response') {
+                response = data.messages[i + 1].say || '';
+              }
+              
+              source.messages.push({
+                prompt: prompt,
+                response: response,
+                promptKey: this.hashPrompt(prompt)
+              });
+              source.promptCount++;
+            }
+          }
+        }
+        
+        this.sources.push(source);
+        this.showToast('Loaded: ' + source.title);
+      },
+      
+      // Hash prompt for matching
+      hashPrompt(text) {
+        // Normalize: trim, collapse whitespace, lowercase for matching
+        const normalized = text.trim().replace(/\s+/g, ' ');
+        // Simple hash for grouping
+        let hash = 0;
+        for (let i = 0; i < normalized.length; i++) {
+          const char = normalized.charCodeAt(i);
+          hash = ((hash << 5) - hash) + char;
+          hash = hash & hash;
+        }
+        return 'CASE_' + Math.abs(hash).toString(16).toUpperCase().substring(0, 8);
+      },
+      
+      // Build cases by grouping same prompts
+      buildCases() {
+        this.cases.clear();
+        
+        for (const source of this.sources) {
+          for (const msg of source.messages) {
+            if (!this.cases.has(msg.promptKey)) {
+              this.cases.set(msg.promptKey, {
+                id: msg.promptKey,
+                prompt: msg.prompt,
+                completions: []
+              });
+            }
+            
+            this.cases.get(msg.promptKey).completions.push({
+              source: source.filename,
+              sourceTitle: source.title,
+              response: msg.response
+            });
+          }
+        }
+      },
+      
+      // Render loaded files
+      renderLoadedFiles() {
+        const container = document.getElementById('loadedFiles');
+        const chips = document.getElementById('fileChips');
+        
+        if (this.sources.length === 0) {
+          container.style.display = 'none';
+          return;
+        }
+        
+        container.style.display = 'block';
+        chips.innerHTML = this.sources.map(s => `
+          <span class="file-chip">
+            ${this.truncate(s.title, 20)}
+            <span class="file-chip-count">${s.promptCount}</span>
+          </span>
+        `).join('');
+      },
+      
+      // Render cases list
+      renderCases(filter = '') {
+        const list = document.getElementById('casesList');
+        const filterLower = filter.toLowerCase();
+        
+        let html = '';
+        let index = 0;
+        
+        for (const [id, caseData] of this.cases) {
+          // Filter
+          if (filter && !caseData.prompt.toLowerCase().includes(filterLower)) {
+            continue;
+          }
+          
+          index++;
+          const sources = [...new Set(caseData.completions.map(c => c.sourceTitle))];
+          const title = this.getPromptTitle(caseData.prompt);
+          
+          html += `
+            <div class="case-card" data-case-id="${id}">
+              <div class="case-header">
+                <span class="case-id">Case #${index.toString().padStart(3, '0')}</span>
+                <span class="case-count">${caseData.completions.length} witness${caseData.completions.length > 1 ? 'es' : ''}</span>
+              </div>
+              <div class="case-title">${this.escapeHtml(title)}</div>
+              <div class="case-sources">
+                ${sources.map(s => `<span class="source-tag">${this.truncate(s, 15)}</span>`).join('')}
+              </div>
+            </div>
+          `;
+        }
+        
+        if (!html) {
+          html = `
+            <div class="empty-state">
+              <svg class="empty-icon" viewBox="0 0 24 24">
+                <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/>
+              </svg>
+              <div class="empty-title">No Cases Found</div>
+              <div class="empty-subtitle">${this.sources.length === 0 ? 'Import JSON files to begin' : 'Try a different search'}</div>
+            </div>
+          `;
+        }
+        
+        list.innerHTML = html;
+        
+        // Bind click events
+        list.querySelectorAll('.case-card').forEach(card => {
+          card.addEventListener('click', () => {
+            const caseId = card.dataset.caseId;
+            this.showCaseDetail(caseId);
+          });
+        });
+      },
+      
+      // Show case detail
+      showCaseDetail(caseId) {
+        const caseData = this.cases.get(caseId);
+        if (!caseData) return;
+        
+        this.currentCase = caseData;
+        
+        document.getElementById('detailPromptText').textContent = caseData.prompt;
+        document.getElementById('completionCount').textContent = caseData.completions.length;
+        
+        const list = document.getElementById('completionsList');
+        list.innerHTML = caseData.completions.map((comp, idx) => `
+          <div class="completion-card">
+            <div class="completion-source">
+              <span class="completion-source-name">${this.escapeHtml(comp.sourceTitle)}</span>
+              <div class="completion-actions">
+                <button class="action-btn" data-action="copy" data-idx="${idx}">Copy</button>
+                <button class="action-btn compare-btn ${this.isInCompare(caseId, idx) ? 'selected' : ''}" 
+                        data-action="compare" data-case="${caseId}" data-idx="${idx}">
+                  ${this.isInCompare(caseId, idx) ? '✓ Added' : '+ Compare'}
+                </button>
+              </div>
+            </div>
+            <div class="completion-text">${this.escapeHtml(comp.response)}</div>
+          </div>
+        `).join('');
+        
+        // Bind actions
+        list.querySelectorAll('.action-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const action = btn.dataset.action;
+            const idx = parseInt(btn.dataset.idx);
+            
+            if (action === 'copy') {
+              navigator.clipboard.writeText(caseData.completions[idx].response);
+              this.showToast('Copied to clipboard');
+            } else if (action === 'compare') {
+              this.toggleCompare(btn.dataset.case, idx, btn);
+            }
+          });
+        });
+        
+        this.showView('caseDetailView');
+      },
+      
+      // Check if in compare list
+      isInCompare(caseId, idx) {
+        return this.compareList.some(c => c.caseId === caseId && c.idx === idx);
+      },
+      
+      // Toggle compare
+      toggleCompare(caseId, idx, btn) {
+        const existing = this.compareList.findIndex(c => c.caseId === caseId && c.idx === idx);
+        
+        if (existing >= 0) {
+          this.compareList.splice(existing, 1);
+          btn.textContent = '+ Compare';
+          btn.classList.remove('selected');
+          this.showToast('Removed from comparison');
+        } else {
+          if (this.compareList.length >= 3) {
+            this.showToast('Max 3 items for comparison');
+            return;
+          }
+          this.compareList.push({ caseId, idx });
+          btn.textContent = '✓ Added';
+          btn.classList.add('selected');
+          this.showToast('Added to comparison');
+        }
+        
+        this.renderCompare();
+      },
+      
+      // Render compare view
+      renderCompare() {
+        const empty = document.getElementById('compareEmpty');
+        const grid = document.getElementById('compareGrid');
+        
+        if (this.compareList.length === 0) {
+          empty.style.display = 'block';
+          grid.style.display = 'none';
+          return;
+        }
+        
+        empty.style.display = 'none';
+        grid.style.display = 'flex';
+        
+        grid.innerHTML = this.compareList.map(item => {
+          const caseData = this.cases.get(item.caseId);
+          const comp = caseData.completions[item.idx];
+          return `
+            <div class="compare-item">
+              <div class="compare-item-header">${this.escapeHtml(comp.sourceTitle)}</div>
+              <div class="compare-item-text">${this.escapeHtml(comp.response)}</div>
+            </div>
+          `;
+        }).join('');
+      },
+      
+      // Render census
+      renderCensus() {
+        let totalCompletions = 0;
+        this.cases.forEach(c => totalCompletions += c.completions.length);
+        
+        document.getElementById('statCases').textContent = this.cases.size;
+        document.getElementById('statCompletions').textContent = totalCompletions;
+        document.getElementById('statSources').textContent = this.sources.length;
+        document.getElementById('statAvgComp').textContent = this.cases.size > 0 
+          ? (totalCompletions / this.cases.size).toFixed(1) 
+          : '0';
+        
+        // Source breakdown
+        const breakdown = document.getElementById('sourceBreakdown');
+        const maxCount = Math.max(...this.sources.map(s => s.promptCount), 1);
+        
+        breakdown.innerHTML = this.sources.map(s => `
+          <div class="source-bar">
+            <span class="source-bar-name" title="${s.title}">${this.truncate(s.title, 15)}</span>
+            <div class="source-bar-track">
+              <div class="source-bar-fill" style="width: ${(s.promptCount / maxCount) * 100}%"></div>
+            </div>
+            <span class="source-bar-count">${s.promptCount}</span>
+          </div>
+        `).join('');
+      },
+      
+      // Filter cases
+      filterCases(query) {
+        this.renderCases(query);
+      },
+      
+      // Show view
+      showView(viewId) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.getElementById(viewId).classList.add('active');
+      },
+      
+      // Set active nav
+      setActiveNav(viewId) {
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.view === viewId);
+        });
+      },
+      
+      // Update status badge
+      updateStatus() {
+        const badge = document.getElementById('statusBadge');
+        if (this.cases.size > 0) {
+          badge.textContent = 'LEDGER ACTIVE';
+          badge.style.color = '#4ADE80';
+          badge.style.borderColor = '#4ADE80';
+          badge.style.background = 'rgba(74, 222, 128, 0.1)';
+        }
+      },
+      
+      // Get title from prompt
+      getPromptTitle(prompt) {
+        // Try to extract title from common patterns
+        const lines = prompt.split('\n').filter(l => l.trim());
+        if (lines.length > 0) {
+          // Look for THE REPBUILIC: pattern
+          for (const line of lines.slice(0, 5)) {
+            if (line.includes('THE REPBUILIC:') || line.includes('REPBUILIC:')) {
+              return line.trim();
+            }
+          }
+          // Otherwise return first line
+          return lines[0].trim().substring(0, 100);
+        }
+        return 'Untitled Case';
+      },
+      
+      // Truncate text
+      truncate(text, len) {
+        return text.length > len ? text.substring(0, len) + '...' : text;
+      },
+      
+      // Escape HTML
+      escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      },
+      
+      // Show toast
+      showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
+      }
+    };
+    
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', () => Republic.init());
+  </script>
+</body>
+</html>

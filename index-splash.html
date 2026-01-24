@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0a0a0a">
+<title>THE REPUBLIC</title>
+<link rel="icon" type="image/svg+xml" href="favicon-splash.svg">
+<style>
+:root{--bg:#0a0a0a;--bg2:#0f0f0f;--fg:#c4c4c4;--fg2:#666;--accent:#cc5500;--accent2:#d8a25a;--border:#222}
+[data-theme="light"]{--bg:#f5f0e6;--bg2:#ebe5d8;--fg:#2a2520;--fg2:#6a6560;--accent:#8b4513;--accent2:#a0522d;--border:#d5d0c0}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;font-family:'Courier New',monospace;background:var(--bg);color:var(--fg);overflow-x:hidden}
+.splash{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center;position:relative}
+.theme-toggle{position:fixed;top:16px;right:16px;font-size:9px;padding:6px 12px;background:var(--bg2);border:1px solid var(--border);color:var(--fg2);cursor:pointer;z-index:100;transition:all .2s}
+.theme-toggle:hover{border-color:var(--accent);color:var(--accent)}
+.star{width:80px;height:80px;margin-bottom:24px;opacity:.8}
+.star polygon{fill:var(--accent);filter:drop-shadow(0 0 20px var(--accent))}
+.title{font-size:clamp(28px,8vw,48px);letter-spacing:.2em;color:var(--accent);margin-bottom:8px;text-shadow:0 0 40px var(--accent)}
+.subtitle{font-size:clamp(10px,3vw,12px);letter-spacing:.3em;color:var(--fg2);margin-bottom:48px;text-transform:uppercase}
+.tagline{font-size:clamp(12px,3.5vw,14px);color:var(--fg);margin-bottom:48px;max-width:500px;line-height:1.8;opacity:.8}
+.nav-grid{display:grid;grid-template-columns:1fr;gap:12px;width:100%;max-width:400px;margin-bottom:48px}
+@media(min-width:600px){.nav-grid{grid-template-columns:1fr 1fr}}
+.nav-card{display:block;padding:20px;background:var(--bg2);border:1px solid var(--border);text-decoration:none;color:var(--fg);transition:all .2s;text-align:left}
+.nav-card:hover,.nav-card:active{border-color:var(--accent);transform:translateY(-2px)}
+.nav-card-title{font-size:11px;color:var(--accent);letter-spacing:.1em;margin-bottom:8px}
+.nav-card-desc{font-size:10px;color:var(--fg2);line-height:1.6}
+.stats{display:flex;gap:24px;justify-content:center;margin-bottom:48px;flex-wrap:wrap}
+.stat{text-align:center}
+.stat-val{font-size:24px;color:var(--accent)}
+.stat-label{font-size:9px;color:var(--fg2);margin-top:4px;text-transform:uppercase}
+.manifest{max-width:600px;padding:24px;background:var(--bg2);border:1px solid var(--border);text-align:left;font-size:10px;line-height:1.8;color:var(--fg2);margin-bottom:32px}
+.manifest-title{font-size:11px;color:var(--accent);margin-bottom:12px;letter-spacing:.1em}
+.manifest p{margin-bottom:8px}
+.footer{font-size:9px;color:var(--fg2);opacity:.5}
+.scanline{position:fixed;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px);pointer-events:none;z-index:9999}
+[data-theme="light"] .scanline{background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.01) 2px,rgba(0,0,0,.01) 4px)}
+.loading{color:var(--fg2);font-size:10px}
+</style>
+</head>
+<body data-theme="dark">
+<div class="scanline"></div>
+<button class="theme-toggle" id="theme-toggle">LIGHT</button>
+<div class="splash">
+<svg class="star" viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>
+<h1 class="title">THE REPUBLIC</h1>
+<p class="subtitle">January 2026</p>
+
+<div class="manifest" style="max-width:700px;text-align:center;background:transparent;border:none;margin-bottom:32px">
+<p style="font-size:14px;line-height:2;color:var(--fg);margin-bottom:16px"><strong>LOGLINE:</strong> A philosophy professor is ordered to remove Plato from his syllabus. He complies - by teaching the censorship order itself.</p>
+<p style="font-size:11px;line-height:1.9;color:var(--fg2)">Texas A&M. System Policy 08.01. "No course will advocate race or gender ideology." The Symposium flagged for Aristophanes' three primordial genders. The Republic flagged for Book V's radical equality. 200 courses purged. One professor's malicious compliance becomes the only philosophy lesson left standing.</p>
+</div>
+
+<div class="stats" id="stats">
+<div class="stat"><div class="stat-val" id="s-sources">-</div><div class="stat-label">Witnesses</div></div>
+<div class="stat"><div class="stat-val" id="s-cases">-</div><div class="stat-label">Prompts</div></div>
+<div class="stat"><div class="stat-val" id="s-witnesses">-</div><div class="stat-label">Completions</div></div>
+</div>
+
+<div class="manifest" style="max-width:700px">
+<p><strong>THE SEED:</strong> By banning The Republic, Texas enacted it. Plato's own censorship program - striking out Homer, controlling myths told to the young (Republic 387b) - realized by those who claim to defend him. The puppeteers of Book VII now hold up "Tradition" and "Biology" before the fire, casting state-sanctioned shadows on the classroom wall.</p>
+<p style="margin-top:12px"><strong>THE ARCHIVE:</strong> These are the prompts that generated the course content. These are the completions that would have been taught. CASES group identical prompts across sources. WITNESS STATEMENTS are the AI responses. Cross-examination reveals what the State decided you should never compare.</p>
+</div>
+
+<nav class="nav-grid" style="max-width:500px">
+<a class="nav-card" href="ledger.html"><div class="nav-card-title">LEDGER</div><div class="nav-card-desc">Pin witnesses. Cross-examine.</div></a>
+<a class="nav-card" href="compare.html"><div class="nav-card-title">COMPARE</div><div class="nav-card-desc">Side-by-side. Direct visual.</div></a>
+<a class="nav-card" href="treatment.html"><div class="nav-card-title">TREATMENTS</div><div class="nav-card-desc">Unified. All completions.</div></a>
+<a class="nav-card" href="megamap.html"><div class="nav-card-title">MEGA MAP</div><div class="nav-card-desc">Scene grid. Assembly.</div></a>
+<a class="nav-card" href="screenplay.html"><div class="nav-card-title">SCREENPLAY</div><div class="nav-card-desc">Executive-grade export.</div></a>
+<a class="nav-card" href="screenplay-assembly.html"><div class="nav-card-title">ASSEMBLY</div><div class="nav-card-desc">Minimap. Page/line numbers.</div></a>
+<a class="nav-card" href="republic-viewer.html"><div class="nav-card-title">FULL VIEWER</div><div class="nav-card-desc">Original interface.</div></a>
+<a class="nav-card" href="onyx-rep.html"><div class="nav-card-title">ONYX</div><div class="nav-card-desc">Forensic ancestry graph.</div></a>
+</nav>
+
+<div class="manifest" style="max-width:700px;font-size:9px;line-height:1.7;opacity:.7">
+<strong>CITATIONS:</strong> Daily Nous (1/6/26) · FIRE Letter (1/8/26) · NY Times (1/8/26) · Texas Tribune (11/13/25, 1/7/26) · Leiter Reports (1/6/26, 1/9/26) · The Battalion (1/8/26) · System Policy 08.01 (policies.tamu.edu) · SB 37 89th Legislature (capitol.texas.gov) · AAUP Statement (1/7/26) · Heterodox Academy (1/9/26)
+</div>
+
+<div class="footer">"Can a university that bans the Republic still claim to be a university?" - AAUP, January 2026</div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+const FILES=['ma-52.json','character-comp-52.json','world-prompt-52.json','matrix-editor-52.json','legos-cog-arch-52.json','legos-gpt-52.json','slugline-seq-52.json'];
+
+// Theme
+const theme=localStorage.getItem('republic-theme')||'dark';
+document.body.dataset.theme=theme;
+$('#theme-toggle').textContent=theme==='dark'?'LIGHT':'DARK';
+
+$('#theme-toggle').onclick=()=>{
+  const t=document.body.dataset.theme==='dark'?'light':'dark';
+  document.body.dataset.theme=t;
+  localStorage.setItem('republic-theme',t);
+  $('#theme-toggle').textContent=t==='dark'?'LIGHT':'DARK';
+};
+
+// Load stats
+async function loadStats(){
+  let sources=0,cases=new Map(),witnesses=0;
+  for(const fn of FILES){
+    try{
+      const res=await fetch(fn);
+      if(!res.ok)continue;
+      const data=await res.json();
+      sources++;
+      if(data.messages){
+        for(let i=0;i<data.messages.length;i++){
+          const m=data.messages[i];
+          if(m.role==='Prompt'&&m.say){
+            const key=m.say.trim().replace(/\s+/g,' ').slice(0,100);
+            if(!cases.has(key))cases.set(key,0);
+            cases.set(key,cases.get(key)+1);
+            witnesses++;
+          }
+        }
+      }
+    }catch(e){}
+  }
+  $('#s-sources').textContent=sources;
+  $('#s-cases').textContent=cases.size;
+  $('#s-witnesses').textContent=witnesses;
+}
+
+loadStats();
+</script>
+</body>
+</html>

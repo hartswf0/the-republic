@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>THE REPUBLIC — Generate Individual Scripts</title>
+<link rel="icon" type="image/svg+xml" href="favicon-generate.svg">
+<style>
+:root{--bg:#0a0a0a;--bg2:#0f0f0f;--fg:#c4c4c4;--fg2:#666;--accent:#cc5500;--border:#222}
+[data-theme="light"]{--bg:#f5f0e6;--bg2:#ebe5d8;--fg:#2a2520;--fg2:#6a6560;--accent:#8b4513;--border:#d5d0c0}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Courier New',monospace;background:var(--bg);color:var(--fg);padding:20px;min-height:100vh}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.title{font-size:14px;color:var(--accent);letter-spacing:.1em}
+.theme-toggle{font-size:9px;padding:6px 12px;background:var(--bg2);border:1px solid var(--border);color:var(--fg2);cursor:pointer}
+.theme-toggle:hover{border-color:var(--accent);color:var(--accent)}
+.status{padding:16px;background:var(--bg2);border:1px solid var(--border);margin-bottom:24px;font-size:11px;line-height:1.8}
+.status-title{color:var(--accent);margin-bottom:8px}
+.btn{display:inline-block;padding:12px 24px;background:var(--accent);border:none;color:var(--bg);font:inherit;font-size:11px;cursor:pointer;margin-right:12px;margin-bottom:12px}
+.btn:hover{opacity:.8}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.secondary{background:var(--bg2);border:1px solid var(--border);color:var(--fg2)}
+.btn.secondary:hover{border-color:var(--accent);color:var(--accent)}
+.output{margin-top:24px;padding:16px;background:var(--bg2);border:1px solid var(--border);font-size:10px;max-height:400px;overflow-y:auto}
+.output-line{padding:4px 0;border-bottom:1px solid var(--border);color:var(--fg2)}
+.output-line.success{color:#4a4}
+.output-line.error{color:#a44}
+.file-list{margin-top:24px}
+.file-item{display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--bg2);border:1px solid var(--border);margin-bottom:8px}
+.file-name{font-size:11px;color:var(--fg)}
+.file-actions a{font-size:9px;color:var(--accent);margin-left:12px}
+</style>
+</head>
+<body data-theme="dark">
+<div class="header">
+<div class="title">GENERATE INDIVIDUAL SCRIPTS</div>
+<button class="theme-toggle" id="theme-toggle">LIGHT</button>
+</div>
+
+<div class="status">
+<div class="status-title">STATUS</div>
+<div id="status-text">Ready. This will generate one self-contained HTML file per unique prompt, combining all witness statements.</div>
+</div>
+
+<button class="btn" id="generate">GENERATE ALL SCRIPTS</button>
+<button class="btn secondary" id="download-all">DOWNLOAD AS ZIP</button>
+
+<div class="output" id="output" style="display:none"></div>
+<div class="file-list" id="file-list"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const FILES=['ma-52.json','character-comp-52.json','world-prompt-52.json','matrix-editor-52.json','legos-cog-arch-52.json','legos-gpt-52.json','slugline-seq-52.json'];
+const state={sources:[],cases:new Map(),generated:[]};
+
+// Theme
+const theme=localStorage.getItem('republic-theme')||'dark';
+document.body.dataset.theme=theme;
+$('#theme-toggle').textContent=theme==='dark'?'LIGHT':'DARK';
+$('#theme-toggle').onclick=()=>{
+  const t=document.body.dataset.theme==='dark'?'light':'dark';
+  document.body.dataset.theme=t;
+  localStorage.setItem('republic-theme',t);
+  $('#theme-toggle').textContent=t==='dark'?'LIGHT':'DARK';
+};
+
+function hash(s){let h=0;for(let i=0;i<s.length;i++)h=((h<<5)-h)+s.charCodeAt(i)|0;return'T'+Math.abs(h).toString(16).toUpperCase().slice(0,8)}
+
+function extract(data,fname){
+  const pairs=[];
+  const title=data.metadata?.title||fname.replace('.json','');
+  if(data.messages&&Array.isArray(data.messages)){
+    for(let i=0;i<data.messages.length;i++){
+      const m=data.messages[i];
+      if(m.role==='Prompt'&&m.say){
+        let comp='';
+        if(data.messages[i+1]?.role==='Response')comp=data.messages[i+1].say||'';
+        if(comp)pairs.push({prompt:m.say,comp,key:hash(m.say.trim().replace(/\s+/g,' '))});
+      }
+    }
+  }
+  return{fname,title,pairs};
+}
+
+function getTitle(prompt){
+  const lines=prompt.split('\n').filter(l=>l.trim());
+  for(const line of lines.slice(0,5)){
+    if(line.includes('REPBUILIC')||line.includes('Republic')||line.length>20)return line.trim().slice(0,80);
+  }
+  return lines[0]?.trim().slice(0,80)||'Untitled';
+}
+
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function generateHTML(id,c){
+  const title=getTitle(c.prompt);
+  const sources=[...new Set(c.witnesses.map(w=>w.source))];
+  
+  let witnessHtml='';
+  c.witnesses.forEach((w,i)=>{
+    witnessHtml+=`
+    <div class="witness" data-idx="${i}">
+      <div class="witness-header">
+        <span class="witness-source">${esc(w.source)}</span>
+        <span class="witness-num">WITNESS ${i+1} of ${c.witnesses.length}</span>
+        <button class="copy-btn" data-idx="${i}">COPY</button>
+      </div>
+      <div class="witness-text" id="w${i}">${esc(w.text)}</div>
+    </div>`;
+  });
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${esc(title)} — THE REPUBLIC</title>
+<style>
+:root{--bg:#0a0a0a;--bg2:#0f0f0f;--fg:#c4c4c4;--fg2:#666;--accent:#cc5500;--accent2:#d8a25a;--border:#222;--select:#1a1a1a}
+[data-theme="light"]{--bg:#f5f0e6;--bg2:#ebe5d8;--fg:#2a2520;--fg2:#6a6560;--accent:#8b4513;--accent2:#a0522d;--border:#d5d0c0;--select:#ddd5c5}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Courier New',monospace;background:var(--bg);color:var(--fg);font-size:13px;line-height:1.7;min-height:100vh}
+.header{position:sticky;top:0;background:var(--bg);border-bottom:1px solid var(--border);padding:16px 20px;z-index:100;display:flex;justify-content:space-between;align-items:center}
+.back{font-size:10px;color:var(--accent);text-decoration:none}
+.back:hover{text-decoration:underline}
+.controls{display:flex;gap:8px}
+.ctrl-btn{font-size:9px;padding:6px 10px;background:var(--bg2);border:1px solid var(--border);color:var(--fg2);cursor:pointer}
+.ctrl-btn:hover{border-color:var(--accent);color:var(--accent)}
+.container{max-width:800px;margin:0 auto;padding:24px 20px 60px}
+.meta{font-size:9px;color:var(--fg2);margin-bottom:8px;letter-spacing:.1em}
+h1{font-size:clamp(16px,4vw,20px);color:var(--accent);margin-bottom:16px;line-height:1.4;font-weight:normal}
+.stats{font-size:10px;color:var(--fg2);margin-bottom:32px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.section{margin-bottom:32px}
+.section-title{font-size:10px;color:var(--accent2);margin-bottom:12px;letter-spacing:.1em;text-transform:uppercase}
+.prompt{padding:20px;background:var(--bg2);border-left:3px solid #1f4e7a;font-size:12px;line-height:1.8;white-space:pre-wrap;word-break:break-word;position:relative}
+.witness{margin-bottom:20px;padding:20px;background:var(--bg2);border-left:3px solid #2d5a3d;position:relative}
+.witness-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px}
+.witness-source{font-size:11px;color:var(--accent2)}
+.witness-num{font-size:9px;color:var(--fg2)}
+.witness-text{font-size:12px;line-height:1.8;white-space:pre-wrap;word-break:break-word}
+.copy-btn{font-size:8px;padding:4px 8px;background:var(--bg);border:1px solid var(--border);color:var(--fg2);cursor:pointer}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+.line{display:block;padding:2px 4px;margin:0 -4px;cursor:pointer;border-radius:2px}
+.line:hover{background:var(--select)}
+.line.selected{background:var(--accent);color:var(--bg)}
+.notes{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);padding:12px 20px;display:none}
+.notes.open{display:block}
+.notes-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.notes-title{font-size:10px;color:var(--accent)}
+.notes-close{font-size:9px;color:var(--fg2);cursor:pointer;background:none;border:none}
+.notes-input{width:100%;padding:8px;background:var(--bg);border:1px solid var(--border);color:var(--fg);font:inherit;font-size:11px;resize:none;height:60px}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);font-size:10px;background:var(--accent);color:var(--bg);padding:8px 16px;opacity:0;transition:opacity .3s;z-index:200}
+.toast.show{opacity:1}
+.context-menu{position:fixed;background:var(--bg2);border:1px solid var(--border);padding:4px 0;z-index:300;display:none;min-width:120px}
+.context-menu.open{display:block}
+.context-item{padding:8px 16px;font-size:10px;cursor:pointer;color:var(--fg)}
+.context-item:hover{background:var(--select);color:var(--accent)}
+@media(max-width:600px){.container{padding:16px 12px 80px}.prompt,.witness{padding:12px}.header{padding:12px}}
+</style>
+</head>
+<body data-theme="dark">
+<header class="header">
+<a class="back" href="index-splash.html">< BACK TO REPUBLIC</a>
+<div class="controls">
+<button class="ctrl-btn" id="theme-toggle">LIGHT</button>
+<button class="ctrl-btn" id="copy-all">COPY ALL</button>
+</div>
+</header>
+<main class="container">
+<div class="meta">TREATMENT ${id}</div>
+<h1>${esc(title)}</h1>
+<div class="stats">${c.witnesses.length} witness${c.witnesses.length>1?'es':''} from ${sources.length} source${sources.length>1?'s':''}: ${sources.join(', ')}</div>
+
+<section class="section">
+<div class="section-title">THE PROMPT (STAMPED)</div>
+<div class="prompt" id="prompt">${esc(c.prompt)}</div>
+</section>
+
+<section class="section">
+<div class="section-title">WITNESS STATEMENTS</div>
+${witnessHtml}
+</section>
+</main>
+
+<div class="notes" id="notes">
+<div class="notes-header">
+<span class="notes-title">NOTE FOR SELECTED LINE</span>
+<button class="notes-close" id="notes-close">CLOSE</button>
+</div>
+<textarea class="notes-input" id="notes-input" placeholder="Add your note here..."></textarea>
+</div>
+
+<div class="context-menu" id="context-menu">
+<div class="context-item" data-action="copy">Copy</div>
+<div class="context-item" data-action="note">Add Note</div>
+<div class="context-item" data-action="highlight">Highlight</div>
+</div>
+
+<div class="toast" id="toast">COPIED</div>
+
+<script>
+const $=s=>document.querySelector(s);
+const state={selectedLine:null,notes:JSON.parse(localStorage.getItem('notes-'+${JSON.stringify(id)})||'{}')};
+
+// Theme
+const theme=localStorage.getItem('republic-theme')||'dark';
+document.body.dataset.theme=theme;
+$('#theme-toggle').textContent=theme==='dark'?'LIGHT':'DARK';
+$('#theme-toggle').onclick=()=>{
+  const t=document.body.dataset.theme==='dark'?'light':'dark';
+  document.body.dataset.theme=t;
+  localStorage.setItem('republic-theme',t);
+  $('#theme-toggle').textContent=t==='dark'?'LIGHT':'DARK';
+};
+
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1200);}
+
+// Wrap lines for selection
+function wrapLines(el){
+  const text=el.textContent;
+  const lines=text.split('\\n');
+  el.innerHTML=lines.map((line,i)=>'<span class="line" data-line="'+i+'">'+line+'</span>').join('\\n');
+}
+document.querySelectorAll('.prompt, .witness-text').forEach(wrapLines);
+
+// Line selection
+document.addEventListener('click',e=>{
+  const line=e.target.closest('.line');
+  if(line){
+    document.querySelectorAll('.line.selected').forEach(l=>l.classList.remove('selected'));
+    line.classList.add('selected');
+    state.selectedLine=line;
+  }
+});
+
+// Context menu (right-click desktop)
+document.addEventListener('contextmenu',e=>{
+  const line=e.target.closest('.line');
+  if(line){
+    e.preventDefault();
+    state.selectedLine=line;
+    line.classList.add('selected');
+    const menu=$('#context-menu');
+    menu.style.left=e.clientX+'px';
+    menu.style.top=e.clientY+'px';
+    menu.classList.add('open');
+  }
+});
+
+// Long press (mobile)
+let pressTimer;
+document.addEventListener('touchstart',e=>{
+  const line=e.target.closest('.line');
+  if(line){
+    pressTimer=setTimeout(()=>{
+      state.selectedLine=line;
+      line.classList.add('selected');
+      const rect=line.getBoundingClientRect();
+      const menu=$('#context-menu');
+      menu.style.left=rect.left+'px';
+      menu.style.top=(rect.bottom+5)+'px';
+      menu.classList.add('open');
+    },500);
+  }
+});
+document.addEventListener('touchend',()=>clearTimeout(pressTimer));
+document.addEventListener('touchmove',()=>clearTimeout(pressTimer));
+
+// Close context menu
+document.addEventListener('click',e=>{
+  if(!e.target.closest('#context-menu'))$('#context-menu').classList.remove('open');
+});
+
+// Context actions
+document.querySelectorAll('.context-item').forEach(item=>{
+  item.onclick=()=>{
+    const action=item.dataset.action;
+    const line=state.selectedLine;
+    if(!line)return;
+    if(action==='copy'){
+      navigator.clipboard.writeText(line.textContent);
+      toast('COPIED');
+    }else if(action==='note'){
+      $('#notes').classList.add('open');
+      $('#notes-input').value=state.notes[line.dataset.line]||'';
+      $('#notes-input').focus();
+    }else if(action==='highlight'){
+      line.style.background=line.style.background?'':'var(--accent)';
+      line.style.color=line.style.color?'':'var(--bg)';
+    }
+    $('#context-menu').classList.remove('open');
+  };
+});
+
+// Notes
+$('#notes-close').onclick=()=>{
+  if(state.selectedLine){
+    state.notes[state.selectedLine.dataset.line]=$('#notes-input').value;
+    localStorage.setItem('notes-'+${JSON.stringify(id)},JSON.stringify(state.notes));
+  }
+  $('#notes').classList.remove('open');
+};
+
+// Copy buttons
+document.querySelectorAll('.copy-btn').forEach(btn=>{
+  btn.onclick=()=>{
+    const idx=btn.dataset.idx;
+    const text=$('#w'+idx).textContent;
+    navigator.clipboard.writeText(text);
+    toast('COPIED');
+  };
+});
+
+$('#copy-all').onclick=()=>{
+  const all=document.querySelector('.container').textContent;
+  navigator.clipboard.writeText(all);
+  toast('COPIED ALL');
+};
+
+// Keyboard
+document.onkeydown=e=>{
+  if(e.key==='c'&&state.selectedLine&&!e.ctrlKey&&!e.metaKey){
+    navigator.clipboard.writeText(state.selectedLine.textContent);
+    toast('COPIED');
+  }
+  if(e.key==='n'&&state.selectedLine){
+    $('#notes').classList.add('open');
+    $('#notes-input').value=state.notes[state.selectedLine.dataset.line]||'';
+  }
+  if(e.key==='Escape'){
+    $('#notes').classList.remove('open');
+    $('#context-menu').classList.remove('open');
+  }
+};
+<`+`/script>
+</body>
+</html>`;
+}
+
+function log(msg,type=''){
+  const output=$('#output');
+  output.style.display='block';
+  output.innerHTML+=`<div class="output-line ${type}">${msg}</div>`;
+  output.scrollTop=output.scrollHeight;
+}
+
+async function loadData(){
+  log('Loading JSON sources...');
+  for(const fn of FILES){
+    try{
+      const res=await fetch(fn);
+      if(!res.ok)continue;
+      const data=await res.json();
+      const ex=extract(data,fn);
+      if(ex.pairs.length){
+        state.sources.push(ex);
+        log(`Loaded ${fn}: ${ex.pairs.length} pairs`,'success');
+      }
+    }catch(e){log(`Error loading ${fn}`,'error');}
+  }
+  
+  // Build cases
+  for(const src of state.sources){
+    for(const p of src.pairs){
+      if(!state.cases.has(p.key))state.cases.set(p.key,{id:p.key,prompt:p.prompt,witnesses:[]});
+      state.cases.get(p.key).witnesses.push({source:src.title,fname:src.fname,text:p.comp});
+    }
+  }
+  log(`Built ${state.cases.size} unique cases`,'success');
+}
+
+async function generate(){
+  $('#generate').disabled=true;
+  $('#output').innerHTML='';
+  state.generated=[];
+  
+  await loadData();
+  
+  log('Generating individual HTML files...');
+  let i=0;
+  for(const[id,c]of state.cases){
+    i++;
+    const html=generateHTML(id,c);
+    const filename=`script-${String(i).padStart(3,'0')}-${id}.html`;
+    state.generated.push({filename,html,title:getTitle(c.prompt)});
+    log(`Generated ${filename}`,'success');
+  }
+  
+  log(`Done! ${state.generated.length} scripts generated.`,'success');
+  renderFileList();
+  $('#generate').disabled=false;
+}
+
+function renderFileList(){
+  const list=$('#file-list');
+  list.innerHTML=state.generated.map(f=>`
+    <div class="file-item">
+      <span class="file-name">${f.filename}</span>
+      <span class="file-actions">
+        <a href="#" onclick="downloadFile('${f.filename}');return false;">DOWNLOAD</a>
+        <a href="#" onclick="previewFile('${f.filename}');return false;">PREVIEW</a>
+      </span>
+    </div>
+  `).join('');
+}
+
+function downloadFile(filename){
+  const f=state.generated.find(x=>x.filename===filename);
+  if(!f)return;
+  const blob=new Blob([f.html],{type:'text/html'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=filename;
+  a.click();
+}
+
+function previewFile(filename){
+  const f=state.generated.find(x=>x.filename===filename);
+  if(!f)return;
+  const win=window.open('','_blank');
+  win.document.write(f.html);
+  win.document.close();
+}
+
+$('#download-all').onclick=async()=>{
+  if(!state.generated.length){await generate();}
+  // Simple sequential download since we can't zip without library
+  for(const f of state.generated){
+    downloadFile(f.filename);
+    await new Promise(r=>setTimeout(r,200));
+  }
+};
+
+$('#generate').onclick=generate;
+</script>
+</body>
+</html>

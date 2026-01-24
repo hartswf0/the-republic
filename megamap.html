@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="theme-color" content="#0a0a0a">
+<title>THE REPUBLIC — Mega Map</title>
+<link rel="icon" type="image/svg+xml" href="favicon-megamap.svg">
+<style>
+:root{--bg:#0a0a0a;--bg2:#0f0f0f;--bg3:#151515;--fg:#c4c4c4;--fg2:#666;--accent:#cc5500;--accent2:#d8a25a;--border:#222;--select:#1a1a0a;--code-bg:#080808}
+[data-theme="light"]{--bg:#f5f0e6;--bg2:#ebe5d8;--bg3:#e0dbd0;--fg:#2a2520;--fg2:#6a6560;--accent:#8b4513;--accent2:#a0522d;--border:#d5d0c0;--select:#d5d0a0;--code-bg:#ddd8cc}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Courier New',monospace;background:var(--bg);color:var(--fg);font-size:12px;line-height:1.6;min-height:100vh;overflow-x:hidden}
+
+/* Header */
+.header{position:fixed;top:0;left:0;right:0;height:48px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 12px;z-index:100;backdrop-filter:blur(10px)}
+.header-left{display:flex;align-items:center;gap:12px}
+.back{font-size:10px;color:var(--accent);text-decoration:none;padding:6px 0}
+.logo{font-size:11px;color:var(--accent);letter-spacing:.1em}
+.header-right{display:flex;gap:8px}
+.btn{font-size:9px;padding:6px 10px;background:var(--bg3);border:1px solid var(--border);color:var(--fg2);cursor:pointer;transition:all .2s;border-radius:2px}
+.btn:hover,.btn:active{border-color:var(--accent);color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.btn.primary:hover{opacity:.8}
+
+/* View modes */
+.view-toggle{display:flex;border:1px solid var(--border);border-radius:2px;overflow:hidden}
+.view-btn{padding:6px 10px;background:var(--bg3);border:none;color:var(--fg2);font-size:9px;cursor:pointer;transition:all .2s}
+.view-btn.active{background:var(--accent);color:var(--bg)}
+
+/* Main container */
+.main{padding-top:48px;min-height:100vh}
+
+/* Map view */
+.map{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;padding:12px;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* Scene cards */
+.scene{background:var(--bg2);border:1px solid var(--border);border-radius:4px;overflow:hidden;cursor:pointer;transition:all .2s;position:relative;animation:cardIn .3s ease backwards}
+@keyframes cardIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.scene:nth-child(1){animation-delay:0s}
+.scene:nth-child(2){animation-delay:.03s}
+.scene:nth-child(3){animation-delay:.06s}
+.scene:nth-child(4){animation-delay:.09s}
+.scene:nth-child(5){animation-delay:.12s}
+.scene:nth-child(6){animation-delay:.15s}
+.scene:hover{border-color:var(--accent);transform:translateY(-2px)}
+.scene.selected{border-color:var(--accent);background:var(--select);box-shadow:0 0 0 2px var(--accent)}
+.scene.in-script{border-left:3px solid var(--accent2)}
+.scene-order{position:absolute;top:8px;right:8px;width:20px;height:20px;background:var(--accent);color:var(--bg);font-size:10px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-weight:bold;opacity:0;transition:opacity .2s}
+.scene.in-script .scene-order{opacity:1}
+.scene-header{padding:10px 12px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.scene-id{font-size:9px;color:var(--fg2);letter-spacing:.05em}
+.scene-sources{font-size:8px;color:var(--accent2)}
+.scene-title{padding:10px 12px;font-size:11px;color:var(--fg);line-height:1.5;max-height:60px;overflow:hidden}
+.scene-preview{padding:0 12px 12px;font-size:10px;color:var(--fg2);max-height:80px;overflow:hidden;position:relative}
+.scene-preview::after{content:'';position:absolute;bottom:0;left:0;right:0;height:30px;background:linear-gradient(transparent,var(--bg2))}
+.scene.selected .scene-preview::after{background:linear-gradient(transparent,var(--select))}
+
+/* Code blocks */
+.code-block{background:var(--code-bg);border:1px solid var(--border);border-radius:2px;padding:8px 10px;margin:8px 0;font-family:'Courier New',monospace;font-size:10px;line-height:1.5;overflow-x:auto;white-space:pre-wrap;word-break:break-word}
+
+/* Script panel */
+.script-panel{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);transform:translateY(calc(100% - 48px));transition:transform .3s ease;z-index:90}
+.script-panel.open{transform:translateY(0)}
+.script-toggle{height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;cursor:pointer;border-bottom:1px solid var(--border)}
+.script-toggle-left{display:flex;align-items:center;gap:12px}
+.script-title{font-size:10px;color:var(--accent);letter-spacing:.1em}
+.script-count{font-size:9px;color:var(--fg2);background:var(--bg3);padding:2px 8px;border-radius:10px}
+.script-toggle-arrow{font-size:14px;color:var(--fg2);transition:transform .3s}
+.script-panel.open .script-toggle-arrow{transform:rotate(180deg)}
+.script-content{max-height:50vh;overflow-y:auto;padding:16px}
+.script-empty{text-align:center;padding:32px;color:var(--fg2);font-size:11px}
+.script-scenes{display:flex;flex-direction:column;gap:8px}
+.script-scene{display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;animation:slideIn .2s ease}
+@keyframes slideIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+.script-scene-num{width:24px;height:24px;background:var(--accent);color:var(--bg);font-size:10px;display:flex;align-items:center;justify-content:center;border-radius:50%;flex-shrink:0}
+.script-scene-info{flex:1;min-width:0}
+.script-scene-title{font-size:10px;color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.script-scene-meta{font-size:9px;color:var(--fg2);margin-top:2px}
+.script-scene-actions{display:flex;gap:4px}
+.script-scene-btn{width:24px;height:24px;background:var(--bg);border:1px solid var(--border);color:var(--fg2);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:2px}
+.script-scene-btn:hover{border-color:var(--accent);color:var(--accent)}
+.script-actions{display:flex;gap:8px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border)}
+
+/* Detail modal */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;display:none;align-items:flex-end;justify-content:center;animation:fadeIn .2s ease}
+.modal.open{display:flex}
+.modal-content{background:var(--bg);width:100%;max-width:700px;max-height:90vh;border-radius:12px 12px 0 0;overflow:hidden;display:flex;flex-direction:column;animation:slideUp .3s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-header{padding:16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.modal-title{font-size:11px;color:var(--accent);letter-spacing:.1em}
+.modal-close{background:none;border:none;color:var(--fg2);font-size:20px;cursor:pointer;padding:0 8px}
+.modal-body{flex:1;overflow-y:auto;padding:16px}
+.modal-section{margin-bottom:24px}
+.modal-section-title{font-size:10px;color:var(--accent2);margin-bottom:12px;letter-spacing:.1em;text-transform:uppercase}
+.modal-text{font-size:11px;line-height:1.8;color:var(--fg);white-space:pre-wrap;word-break:break-word}
+.modal-witness{padding:12px;background:var(--bg2);border-left:2px solid var(--accent2);margin-bottom:12px}
+.modal-witness-header{display:flex;justify-content:space-between;margin-bottom:8px;font-size:9px;color:var(--fg2)}
+.modal-footer{padding:16px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0}
+
+/* Generated script view */
+.generated{padding:16px;max-width:800px;margin:0 auto}
+.generated-header{text-align:center;margin-bottom:32px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.generated-title{font-size:16px;color:var(--accent);margin-bottom:8px}
+.generated-meta{font-size:10px;color:var(--fg2)}
+.generated-scene{margin-bottom:32px;padding:20px;background:var(--bg2);border:1px solid var(--border);border-radius:4px}
+.generated-scene-header{margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.generated-scene-num{font-size:9px;color:var(--fg2);margin-bottom:4px}
+.generated-scene-title{font-size:13px;color:var(--accent)}
+.generated-prompt{margin-bottom:16px}
+.generated-prompt-label{font-size:9px;color:var(--accent2);margin-bottom:8px;text-transform:uppercase}
+.generated-witnesses{border-top:1px solid var(--border);padding-top:16px}
+.generated-witness{margin-bottom:16px}
+.generated-witness-label{font-size:9px;color:var(--accent2);margin-bottom:8px}
+.generated-witness-text{font-size:11px;line-height:1.8;color:var(--fg)}
+
+/* Toast */
+.toast{position:fixed;bottom:60px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--accent);color:var(--bg);padding:10px 20px;font-size:10px;border-radius:4px;opacity:0;transition:all .3s;z-index:300}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* Mobile */
+@media(max-width:600px){
+  .map{grid-template-columns:1fr;gap:8px;padding:8px}
+  .scene-title{font-size:12px}
+  .modal-content{max-height:95vh;border-radius:16px 16px 0 0}
+  .script-content{max-height:60vh}
+  .header{padding:0 8px}
+  .btn{padding:6px 8px}
+}
+</style>
+</head>
+<body data-theme="dark">
+
+<header class="header">
+<div class="header-left">
+<a class="back" href="index-splash.html">&lt;</a>
+<span class="logo">MEGA MAP</span>
+</div>
+<div class="header-right">
+<div class="view-toggle">
+<button class="view-btn active" data-view="map">MAP</button>
+<button class="view-btn" data-view="script">SCRIPT</button>
+</div>
+<button class="btn" id="theme-toggle">LIGHT</button>
+</div>
+</header>
+
+<main class="main">
+<div class="map" id="map"></div>
+<div class="generated" id="generated" style="display:none"></div>
+</main>
+
+<div class="script-panel" id="script-panel">
+<div class="script-toggle" id="script-toggle">
+<div class="script-toggle-left">
+<span class="script-title">FILM SCRIPT</span>
+<span class="script-count" id="script-count">0 scenes</span>
+</div>
+<span class="script-toggle-arrow">^</span>
+</div>
+<div class="script-content">
+<div class="script-empty" id="script-empty">Tap scenes to add them to your script. Drag to reorder.</div>
+<div class="script-scenes" id="script-scenes"></div>
+<div class="script-actions" id="script-actions" style="display:none">
+<button class="btn primary" id="generate-script">GENERATE UNIFIED SCRIPT</button>
+<button class="btn" id="export-script">EXPORT</button>
+<button class="btn" id="clear-script">CLEAR</button>
+</div>
+</div>
+</div>
+
+<div class="modal" id="modal">
+<div class="modal-content">
+<div class="modal-header">
+<span class="modal-title" id="modal-title">SCENE DETAIL</span>
+<button class="modal-close" id="modal-close">&times;</button>
+</div>
+<div class="modal-body" id="modal-body"></div>
+<div class="modal-footer">
+<button class="btn primary" id="modal-add">ADD TO SCRIPT</button>
+<button class="btn" id="modal-copy">COPY ALL</button>
+</div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const $$=s=>document.querySelectorAll(s);
+const FILES=['ma-52.json','character-comp-52.json','world-prompt-52.json','matrix-editor-52.json','legos-cog-arch-52.json','legos-gpt-52.json','slugline-seq-52.json'];
+
+const state={
+  sources:[],
+  cases:new Map(),
+  script:[],
+  currentScene:null,
+  view:'map'
+};
+
+// Theme
+const theme=localStorage.getItem('republic-theme')||'dark';
+document.body.dataset.theme=theme;
+$('#theme-toggle').textContent=theme==='dark'?'LIGHT':'DARK';
+$('#theme-toggle').onclick=()=>{
+  const t=document.body.dataset.theme==='dark'?'light':'dark';
+  document.body.dataset.theme=t;
+  localStorage.setItem('republic-theme',t);
+  $('#theme-toggle').textContent=t==='dark'?'LIGHT':'DARK';
+};
+
+function hash(s){let h=0;for(let i=0;i<s.length;i++)h=((h<<5)-h)+s.charCodeAt(i)|0;return'S'+Math.abs(h).toString(16).toUpperCase().slice(0,6)}
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1500);}
+
+function getTitle(prompt){
+  const lines=prompt.split('\n').filter(l=>l.trim());
+  for(const line of lines.slice(0,5)){
+    if(line.length>15&&line.length<100)return line.trim();
+  }
+  return lines[0]?.trim().slice(0,60)||'Untitled';
+}
+
+function extract(data,fname){
+  const pairs=[];
+  const title=data.metadata?.title||fname.replace('.json','');
+  if(data.messages&&Array.isArray(data.messages)){
+    for(let i=0;i<data.messages.length;i++){
+      const m=data.messages[i];
+      if(m.role==='Prompt'&&m.say){
+        let comp='';
+        if(data.messages[i+1]?.role==='Response')comp=data.messages[i+1].say||'';
+        if(comp)pairs.push({prompt:m.say,comp,key:hash(m.say.trim().replace(/\s+/g,' '))});
+      }
+    }
+  }
+  return{fname,title,pairs};
+}
+
+function build(){
+  state.cases.clear();
+  for(const src of state.sources){
+    for(const p of src.pairs){
+      if(!state.cases.has(p.key))state.cases.set(p.key,{id:p.key,prompt:p.prompt,witnesses:[]});
+      state.cases.get(p.key).witnesses.push({source:src.title,fname:src.fname,text:p.comp});
+    }
+  }
+}
+
+function renderMap(){
+  let html='';
+  let i=0;
+  for(const[id,c]of state.cases){
+    i++;
+    const title=getTitle(c.prompt);
+    const sources=[...new Set(c.witnesses.map(w=>w.source))];
+    const inScript=state.script.findIndex(s=>s.id===id);
+    const preview=c.prompt.slice(0,150).replace(/\n/g,' ');
+    
+    html+=`
+      <div class="scene ${inScript>=0?'in-script':''}" data-id="${id}" style="animation-delay:${i*0.02}s">
+        <div class="scene-order">${inScript>=0?inScript+1:''}</div>
+        <div class="scene-header">
+          <span class="scene-id">SCENE ${String(i).padStart(3,'0')}</span>
+          <span class="scene-sources">${c.witnesses.length}W / ${sources.length}S</span>
+        </div>
+        <div class="scene-title">${esc(title)}</div>
+        <div class="scene-preview">${esc(preview)}...</div>
+      </div>
+    `;
+  }
+  $('#map').innerHTML=html;
+  
+  $$('.scene').forEach(el=>{
+    el.onclick=()=>openScene(el.dataset.id);
+  });
+}
+
+function openScene(id){
+  const c=state.cases.get(id);
+  if(!c)return;
+  state.currentScene=id;
+  
+  const title=getTitle(c.prompt);
+  $('#modal-title').textContent=title.slice(0,40);
+  
+  let html=`
+    <div class="modal-section">
+      <div class="modal-section-title">PROMPT</div>
+      <div class="code-block">${esc(c.prompt)}</div>
+    </div>
+    <div class="modal-section">
+      <div class="modal-section-title">WITNESSES (${c.witnesses.length})</div>
+  `;
+  
+  c.witnesses.forEach((w,i)=>{
+    html+=`
+      <div class="modal-witness">
+        <div class="modal-witness-header">
+          <span>${esc(w.source)}</span>
+          <span>WITNESS ${i+1}</span>
+        </div>
+        <div class="code-block">${esc(w.text)}</div>
+      </div>
+    `;
+  });
+  
+  html+=`</div>`;
+  $('#modal-body').innerHTML=html;
+  
+  const inScript=state.script.find(s=>s.id===id);
+  $('#modal-add').textContent=inScript?'REMOVE FROM SCRIPT':'ADD TO SCRIPT';
+  
+  $('#modal').classList.add('open');
+}
+
+function toggleScript(id){
+  const idx=state.script.findIndex(s=>s.id===id);
+  if(idx>=0){
+    state.script.splice(idx,1);
+    toast('Removed from script');
+  }else{
+    const c=state.cases.get(id);
+    if(c){
+      state.script.push({id,title:getTitle(c.prompt)});
+      toast('Added to script');
+    }
+  }
+  renderMap();
+  renderScriptPanel();
+}
+
+function renderScriptPanel(){
+  const count=state.script.length;
+  $('#script-count').textContent=count+' scene'+(count!==1?'s':'');
+  $('#script-empty').style.display=count?'none':'block';
+  $('#script-actions').style.display=count?'flex':'none';
+  
+  let html='';
+  state.script.forEach((s,i)=>{
+    const c=state.cases.get(s.id);
+    html+=`
+      <div class="script-scene" data-id="${s.id}">
+        <div class="script-scene-num">${i+1}</div>
+        <div class="script-scene-info">
+          <div class="script-scene-title">${esc(s.title)}</div>
+          <div class="script-scene-meta">${c?c.witnesses.length+' witnesses':''}</div>
+        </div>
+        <div class="script-scene-actions">
+          <button class="script-scene-btn" data-action="up" ${i===0?'disabled':''}>&#8593;</button>
+          <button class="script-scene-btn" data-action="down" ${i===count-1?'disabled':''}>&#8595;</button>
+          <button class="script-scene-btn" data-action="remove">&times;</button>
+        </div>
+      </div>
+    `;
+  });
+  $('#script-scenes').innerHTML=html;
+  
+  $$('.script-scene-btn').forEach(btn=>{
+    btn.onclick=e=>{
+      e.stopPropagation();
+      const id=btn.closest('.script-scene').dataset.id;
+      const action=btn.dataset.action;
+      const idx=state.script.findIndex(s=>s.id===id);
+      if(action==='up'&&idx>0){
+        [state.script[idx-1],state.script[idx]]=[state.script[idx],state.script[idx-1]];
+      }else if(action==='down'&&idx<state.script.length-1){
+        [state.script[idx],state.script[idx+1]]=[state.script[idx+1],state.script[idx]];
+      }else if(action==='remove'){
+        state.script.splice(idx,1);
+      }
+      renderMap();
+      renderScriptPanel();
+    };
+  });
+}
+
+function generateUnifiedScript(){
+  if(!state.script.length)return;
+  
+  let html=`
+    <div class="generated-header">
+      <div class="generated-title">THE REPUBLIC: UNIFIED SCRIPT</div>
+      <div class="generated-meta">${state.script.length} scenes / Generated ${new Date().toLocaleDateString()}</div>
+    </div>
+  `;
+  
+  state.script.forEach((s,i)=>{
+    const c=state.cases.get(s.id);
+    if(!c)return;
+    
+    html+=`
+      <div class="generated-scene">
+        <div class="generated-scene-header">
+          <div class="generated-scene-num">SCENE ${i+1} OF ${state.script.length}</div>
+          <div class="generated-scene-title">${esc(s.title)}</div>
+        </div>
+        <div class="generated-prompt">
+          <div class="generated-prompt-label">PROMPT</div>
+          <div class="code-block">${esc(c.prompt)}</div>
+        </div>
+        <div class="generated-witnesses">
+    `;
+    
+    c.witnesses.forEach((w,wi)=>{
+      html+=`
+        <div class="generated-witness">
+          <div class="generated-witness-label">${esc(w.source)} (Witness ${wi+1})</div>
+          <div class="code-block">${esc(w.text)}</div>
+        </div>
+      `;
+    });
+    
+    html+=`</div></div>`;
+  });
+  
+  $('#generated').innerHTML=html;
+  $('#map').style.display='none';
+  $('#generated').style.display='block';
+  $('#script-panel').classList.remove('open');
+  
+  $$('.view-btn').forEach(b=>b.classList.remove('active'));
+  $$('.view-btn[data-view="script"]').forEach(b=>b.classList.add('active'));
+  state.view='script';
+}
+
+function exportScript(){
+  if(!state.script.length)return;
+  
+  let txt='THE REPUBLIC: UNIFIED SCRIPT\n';
+  txt+='Generated: '+new Date().toISOString()+'\n';
+  txt+='='.repeat(60)+'\n\n';
+  
+  state.script.forEach((s,i)=>{
+    const c=state.cases.get(s.id);
+    if(!c)return;
+    
+    txt+=`SCENE ${i+1}: ${s.title}\n`;
+    txt+='-'.repeat(60)+'\n\n';
+    txt+='PROMPT:\n'+c.prompt+'\n\n';
+    
+    c.witnesses.forEach((w,wi)=>{
+      txt+=`[${w.source}] WITNESS ${wi+1}:\n`;
+      txt+=w.text+'\n\n';
+    });
+    
+    txt+='='.repeat(60)+'\n\n';
+  });
+  
+  const blob=new Blob([txt],{type:'text/plain'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='republic-script.txt';
+  a.click();
+  toast('Exported!');
+}
+
+async function loadData(){
+  $('#map').innerHTML='<div style="padding:40px;text-align:center;color:var(--fg2)">Loading scenes...</div>';
+  for(const fn of FILES){
+    try{
+      const res=await fetch(fn);
+      if(!res.ok)continue;
+      const data=await res.json();
+      const ex=extract(data,fn);
+      if(ex.pairs.length)state.sources.push(ex);
+    }catch(e){}
+  }
+  build();
+  renderMap();
+  renderScriptPanel();
+}
+
+// Events
+$('#script-toggle').onclick=()=>$('#script-panel').classList.toggle('open');
+$('#modal-close').onclick=()=>$('#modal').classList.remove('open');
+$('#modal').onclick=e=>{if(e.target===$('#modal'))$('#modal').classList.remove('open');};
+$('#modal-add').onclick=()=>{
+  if(state.currentScene){
+    toggleScript(state.currentScene);
+    const inScript=state.script.find(s=>s.id===state.currentScene);
+    $('#modal-add').textContent=inScript?'REMOVE FROM SCRIPT':'ADD TO SCRIPT';
+  }
+};
+$('#modal-copy').onclick=()=>{
+  const c=state.cases.get(state.currentScene);
+  if(c){
+    let txt=c.prompt+'\n\n';
+    c.witnesses.forEach(w=>txt+=`[${w.source}]\n${w.text}\n\n`);
+    navigator.clipboard.writeText(txt);
+    toast('Copied!');
+  }
+};
+$('#generate-script').onclick=generateUnifiedScript;
+$('#export-script').onclick=exportScript;
+$('#clear-script').onclick=()=>{
+  state.script=[];
+  renderMap();
+  renderScriptPanel();
+  toast('Cleared');
+};
+
+$$('.view-btn').forEach(btn=>{
+  btn.onclick=()=>{
+    $$('.view-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const view=btn.dataset.view;
+    if(view==='map'){
+      $('#map').style.display='grid';
+      $('#generated').style.display='none';
+    }else{
+      if(state.script.length){
+        generateUnifiedScript();
+      }else{
+        toast('Add scenes first');
+        btn.classList.remove('active');
+        $$('.view-btn[data-view="map"]').forEach(b=>b.classList.add('active'));
+      }
+    }
+  };
+});
+
+// Keyboard
+document.onkeydown=e=>{
+  if(e.key==='Escape')$('#modal').classList.remove('open');
+};
+
+loadData();
+</script>
+</body>
+</html>
