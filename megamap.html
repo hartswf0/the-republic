@@ -53,8 +53,9 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--fg);fo
 .scene-header{padding:10px 12px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
 .scene-id{font-size:9px;color:var(--fg2);letter-spacing:.05em}
 .scene-sources{font-size:8px;color:var(--accent2)}
-.scene-title{padding:10px 12px;font-size:11px;color:var(--fg);line-height:1.5;max-height:60px;overflow:hidden}
-.scene-preview{padding:0 12px 12px;font-size:10px;color:var(--fg2);max-height:80px;overflow:hidden;position:relative}
+.scene-brand{padding:10px 12px 0;font-size:9px;color:var(--accent);letter-spacing:.15em;font-weight:bold}
+.scene-title{padding:4px 12px 8px;font-size:12px;color:var(--fg);line-height:1.4;max-height:50px;overflow:hidden;font-weight:600}
+.scene-preview{padding:0 12px 12px;font-size:10px;color:var(--fg2);max-height:60px;overflow:hidden;position:relative;line-height:1.5}
 .scene-preview::after{content:'';position:absolute;bottom:0;left:0;right:0;height:30px;background:linear-gradient(transparent,var(--bg2))}
 .scene.selected .scene-preview::after{background:linear-gradient(transparent,var(--select))}
 
@@ -96,9 +97,57 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--fg);fo
 .modal-section{margin-bottom:24px}
 .modal-section-title{font-size:10px;color:var(--accent2);margin-bottom:12px;letter-spacing:.1em;text-transform:uppercase}
 .modal-text{font-size:11px;line-height:1.8;color:var(--fg);white-space:pre-wrap;word-break:break-word}
-.modal-witness{padding:12px;background:var(--bg2);border-left:2px solid var(--accent2);margin-bottom:12px}
-.modal-witness-header{display:flex;justify-content:space-between;margin-bottom:8px;font-size:9px;color:var(--fg2)}
-.modal-footer{padding:16px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0}
+.modal-witness{padding:12px;background:var(--bg2);border-left:3px solid var(--accent2);margin-bottom:12px;border-radius:4px;position:relative}
+.modal-witness-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:9px;color:var(--fg2)}
+.modal-witness-source{font-weight:bold;color:var(--accent)}
+.modal-witness-actions{display:flex;gap:4px}
+/* Archer/Bow Copy Buttons */
+.copy-btn{font-size:8px;padding:6px 12px;background:var(--bg3);border:1px solid var(--border);color:var(--fg2);cursor:pointer;border-radius:3px;transition:all .15s;display:flex;align-items:center;gap:6px;position:relative;overflow:hidden}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--bg);transform:translateX(-2px)}
+.copy-btn:active{transform:translateX(0) scale(.98)}
+.copy-btn svg{width:12px;height:12px;transition:transform .2s}
+.copy-btn:hover svg{transform:translateX(2px)}
+.copy-btn.drawing{animation:drawBow .15s ease-out}
+.copy-btn.released{animation:releaseBow .3s ease-out}
+.copy-btn.copied{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.copy-btn .arrow-trail{position:absolute;right:100%;top:50%;width:20px;height:2px;background:linear-gradient(90deg,transparent,var(--accent));transform:translateY(-50%);opacity:0}
+.copy-btn.released .arrow-trail{animation:arrowFly .3s ease-out}
+
+@keyframes drawBow{0%{transform:translateX(0)}100%{transform:translateX(-4px)}}
+@keyframes releaseBow{0%{transform:translateX(-4px)}30%{transform:translateX(3px)}100%{transform:translateX(0)}}
+@keyframes arrowFly{0%{right:100%;opacity:1}100%{right:-20px;opacity:0}}
+
+/* Send Button (prominent archer style) */
+.send-btn{font-size:10px;padding:8px 16px;background:linear-gradient(135deg,var(--accent),#e06600);border:none;color:#fff;cursor:pointer;border-radius:4px;display:flex;align-items:center;gap:8px;font-weight:bold;transition:all .2s;position:relative;overflow:hidden;text-shadow:0 1px 2px rgba(0,0,0,.3)}
+.send-btn:hover{transform:scale(1.02);box-shadow:0 4px 12px rgba(204,85,0,.4)}
+.send-btn:active{transform:scale(.98)}
+.send-btn svg{width:14px;height:14px;transition:transform .2s}
+.send-btn:hover svg{transform:translateX(4px)}
+.send-btn.firing{animation:fireBow .4s ease-out}
+.send-btn.fired{background:linear-gradient(135deg,#22c55e,#16a34a)}
+
+@keyframes fireBow{0%{transform:scale(1)}15%{transform:scale(.95) translateX(-3px)}40%{transform:scale(1.05) translateX(2px)}100%{transform:scale(1)}}
+
+/* Copy Menu */
+.copy-menu{position:relative;display:inline-block}
+.copy-menu-btn{font-size:9px;padding:6px 12px;background:var(--bg3);border:1px solid var(--border);color:var(--fg2);cursor:pointer;border-radius:3px;display:flex;align-items:center;gap:6px;transition:all .15s}
+.copy-menu-btn:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-1px)}
+.copy-menu-btn svg{width:12px;height:12px}
+.copy-menu-dropdown{position:absolute;bottom:100%;left:0;margin-bottom:4px;background:var(--bg2);border:1px solid var(--border);border-radius:4px;min-width:200px;box-shadow:0 4px 16px rgba(0,0,0,.5);display:none;z-index:10}
+.copy-menu.open .copy-menu-dropdown{display:block;animation:menuPop .2s ease-out}
+@keyframes menuPop{from{opacity:0;transform:translateY(8px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+.copy-menu-item{padding:12px 16px;font-size:10px;color:var(--fg);cursor:pointer;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);transition:all .15s;position:relative;overflow:hidden}
+.copy-menu-item:last-child{border-bottom:none}
+.copy-menu-item:hover{background:var(--bg3);color:var(--accent);padding-left:20px}
+.copy-menu-item svg{width:14px;height:14px;color:var(--fg2);transition:all .15s}
+.copy-menu-item:hover svg{color:var(--accent);transform:translateX(2px)}
+.copy-menu-item small{color:var(--fg2);margin-left:auto;font-size:8px}
+.copy-menu-item.fired{background:var(--accent);color:var(--bg)}
+.copy-menu-item.fired svg{color:var(--bg)}
+
+.modal-footer{padding:16px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0;align-items:center}
+.modal-footer-left{flex:1;display:flex;gap:8px}
+.modal-footer-right{display:flex;gap:8px}
 
 /* Generated script view */
 .generated{padding:16px;max-width:800px;margin:0 auto}
@@ -179,8 +228,37 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--fg);fo
 </div>
 <div class="modal-body" id="modal-body"></div>
 <div class="modal-footer">
+<div class="modal-footer-left">
 <button class="btn primary" id="modal-add">ADD TO SCRIPT</button>
-<button class="btn" id="modal-copy">COPY ALL</button>
+</div>
+<div class="modal-footer-right">
+<div class="copy-menu" id="copy-menu">
+<button class="copy-menu-btn" id="copy-menu-btn">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+COPY
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:8px;height:8px"><path d="M6 9l6 6 6-6"/></svg>
+</button>
+<div class="copy-menu-dropdown">
+<div class="copy-menu-item" data-copy="all">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+Copy Everything
+<small>Prompt + All</small>
+</div>
+<div class="copy-menu-item" data-copy="prompt">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>
+Copy Prompt Only
+</div>
+<div class="copy-menu-item" data-copy="witnesses">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+Copy All Witnesses
+</div>
+<div class="copy-menu-item" data-copy="json">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+Copy as JSON
+</div>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -217,10 +295,109 @@ function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show'
 
 function getTitle(prompt){
   const lines=prompt.split('\n').filter(l=>l.trim());
-  for(const line of lines.slice(0,5)){
-    if(line.length>15&&line.length<100)return line.trim();
+  const text=prompt.toLowerCase();
+  
+  // 1. Look for quoted titles like "Operation Lone Star-Kallipolis"
+  for(const line of lines.slice(0,15)){
+    const quotedMatch=line.match(/[""]([A-Z][^""]{8,50})[""]\.?\s*(Imagine|It's|The|Set|A\s)/i);
+    if(quotedMatch)return quotedMatch[1].trim();
   }
-  return lines[0]?.trim().slice(0,60)||'Untitled';
+  
+  // 2. Look for SCENE: "Title" pattern
+  for(const line of lines.slice(0,10)){
+    const sceneMatch=line.match(/^SCENE:\s*["']?([^"'\n]{5,60})["']?\s*$/i);
+    if(sceneMatch){
+      const t=sceneMatch[1].trim();
+      if(!t.match(/^THE\s+REP/i))return t;
+    }
+  }
+  
+  // 3. Look for EPISODE: pattern
+  for(const line of lines.slice(0,10)){
+    const epMatch=line.match(/^EPISODE:\s*["']?([^"'\n]{5,60})["']?\s*$/i);
+    if(epMatch)return epMatch[1].trim();
+  }
+  
+  // 4. Look for THE REPUBLIC: SUBTITLE (but not just "THE REPUBLIC" alone)
+  for(const line of lines.slice(0,10)){
+    const repMatch=line.match(/THE\s+REP[BU]*ILIC:\s+([A-Z][^:\n]{5,50})/i);
+    if(repMatch){
+      const sub=repMatch[1].trim();
+      if(!sub.match(/^THE\s+REP/i)&&sub.length>5)return sub;
+    }
+  }
+  
+  // 5. Extract concept from "This is the [Concept]" pattern
+  for(const line of lines.slice(0,8)){
+    const thisMatch=line.match(/This is the\s+(.{15,60}?)(\.|\sthat\s)/i);
+    if(thisMatch){
+      let concept=thisMatch[1].trim();
+      // Clean up common prefixes
+      concept=concept.replace(/^(ultimate|High-[A-Za-z]+|Netflix Original|HBO|A24)\s*/i,'');
+      if(concept.length>8)return concept.slice(0,50);
+    }
+  }
+  
+  // 6. Look for "Imagine X meets Y" pattern and extract X
+  for(const line of lines.slice(0,10)){
+    const imagineMatch=line.match(/Imagine\s+([A-Z][^,]+?)\s+meets\s+/i);
+    if(imagineMatch)return imagineMatch[1].trim()+' Meets...';
+  }
+  
+  // 7. Look for strong concept phrases
+  for(const line of lines.slice(0,12)){
+    // "Confident Incompetence" style phrases
+    const conceptMatch=line.match(/"([A-Z][^"]{8,40})"/);
+    if(conceptMatch&&!conceptMatch[1].match(/summarized|The Republic/i)){
+      return conceptMatch[1];
+    }
+  }
+  
+  // 8. Fallback: first meaningful line that's not generic
+  for(const line of lines.slice(0,10)){
+    const clean=line.replace(/^(TITLE|EPISODE|SCENE|THE\s+REP[BU]*ILIC)[:\s]*/i,'').trim();
+    if(clean.length>12&&clean.length<70&&
+       !clean.match(/^(The\s+Vibe|Imagine|This is|The\s+Pitch|THE\s+REP)/i)){
+      return clean.slice(0,55);
+    }
+  }
+  
+  return 'Untitled Concept';
+}
+
+function getSubtitle(prompt){
+  const lines=prompt.split('\n').filter(l=>l.trim());
+  
+  // Look for The Vibe / The Pitch first
+  for(const line of lines.slice(0,12)){
+    if(line.match(/^The\s+(Vibe|Pitch):/i)){
+      return line.replace(/^The\s+(Vibe|Pitch):\s*/i,'').slice(0,110)+'...';
+    }
+  }
+  
+  // Look for logline
+  for(const line of lines.slice(0,12)){
+    if(line.toLowerCase().includes('logline:')){
+      return line.replace(/logline:\s*/i,'').slice(0,110)+'...';
+    }
+  }
+  
+  // Look for "Imagine" descriptions
+  for(const line of lines.slice(0,10)){
+    if(line.match(/^Imagine\s/i)){
+      return line.slice(0,110)+'...';
+    }
+  }
+  
+  // Look for "This is the" descriptions
+  for(const line of lines.slice(0,8)){
+    if(line.match(/^This is the/i)){
+      return line.slice(0,110)+'...';
+    }
+  }
+  
+  // Fallback
+  return lines.slice(0,2).join(' ').slice(0,100)+'...';
 }
 
 function extract(data,fname){
@@ -255,9 +432,12 @@ function renderMap(){
   for(const[id,c]of state.cases){
     i++;
     const title=getTitle(c.prompt);
+    const subtitle=getSubtitle(c.prompt);
     const sources=[...new Set(c.witnesses.map(w=>w.source))];
     const inScript=state.script.findIndex(s=>s.id===id);
-    const preview=c.prompt.slice(0,150).replace(/\n/g,' ');
+    
+    // Extract just the episode name for cleaner display
+    const episodeName=title.replace(/^THE REPUBLIC:\s*/i,'');
     
     html+=`
       <div class="scene ${inScript>=0?'in-script':''}" data-id="${id}" style="animation-delay:${i*0.02}s">
@@ -266,8 +446,9 @@ function renderMap(){
           <span class="scene-id">SCENE ${String(i).padStart(3,'0')}</span>
           <span class="scene-sources">${c.witnesses.length}W / ${sources.length}S</span>
         </div>
-        <div class="scene-title">${esc(title)}</div>
-        <div class="scene-preview">${esc(preview)}...</div>
+        <div class="scene-brand">THE REPUBLIC</div>
+        <div class="scene-title">${esc(episodeName)}</div>
+        <div class="scene-preview">${esc(subtitle)}</div>
       </div>
     `;
   }
@@ -288,19 +469,39 @@ function openScene(id){
   
   let html=`
     <div class="modal-section">
-      <div class="modal-section-title">PROMPT</div>
+      <div class="modal-section-title" style="display:flex;justify-content:space-between;align-items:center">
+        <span>PROMPT</span>
+        <button class="copy-btn" data-copy-prompt>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          COPY PROMPT
+        </button>
+      </div>
       <div class="code-block">${esc(c.prompt)}</div>
     </div>
     <div class="modal-section">
-      <div class="modal-section-title">WITNESSES (${c.witnesses.length})</div>
+      <div class="modal-section-title" style="display:flex;justify-content:space-between;align-items:center">
+        <span>WITNESSES (${c.witnesses.length})</span>
+        <button class="copy-btn" data-copy-all-witnesses>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          COPY ALL
+        </button>
+      </div>
   `;
   
   c.witnesses.forEach((w,i)=>{
+    const colorIdx=(i%6)+1;
+    const colors=['#34d399','#a78bfa','#fbbf24','#f472b6','#22d3ee','#fb923c'];
     html+=`
-      <div class="modal-witness">
+      <div class="modal-witness" style="border-left-color:${colors[i%6]}" data-witness-idx="${i}">
         <div class="modal-witness-header">
-          <span>${esc(w.source)}</span>
-          <span>WITNESS ${i+1}</span>
+          <span class="modal-witness-source">${esc(w.source)}</span>
+          <div class="modal-witness-actions">
+            <span style="color:var(--fg2);margin-right:8px">WITNESS ${i+1}</span>
+            <button class="copy-btn" data-copy-witness="${i}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              COPY
+            </button>
+          </div>
         </div>
         <div class="code-block">${esc(w.text)}</div>
       </div>
@@ -310,10 +511,104 @@ function openScene(id){
   html+=`</div>`;
   $('#modal-body').innerHTML=html;
   
+  // Bind individual copy buttons
+  bindCopyButtons();
+  
   const inScript=state.script.find(s=>s.id===id);
   $('#modal-add').textContent=inScript?'REMOVE FROM SCRIPT':'ADD TO SCRIPT';
   
   $('#modal').classList.add('open');
+}
+
+function bindCopyButtons(){
+  const c=state.cases.get(state.currentScene);
+  if(!c)return;
+  
+  // Copy prompt button
+  const promptBtn=document.querySelector('[data-copy-prompt]');
+  if(promptBtn){
+    promptBtn.onclick=e=>{
+      e.stopPropagation();
+      copyWithFeedback(c.prompt,promptBtn);
+    };
+  }
+  
+  // Copy all witnesses button
+  const allBtn=document.querySelector('[data-copy-all-witnesses]');
+  if(allBtn){
+    allBtn.onclick=e=>{
+      e.stopPropagation();
+      let txt='';
+      c.witnesses.forEach((w,i)=>{
+        txt+=`[${w.source}] WITNESS ${i+1}:\n${w.text}\n\n`;
+      });
+      copyWithFeedback(txt.trim(),allBtn);
+    };
+  }
+  
+  // Individual witness copy buttons
+  document.querySelectorAll('[data-copy-witness]').forEach(btn=>{
+    btn.onclick=e=>{
+      e.stopPropagation();
+      const idx=parseInt(btn.dataset.copyWitness);
+      const w=c.witnesses[idx];
+      if(w)copyWithFeedback(w.text,btn);
+    };
+  });
+}
+
+function copyWithFeedback(text,btn){
+  const origHTML=btn.innerHTML;
+  
+  // Draw bow animation
+  btn.classList.add('drawing');
+  
+  setTimeout(()=>{
+    btn.classList.remove('drawing');
+    btn.classList.add('released');
+    
+    // Perform copy
+    navigator.clipboard.writeText(text).then(()=>{
+      btn.classList.add('copied');
+      btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> SENT!';
+      toastArrow('→ Copied to clipboard');
+      
+      setTimeout(()=>{
+        btn.classList.remove('copied','released');
+        btn.innerHTML=origHTML;
+      },1200);
+    }).catch(()=>{
+      // Fallback
+      const ta=document.createElement('textarea');
+      ta.value=text;
+      ta.style.position='fixed';
+      ta.style.opacity='0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      btn.classList.add('copied');
+      btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> SENT!';
+      toastArrow('→ Copied');
+      setTimeout(()=>{
+        btn.classList.remove('copied','released');
+        btn.innerHTML=origHTML;
+      },1200);
+    });
+  },150);
+}
+
+function toastArrow(msg){
+  const t=$('#toast');
+  t.textContent=msg;
+  t.style.background='linear-gradient(135deg,var(--accent),#e06600)';
+  t.style.color='#fff';
+  t.classList.add('show');
+  setTimeout(()=>{
+    t.classList.remove('show');
+    t.style.background='';
+    t.style.color='';
+  },1500);
 }
 
 function toggleScript(id){
@@ -484,15 +779,49 @@ $('#modal-add').onclick=()=>{
     $('#modal-add').textContent=inScript?'REMOVE FROM SCRIPT':'ADD TO SCRIPT';
   }
 };
-$('#modal-copy').onclick=()=>{
-  const c=state.cases.get(state.currentScene);
-  if(c){
-    let txt=c.prompt+'\n\n';
-    c.witnesses.forEach(w=>txt+=`[${w.source}]\n${w.text}\n\n`);
-    navigator.clipboard.writeText(txt);
-    toast('Copied!');
-  }
+// Copy menu
+$('#copy-menu-btn').onclick=e=>{
+  e.stopPropagation();
+  $('#copy-menu').classList.toggle('open');
 };
+
+document.addEventListener('click',()=>$('#copy-menu').classList.remove('open'));
+
+$$('.copy-menu-item').forEach(item=>{
+  item.onclick=e=>{
+    e.stopPropagation();
+    const c=state.cases.get(state.currentScene);
+    if(!c)return;
+    
+    const type=item.dataset.copy;
+    let txt='';
+    
+    if(type==='all'){
+      txt=`PROMPT:\n${c.prompt}\n\n`;
+      c.witnesses.forEach((w,i)=>{
+        txt+=`[${w.source}] WITNESS ${i+1}:\n${w.text}\n\n`;
+      });
+    }else if(type==='prompt'){
+      txt=c.prompt;
+    }else if(type==='witnesses'){
+      c.witnesses.forEach((w,i)=>{
+        txt+=`[${w.source}] WITNESS ${i+1}:\n${w.text}\n\n`;
+      });
+    }else if(type==='json'){
+      txt=JSON.stringify({
+        id:state.currentScene,
+        title:getTitle(c.prompt),
+        prompt:c.prompt,
+        witnesses:c.witnesses
+      },null,2);
+    }
+    
+    navigator.clipboard.writeText(txt.trim()).then(()=>{
+      toast(`Copied ${type}!`);
+      $('#copy-menu').classList.remove('open');
+    });
+  };
+});
 $('#generate-script').onclick=generateUnifiedScript;
 $('#export-script').onclick=exportScript;
 $('#clear-script').onclick=()=>{
