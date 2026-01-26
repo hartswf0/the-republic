@@ -7,14 +7,21 @@
 <link rel="icon" type="image/svg+xml" href="favicon-screenplay.svg">
 <style>
 :root{
-  --bg:#0a0a0a;--bg2:#111;--panel:#161616;
-  --fg:#e8e8e8;--fg-dim:#888;--fg-muted:#555;
-  --accent:#d4a853;--scene:#f43f5e;
+  --bg:#0a0a0a;--bg2:#0f0f0f;--bg3:#151515;--panel:#161616;
+  --fg:#e8e8e8;--fg-dim:#a0a0a0;--fg-muted:#606060;
+  --accent:#cc5500;--accent2:#d8a25a;--scene:#f43f5e;
   --char1:#60a5fa;--char2:#34d399;--char3:#f472b6;--char4:#a78bfa;--char5:#fbbf24;--char6:#22d3ee;
-  --border:#2a2a2a;
+  --border:#222;--success:#22c55e;
+}
+[data-theme="light"]{
+  --bg:#f5f0e6;--bg2:#ebe5d8;--bg3:#e0dbd0;--panel:#fff;
+  --fg:#1a1a1a;--fg-dim:#4a4a4a;--fg-muted:#888;
+  --accent:#8b4513;--accent2:#a67c52;--scene:#dc2626;
+  --char1:#2563eb;--char2:#059669;--char3:#db2777;--char4:#7c3aed;--char5:#d97706;--char6:#0891b2;
+  --border:#d5d0c0;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{height:100%;font-family:'Courier New',monospace;background:var(--bg);color:var(--fg);overflow:hidden}
+html,body{height:100%;font-family:'Courier New',monospace;background:var(--bg);color:var(--fg);overflow:hidden;transition:background .3s,color .3s}
 
 /* Layout */
 .app{display:flex;height:100vh}
@@ -61,9 +68,9 @@ html,body{height:100%;font-family:'Courier New',monospace;background:var(--bg);c
 
 /* Main Content */
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
-.header{height:52px;background:linear-gradient(180deg,#0f0f0f,#080808);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:16px}
-.logo{font-weight:bold;font-size:13px;color:var(--accent);display:flex;align-items:center;gap:8px}
-.logo svg{width:18px;height:18px}
+.header{height:44px;background:var(--panel);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 12px;gap:10px}
+.logo{font-weight:bold;font-size:12px;color:var(--accent);display:flex;align-items:center;gap:6px}
+.logo svg{width:16px;height:16px}
 .search-box{flex:1;max-width:320px;position:relative}
 .search-input{width:100%;padding:10px 14px 10px 36px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--fg);font:inherit;font-size:12px}
 .search-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(212,168,83,.1)}
@@ -76,7 +83,7 @@ html,body{height:100%;font-family:'Courier New',monospace;background:var(--bg);c
 .btn-primary:hover{background:#e8bc6a}
 
 /* Screenplay Content */
-.content{flex:1;overflow-y:auto;padding:30px 50px 100px;line-height:1.8;font-size:13px;scroll-behavior:smooth}
+.content{flex:1;overflow-y:auto;padding:30px 50px 100px 60px;line-height:1.8;font-size:13px;scroll-behavior:smooth;position:relative}
 .content::-webkit-scrollbar{width:10px}
 .content::-webkit-scrollbar-track{background:var(--bg2)}
 .content::-webkit-scrollbar-thumb{background:var(--border);border-radius:5px;border:2px solid var(--bg2)}
@@ -90,8 +97,11 @@ html,body{height:100%;font-family:'Courier New',monospace;background:var(--bg);c
 .scroll-position{width:44px;height:44px;border-radius:50%;background:var(--accent);color:#000;font-size:11px;font-weight:bold;display:flex;align-items:center;justify-content:center}
 
 /* Line Types */
-.line{padding:2px 0;position:relative}
-.line-num{position:absolute;left:-36px;width:30px;text-align:right;font-size:9px;color:var(--fg-muted);opacity:.5}
+.line{padding:2px 0;position:relative;padding-left:0}
+.line-num{position:absolute;left:-50px;width:44px;text-align:right;font-size:10px;color:var(--accent);opacity:.8;font-weight:500;user-select:none}
+.line:hover .line-num{opacity:1;color:var(--accent)}
+.line.selected{background:rgba(204,85,0,.15);border-radius:2px}
+.line.selected .line-num{color:var(--accent);opacity:1}
 .blank{height:20px}
 .title{text-align:center;font-size:20px;font-weight:bold;letter-spacing:.15em;color:var(--accent);margin:40px 0 10px}
 .subtitle{text-align:center;font-size:14px;color:var(--fg-dim)}
@@ -113,27 +123,103 @@ html,body{height:100%;font-family:'Courier New',monospace;background:var(--bg);c
 .char-LEWIS{color:var(--char5)}
 .char-default{color:var(--fg)}
 
+/* Mobile Drawer Toggle */
+.nav-toggle{display:none;position:fixed;top:50px;left:36px;z-index:200;width:36px;height:36px;background:var(--panel);border:1px solid var(--border);border-radius:6px;color:var(--fg-dim);cursor:pointer;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.3);transition:all .3s ease}
+.nav-toggle:hover{border-color:var(--accent);color:var(--accent)}
+.nav-toggle svg{width:16px;height:16px}
+.nav-toggle.open{background:var(--accent);color:#000;border-color:var(--accent)}
+.nav-toggle.map-mode{left:124px}
+
+/* Mobile Floating Minimap - Full Height Sidebar */
+.mobile-minimap{display:none;position:fixed;top:44px;bottom:56px;left:0;width:32px;background:var(--bg2);border-right:1px solid var(--border);overflow:hidden;z-index:90;transition:width .3s ease}
+.mobile-minimap.expanded{width:120px;z-index:160;box-shadow:4px 0 20px rgba(0,0,0,.5)}
+.mobile-minimap canvas{width:100%;height:100%;display:block}
+.mobile-minimap-viewport{position:absolute;left:0;right:0;background:rgba(204,85,0,.25);border-top:2px solid var(--accent);border-bottom:2px solid var(--accent);pointer-events:none;box-shadow:0 0 12px rgba(204,85,0,.6)}
+.mobile-minimap-pos{position:absolute;left:0;right:0;height:20px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:bold;color:#000;pointer-events:none;transform:translateY(-50%);border-radius:0 10px 10px 0;box-shadow:2px 0 8px rgba(204,85,0,.5)}
+.mobile-minimap-label{display:none}
+.mobile-minimap.expanded .mobile-minimap-label{display:block;position:absolute;top:8px;left:8px;font-size:8px;color:var(--fg-muted);text-transform:uppercase;letter-spacing:.05em}
+
+/* Mobile Steering Wheel */
+.mobile-steer{display:none;position:fixed;bottom:16px;right:16px;z-index:200}
+.steer-ring{width:120px;height:120px;border-radius:50%;background:var(--panel);border:2px solid var(--border);display:flex;flex-wrap:wrap;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,0,0,.5);position:relative;overflow:hidden}
+.steer-btn{width:36px;height:36px;border:none;background:transparent;color:var(--fg-dim);cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:all .15s}
+.steer-btn:active{background:var(--accent);color:#000;transform:scale(.9)}
+.steer-btn svg{width:16px;height:16px}
+.steer-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:36px;height:36px;background:var(--accent);border-radius:50%;font-size:9px;font-weight:bold;color:#000;display:flex;align-items:center;justify-content:center}
+.steer-up{position:absolute;top:8px;left:50%;transform:translateX(-50%)}
+.steer-down{position:absolute;bottom:8px;left:50%;transform:translateX(-50%)}
+.steer-left{position:absolute;left:8px;top:50%;transform:translateY(-50%)}
+.steer-right{position:absolute;right:8px;top:50%;transform:translateY(-50%)}
+
+/* Mobile Scene Selector */
+.mobile-scene-bar{display:none;position:fixed;bottom:0;left:0;right:0;height:60px;background:var(--panel);border-top:1px solid var(--border);padding:8px 12px;z-index:100;display:flex;gap:8px;align-items:center}
+.mobile-scene-bar select{flex:1;height:44px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--fg);font:inherit;font-size:11px;padding:0 12px;cursor:pointer}
+.mobile-scene-bar select:focus{outline:none;border-color:var(--accent)}
+.mobile-scene-bar .search-toggle{width:44px;height:44px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--fg-dim);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.mobile-scene-bar .search-toggle:hover,.mobile-scene-bar .search-toggle.active{border-color:var(--accent);color:var(--accent)}
+.mobile-scene-bar .search-toggle svg{width:18px;height:18px}
+.mobile-scene-bar .copy-btn{width:44px;height:44px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--fg-dim);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.mobile-scene-bar .copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+.mobile-scene-bar .copy-btn.has-selection{background:var(--accent);color:#000;border-color:var(--accent)}
+
+/* Search Overlay */
+.search-overlay{display:none;position:fixed;top:44px;left:0;right:0;background:var(--panel);border-bottom:1px solid var(--border);padding:12px;z-index:120;box-shadow:0 4px 20px rgba(0,0,0,.4)}
+.search-overlay.open{display:block}
+.search-overlay input{width:100%;padding:12px 16px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--fg);font:inherit;font-size:14px}
+.search-overlay input:focus{outline:none;border-color:var(--accent)}
+.search-results-list{max-height:200px;overflow-y:auto;margin-top:8px}
+.search-result{padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer;font-size:11px;display:flex;gap:8px;align-items:center}
+.search-result:hover{background:var(--bg)}
+.search-result-num{color:var(--accent);font-weight:bold;width:40px}
+.search-result-text{flex:1;color:var(--fg-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.search-result mark{background:var(--accent);color:#000;padding:0 2px;border-radius:2px}
+
+/* Context Menu */
+.context-menu{position:fixed;background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:4px 0;min-width:160px;box-shadow:0 4px 20px rgba(0,0,0,.5);z-index:300;display:none}
+.context-menu.open{display:block}
+.context-menu-item{padding:10px 16px;font-size:11px;color:var(--fg);cursor:pointer;display:flex;align-items:center;gap:8px}
+.context-menu-item:hover{background:var(--bg)}
+.context-menu-item svg{width:14px;height:14px;color:var(--fg-muted)}
+.context-menu-divider{height:1px;background:var(--border);margin:4px 0}
+
+/* Toast */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--accent);color:#000;padding:12px 24px;border-radius:6px;font-size:12px;font-weight:bold;opacity:0;transition:all .3s;z-index:400;box-shadow:0 4px 20px rgba(0,0,0,.4)}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
 /* Mobile */
 @media(max-width:900px){
   .navigator{width:200px}
   .content{padding:24px 30px 80px}
 }
 @media(max-width:768px){
-  .navigator{width:60px}
-  .nav-header,.scroll-controls,.nav-section-text{display:none}
-  .nav-section{justify-content:center;padding:8px}
-  .nav-section::before{margin:0}
-  .minimap-visual{height:200px}
-  .content{padding:16px 20px 80px;font-size:12px}
-  .dialogue{padding-left:20px;max-width:100%}
-  .character{padding-left:20px}
-  .parenthetical{padding-left:30px}
+  .app{flex-direction:column}
+  .navigator{position:fixed;top:44px;left:0;bottom:0;width:280px;transform:translateX(-100%);transition:transform .3s ease;z-index:150;box-shadow:4px 0 20px rgba(0,0,0,.5)}
+  .navigator.open{transform:translateX(0)}
+  .nav-toggle{display:flex;left:36px}
+  .minimap-visual{height:140px}
+  .mobile-minimap{display:block}
+  .mobile-steer{display:block}
+  .mobile-scene-bar{display:block}
+  .scroll-indicator{display:none}
+  .header{position:fixed;top:0;left:0;right:0;z-index:100;height:44px}
+  .main{margin-top:44px;margin-left:28px}
+  .content{padding:16px 16px 140px 12px;font-size:12px}
+  .dialogue{padding-left:10px;max-width:100%}
+  .character{padding-left:10px;text-align:left}
+  .parenthetical{padding-left:20px;text-align:left}
+  .title{font-size:16px}
+  .scene-heading{font-size:11px;margin:20px 0 10px}
 }
 @media(max-width:500px){
-  .navigator{display:none}
-  .content{padding:12px 16px 80px}
-  .scroll-indicator{bottom:16px;right:16px}
-  .scroll-fab,.scroll-position{width:38px;height:38px}
+  .header .search-box{display:none}
+  .header-actions .btn{font-size:8px;padding:6px 10px}
+  .mobile-steer .steer-ring{width:100px;height:100px}
+  .mobile-steer .steer-btn{width:28px;height:28px}
+  .mobile-steer .steer-btn svg{width:14px;height:14px}
+  .mobile-steer .steer-center{width:28px;height:28px;font-size:8px}
+  .mobile-minimap{width:24px}
+  .main{margin-left:24px}
+  .content{padding:12px 12px 140px 10px;font-size:11px}
 }
 
 /* Loading */
@@ -202,6 +288,86 @@ html,body{height:100%;font-family:'Courier New',monospace;background:var(--bg);c
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
     </button>
   </div>
+  
+  <!-- Mobile Navigation Toggle -->
+  <button class="nav-toggle" id="nav-toggle">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+  </button>
+  
+  <!-- Mobile Floating Minimap -->
+  <div class="mobile-minimap" id="mobile-minimap">
+    <canvas id="mobile-minimap-canvas"></canvas>
+    <div class="mobile-minimap-viewport" id="mobile-viewport"></div>
+    <div class="mobile-minimap-pos" id="mobile-pos">0%</div>
+    <div class="mobile-minimap-label">SCREENPLAY MAP</div>
+  </div>
+  
+  <!-- Mobile Steering Wheel -->
+  <div class="mobile-steer" id="mobile-steer">
+    <div class="steer-ring">
+      <button class="steer-btn steer-up" id="steer-up" title="Previous Scene">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg>
+      </button>
+      <button class="steer-btn steer-down" id="steer-down" title="Next Scene">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <button class="steer-btn steer-left" id="steer-left" title="Page Up">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <button class="steer-btn steer-right" id="steer-right" title="Page Down">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+      <div class="steer-center" id="steer-pos">0%</div>
+    </div>
+  </div>
+  
+  <!-- Mobile Scene Bar -->
+  <div class="mobile-scene-bar">
+    <button class="search-toggle" id="search-toggle" title="Search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    </button>
+    <select id="mobile-scene-select">
+      <option value="">Jump to scene...</option>
+    </select>
+    <button class="copy-btn" id="copy-selection-btn" title="Copy Selection">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+    </button>
+  </div>
+  
+  <!-- Search Overlay -->
+  <div class="search-overlay" id="search-overlay">
+    <input type="text" id="search-input" placeholder="Search screenplay...">
+    <div class="search-results-list" id="search-results"></div>
+  </div>
+  
+  <!-- Context Menu -->
+  <div class="context-menu" id="context-menu">
+    <div class="context-menu-item" id="ctx-copy">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+      Copy Text
+    </div>
+    <div class="context-menu-item" id="ctx-copy-scene">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+      Copy Entire Scene
+    </div>
+    <div class="context-menu-divider"></div>
+    <div class="context-menu-item" id="ctx-select-scene">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h6"/><path d="M9 22l3-3m0 0l3 3m-3-3v-7"/></svg>
+      Select This Scene
+    </div>
+    <div class="context-menu-item" id="ctx-select-to-here">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3h5v5M21 3L9 15M21 14v5a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h5"/></svg>
+      Extend Selection Here
+    </div>
+    <div class="context-menu-divider"></div>
+    <div class="context-menu-item" id="ctx-clear">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+      Clear Selection
+    </div>
+  </div>
+  
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
 </div>
 
 <script>
@@ -591,6 +757,466 @@ $('#minimap-wrap').onclick=e=>{
 
 // Resize observer
 new ResizeObserver(()=>{renderMinimap();updateViewport();}).observe($('#minimap-wrap'));
+
+// ============================================
+// MOBILE CONTROLS
+// ============================================
+
+// Mobile nav drawer toggle
+const navToggle=$('#nav-toggle');
+const navigator=document.querySelector('.navigator');
+if(navToggle){
+  navToggle.onclick=()=>{
+    navigator.classList.toggle('open');
+    navToggle.classList.toggle('open');
+  };
+  // Close drawer when clicking outside
+  document.addEventListener('click',e=>{
+    if(navigator.classList.contains('open')&&!navigator.contains(e.target)&&!navToggle.contains(e.target)){
+      navigator.classList.remove('open');
+      navToggle.classList.remove('open');
+    }
+  });
+}
+
+// Mobile minimap - full height sidebar with expand/collapse
+function renderMobileMinimap(){
+  const canvas=$('#mobile-minimap-canvas');
+  if(!canvas||!canvas.offsetParent)return;
+  const ctx=canvas.getContext('2d');
+  const wrap=$('#mobile-minimap');
+  const w=wrap.clientWidth;
+  const h=wrap.clientHeight;
+  canvas.width=w*2;canvas.height=h*2;
+  ctx.scale(2,2);
+  const bg=getComputedStyle(document.body).getPropertyValue('--bg2').trim()||'#0f0f0f';
+  ctx.fillStyle=bg;
+  ctx.fillRect(0,0,w,h);
+  const totalLines=state.elements.length||1;
+  const accent=getComputedStyle(document.body).getPropertyValue('--accent').trim()||'#cc5500';
+  const dim=getComputedStyle(document.body).getPropertyValue('--fg-muted').trim()||'#606060';
+  const scene=getComputedStyle(document.body).getPropertyValue('--scene').trim()||'#f43f5e';
+  const isExpanded=wrap.classList.contains('expanded');
+  for(let i=0;i<state.elements.length;i++){
+    const el=state.elements[i];
+    const y=(i/totalLines)*h;
+    if(el.type==='scene'){
+      ctx.fillStyle=scene;
+      ctx.fillRect(0,y,w,isExpanded?6:4);
+      if(isExpanded&&el.text){
+        ctx.fillStyle='#fff';
+        ctx.font='7px monospace';
+        ctx.fillText(el.text.slice(0,15),4,y+10);
+      }
+    }
+    else if(el.type==='witness'){ctx.fillStyle=accent;ctx.fillRect(isExpanded?8:2,y,w-(isExpanded?16:4),2);}
+    else if(el.type==='character'){ctx.fillStyle=dim;ctx.fillRect(isExpanded?12:4,y,w-(isExpanded?24:8),1);}
+  }
+}
+
+function updateMobileViewport(){
+  const content=$('#content');
+  const viewport=$('#mobile-viewport');
+  const posEl=$('#mobile-pos');
+  const wrap=$('#mobile-minimap');
+  if(!viewport||!wrap||!wrap.offsetParent)return;
+  const h=wrap.clientHeight;
+  const scrollRatio=content.scrollTop/Math.max(1,content.scrollHeight-content.clientHeight);
+  const viewRatio=content.clientHeight/Math.max(1,content.scrollHeight);
+  const viewH=Math.max(20,viewRatio*h);
+  const viewT=scrollRatio*(h-viewH);
+  viewport.style.top=viewT+'px';
+  viewport.style.height=viewH+'px';
+  // Position indicator - center of viewport
+  const posY=viewT+(viewH/2);
+  if(posEl){
+    posEl.style.top=posY+'px';
+    posEl.textContent=Math.round(scrollRatio*100)+'%';
+  }
+  const steerPos=$('#steer-pos');
+  if(steerPos)steerPos.textContent=Math.round(scrollRatio*100)+'%';
+}
+
+// Toggle expanded minimap and scroll on tap
+const mobileMinimap=$('#mobile-minimap');
+if(mobileMinimap){
+  // Single tap scrolls to position
+  mobileMinimap.addEventListener('click',e=>{
+    const rect=mobileMinimap.getBoundingClientRect();
+    const ratio=(e.clientY-rect.top)/rect.height;
+    const content=$('#content');
+    content.scrollTo({top:ratio*content.scrollHeight,behavior:'smooth'});
+  });
+  // Double-tap to toggle expand
+  let lastTap=0;
+  mobileMinimap.addEventListener('touchend',e=>{
+    const now=Date.now();
+    if(now-lastTap<300){
+      e.preventDefault();
+      mobileMinimap.classList.toggle('expanded');
+      navToggle?.classList.toggle('map-mode',mobileMinimap.classList.contains('expanded'));
+      // Adjust main content margin
+      const main=document.querySelector('.main');
+      if(main)main.style.marginLeft=mobileMinimap.classList.contains('expanded')?'120px':'32px';
+      setTimeout(renderMobileMinimap,100);
+    }
+    lastTap=now;
+  });
+}
+
+// Nav toggle also toggles minimap expand when tapped
+if(navToggle){
+  navToggle.addEventListener('dblclick',e=>{
+    e.preventDefault();
+    mobileMinimap?.classList.toggle('expanded');
+    navToggle.classList.toggle('map-mode',mobileMinimap?.classList.contains('expanded'));
+    const main=document.querySelector('.main');
+    if(main)main.style.marginLeft=mobileMinimap?.classList.contains('expanded')?'120px':'32px';
+    setTimeout(renderMobileMinimap,100);
+  });
+}
+
+
+// Mobile steering wheel
+function jumpToScene(direction){
+  const content=$('#content');
+  const sceneEls=document.querySelectorAll('.scene-heading');
+  if(!sceneEls.length)return;
+  const scrollTop=content.scrollTop;
+  let targetIdx=-1;
+  const scenes=Array.from(sceneEls);
+  if(direction>0){
+    for(let i=0;i<scenes.length;i++){
+      if(scenes[i].offsetTop>scrollTop+50){targetIdx=i;break;}
+    }
+  }else{
+    for(let i=scenes.length-1;i>=0;i--){
+      if(scenes[i].offsetTop<scrollTop-10){targetIdx=i;break;}
+    }
+  }
+  if(targetIdx>=0){
+    scenes[targetIdx].scrollIntoView({behavior:'smooth',block:'start'});
+  }
+}
+
+$('#steer-up')?.addEventListener('click',()=>jumpToScene(-1));
+$('#steer-down')?.addEventListener('click',()=>jumpToScene(1));
+$('#steer-left')?.addEventListener('click',()=>scrollBy(-window.innerHeight*.8));
+$('#steer-right')?.addEventListener('click',()=>scrollBy(window.innerHeight*.8));
+
+// Mobile scene selector
+function updateMobileSceneSelect(){
+  const select=$('#mobile-scene-select');
+  if(!select)return;
+  select.innerHTML='<option value="">Jump to scene...</option>';
+  document.querySelectorAll('.scene-heading').forEach((el,i)=>{
+    const opt=document.createElement('option');
+    opt.value=el.id||('scene-'+i);
+    opt.textContent=el.textContent.slice(0,40);
+    select.appendChild(opt);
+  });
+}
+$('#mobile-scene-select')?.addEventListener('change',e=>{
+  if(e.target.value){
+    const el=document.getElementById(e.target.value)||document.querySelector('.scene-heading:nth-of-type('+(parseInt(e.target.value.split('-')[1])+1)+')');
+    if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+    e.target.value='';
+  }
+});
+
+// Update mobile viewport on scroll
+const origUpdateViewport=updateViewport;
+updateViewport=function(){
+  origUpdateViewport();
+  updateMobileViewport();
+};
+
+// Render mobile minimap after main render
+const origLoadData=loadData;
+loadData=async function(){
+  await origLoadData.call?origLoadData():null;
+};
+
+// Hook into content scroll for mobile
+$('#content').addEventListener('scroll',updateMobileViewport);
+
+// Initialize mobile on load
+window.addEventListener('load',()=>{
+  setTimeout(()=>{
+    renderMobileMinimap();
+    updateMobileViewport();
+    updateMobileSceneSelect();
+  },500);
+});
+
+// ============================================
+// SEARCH FUNCTIONALITY
+// ============================================
+const searchOverlay=$('#search-overlay');
+const searchInput=$('#search-input');
+const searchResults=$('#search-results');
+const searchToggle=$('#search-toggle');
+
+function toggleSearch(){
+  searchOverlay?.classList.toggle('open');
+  searchToggle?.classList.toggle('active');
+  if(searchOverlay?.classList.contains('open')){
+    searchInput?.focus();
+  }
+}
+
+function performSearch(query){
+  if(!searchResults)return;
+  searchResults.innerHTML='';
+  if(!query||query.length<2)return;
+  const q=query.toLowerCase();
+  const lines=document.querySelectorAll('.line');
+  let count=0;
+  lines.forEach((line,i)=>{
+    const text=line.textContent||'';
+    if(text.toLowerCase().includes(q)&&count<50){
+      const div=document.createElement('div');
+      div.className='search-result';
+      div.innerHTML=`
+        <span class="search-result-num">${i+1}</span>
+        <span class="search-result-text">${esc(text).replace(new RegExp('('+q+')','gi'),'<mark>$1</mark>')}</span>
+      `;
+      div.onclick=()=>{
+        line.scrollIntoView({behavior:'smooth',block:'center'});
+        line.classList.add('selected');
+        setTimeout(()=>line.classList.remove('selected'),2000);
+        toggleSearch();
+      };
+      searchResults.appendChild(div);
+      count++;
+    }
+  });
+  if(count===0){
+    searchResults.innerHTML='<div class="search-result"><span class="search-result-text">No results found</span></div>';
+  }
+}
+
+searchToggle?.addEventListener('click',toggleSearch);
+searchInput?.addEventListener('input',e=>performSearch(e.target.value));
+searchInput?.addEventListener('keydown',e=>{
+  if(e.key==='Escape')toggleSearch();
+});
+
+// ============================================
+// SELECTION & COPY FUNCTIONALITY
+// ============================================
+const selection={start:null,end:null,lines:new Set()};
+
+function updateSelectionUI(){
+  document.querySelectorAll('.line.selected').forEach(l=>l.classList.remove('selected'));
+  selection.lines.forEach(idx=>{
+    const line=document.querySelectorAll('.line')[idx];
+    if(line)line.classList.add('selected');
+  });
+  const copyBtn=$('#copy-selection-btn');
+  if(copyBtn){
+    copyBtn.classList.toggle('has-selection',selection.lines.size>0);
+  }
+}
+
+function selectLine(idx,extend=false){
+  if(extend&&selection.start!==null){
+    selection.end=idx;
+    selection.lines.clear();
+    const min=Math.min(selection.start,selection.end);
+    const max=Math.max(selection.start,selection.end);
+    for(let i=min;i<=max;i++)selection.lines.add(i);
+  }else{
+    if(selection.lines.has(idx)){
+      selection.lines.delete(idx);
+      if(selection.lines.size===0)selection.start=null;
+    }else{
+      selection.lines.add(idx);
+      if(selection.start===null)selection.start=idx;
+      selection.end=idx;
+    }
+  }
+  updateSelectionUI();
+}
+
+function selectScene(sceneEl){
+  const lines=Array.from(document.querySelectorAll('.line'));
+  const sceneIdx=lines.indexOf(sceneEl);
+  if(sceneIdx<0)return;
+  selection.lines.clear();
+  selection.start=sceneIdx;
+  // Find next scene or end
+  let endIdx=lines.length-1;
+  for(let i=sceneIdx+1;i<lines.length;i++){
+    if(lines[i].classList.contains('scene-heading')){endIdx=i-1;break;}
+  }
+  selection.end=endIdx;
+  for(let i=sceneIdx;i<=endIdx;i++)selection.lines.add(i);
+  updateSelectionUI();
+}
+
+function clearSelection(){
+  selection.start=null;
+  selection.end=null;
+  selection.lines.clear();
+  updateSelectionUI();
+}
+
+function getSelectedText(){
+  const lines=document.querySelectorAll('.line');
+  let text='';
+  const sorted=Array.from(selection.lines).sort((a,b)=>a-b);
+  sorted.forEach(idx=>{
+    if(lines[idx])text+=lines[idx].textContent+'\n';
+  });
+  return text.trim();
+}
+
+function copySelection(){
+  const text=getSelectedText();
+  if(!text){toast('Nothing selected');return;}
+  navigator.clipboard.writeText(text).then(()=>{
+    toast('Copied '+selection.lines.size+' lines');
+  }).catch(()=>{
+    // Fallback
+    const ta=document.createElement('textarea');
+    ta.value=text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    toast('Copied '+selection.lines.size+' lines');
+  });
+}
+
+function toast(msg){
+  const t=$('#toast');
+  if(!t)return;
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2000);
+}
+
+$('#copy-selection-btn')?.addEventListener('click',copySelection);
+
+// ============================================
+// CONTEXT MENU
+// ============================================
+const contextMenu=$('#context-menu');
+let contextTarget=null;
+
+function showContextMenu(x,y,target){
+  if(!contextMenu)return;
+  contextTarget=target;
+  contextMenu.style.left=Math.min(x,window.innerWidth-180)+'px';
+  contextMenu.style.top=Math.min(y,window.innerHeight-200)+'px';
+  contextMenu.classList.add('open');
+}
+
+function hideContextMenu(){
+  contextMenu?.classList.remove('open');
+  contextTarget=null;
+}
+
+// Right-click on lines
+document.addEventListener('contextmenu',e=>{
+  const line=e.target.closest('.line');
+  if(line){
+    e.preventDefault();
+    showContextMenu(e.clientX,e.clientY,line);
+  }
+});
+
+// Long-press for mobile
+let pressTimer=null;
+let pressTarget=null;
+document.addEventListener('touchstart',e=>{
+  const line=e.target.closest('.line');
+  if(line){
+    pressTarget=line;
+    pressTimer=setTimeout(()=>{
+      const touch=e.touches[0];
+      showContextMenu(touch.clientX,touch.clientY,line);
+      pressTarget=null;
+    },500);
+  }
+},{passive:true});
+
+document.addEventListener('touchend',()=>{
+  if(pressTimer){clearTimeout(pressTimer);pressTimer=null;}
+});
+
+document.addEventListener('touchmove',()=>{
+  if(pressTimer){clearTimeout(pressTimer);pressTimer=null;}
+});
+
+// Close context menu on click outside
+document.addEventListener('click',e=>{
+  if(!contextMenu?.contains(e.target)){
+    hideContextMenu();
+  }
+});
+
+// Context menu actions
+$('#ctx-copy')?.addEventListener('click',()=>{
+  if(contextTarget){
+    navigator.clipboard.writeText(contextTarget.textContent||'');
+    toast('Copied line');
+  }
+  hideContextMenu();
+});
+
+$('#ctx-copy-scene')?.addEventListener('click',()=>{
+  if(contextTarget){
+    // Find scene heading for this line
+    let scene=contextTarget;
+    while(scene&&!scene.classList.contains('scene-heading')){
+      scene=scene.previousElementSibling;
+    }
+    if(scene){
+      selectScene(scene);
+      copySelection();
+      clearSelection();
+    }
+  }
+  hideContextMenu();
+});
+
+$('#ctx-select-scene')?.addEventListener('click',()=>{
+  if(contextTarget){
+    let scene=contextTarget;
+    while(scene&&!scene.classList.contains('scene-heading')){
+      scene=scene.previousElementSibling;
+    }
+    if(scene)selectScene(scene);
+  }
+  hideContextMenu();
+});
+
+$('#ctx-select-to-here')?.addEventListener('click',()=>{
+  if(contextTarget){
+    const lines=Array.from(document.querySelectorAll('.line'));
+    const idx=lines.indexOf(contextTarget);
+    if(idx>=0)selectLine(idx,true);
+  }
+  hideContextMenu();
+});
+
+$('#ctx-clear')?.addEventListener('click',()=>{
+  clearSelection();
+  hideContextMenu();
+});
+
+// Add click handler for line selection (shift+click or tap on line numbers)
+$('#content')?.addEventListener('click',e=>{
+  const lineNum=e.target.closest('.line-num');
+  const line=e.target.closest('.line');
+  if(lineNum&&line){
+    const lines=Array.from(document.querySelectorAll('.line'));
+    const idx=lines.indexOf(line);
+    if(idx>=0)selectLine(idx,e.shiftKey);
+  }
+});
 
 loadData();
 </script>

@@ -121,6 +121,84 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--fg);ov
 .column-content::-webkit-scrollbar{width:6px}
 .column-content::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 
+/* Control Panel (replaces modal) */
+.column.control-panel{background:var(--panel);min-width:300px;width:300px}
+.column.control-panel .column-dot{background:var(--accent)}
+.control-tabs{display:flex;border-bottom:1px solid var(--border)}
+.control-tab{flex:1;padding:12px 8px;background:transparent;border:none;color:var(--muted);font:inherit;font-size:9px;cursor:pointer;text-transform:uppercase;letter-spacing:.03em;border-bottom:2px solid transparent;transition:all .15s}
+.control-tab:hover{color:var(--dim);background:var(--bg)}
+.control-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.control-content{display:none;padding:12px}
+.control-content.active{display:block}
+.control-search{margin-bottom:12px}
+.control-search input{width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--fg);font:inherit;font-size:11px}
+.control-search input:focus{outline:none;border-color:var(--accent)}
+.control-list{max-height:calc(100vh - 220px);overflow-y:auto}
+.control-item{padding:12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;margin-bottom:8px;cursor:pointer;transition:all .15s}
+.control-item:hover{border-color:var(--accent);background:rgba(212,168,83,.05)}
+.control-item-title{font-size:11px;color:var(--fg);margin-bottom:4px;font-weight:500}
+.control-item-meta{font-size:9px;color:var(--muted)}
+.control-item-btn{margin-top:8px;padding:8px 14px;background:var(--accent);border:none;border-radius:4px;color:#000;font:inherit;font-size:9px;font-weight:bold;cursor:pointer;width:100%}
+.control-item-btn:hover{background:var(--accent2)}
+.control-paste textarea{width:100%;height:150px;padding:12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--fg);font:inherit;font-size:11px;resize:none;margin-bottom:8px}
+.control-paste input{width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--fg);font:inherit;font-size:11px;margin-bottom:8px}
+
+/* Multi-select lines */
+.text-line.selected{background:rgba(212,168,83,.2);border-left-color:var(--accent)}
+.text-line .line-select{width:16px;height:16px;border:1px solid var(--border);border-radius:3px;margin-right:8px;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.text-line .line-select:hover{border-color:var(--accent)}
+.text-line.selected .line-select{background:var(--accent);border-color:var(--accent)}
+.text-line.selected .line-select::after{content:'✓';color:#000;font-size:10px}
+
+/* Selection Toolbar */
+.selection-toolbar{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:8px 12px;display:flex;gap:8px;align-items:center;box-shadow:0 4px 20px rgba(0,0,0,.4);z-index:200;opacity:0;transition:all .3s;pointer-events:none}
+.selection-toolbar.visible{transform:translateX(-50%) translateY(0);opacity:1;pointer-events:auto}
+.selection-toolbar-count{font-size:10px;color:var(--accent);font-weight:bold;padding-right:8px;border-right:1px solid var(--border)}
+.selection-toolbar-btn{padding:8px 14px;background:var(--bg);border:1px solid var(--border);border-radius:4px;color:var(--fg);font:inherit;font-size:10px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s}
+.selection-toolbar-btn:hover{border-color:var(--accent);color:var(--accent)}
+.selection-toolbar-btn.primary{background:var(--accent);border-color:var(--accent);color:#000}
+.selection-toolbar-btn svg{width:12px;height:12px}
+
+/* Context Menu */
+.context-menu{position:fixed;background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:6px 0;min-width:200px;box-shadow:0 8px 32px rgba(0,0,0,.5);z-index:400;display:none}
+.context-menu.open{display:block}
+.context-menu-header{padding:8px 14px;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border)}
+.context-menu-item{padding:10px 14px;font-size:11px;color:var(--fg);cursor:pointer;display:flex;align-items:center;gap:10px;transition:all .1s}
+.context-menu-item:hover{background:var(--bg);color:var(--accent)}
+.context-menu-item svg{width:14px;height:14px;color:var(--muted)}
+.context-menu-item:hover svg{color:var(--accent)}
+.context-menu-divider{height:1px;background:var(--border);margin:4px 0}
+.context-menu-item.danger:hover{background:rgba(239,68,68,.1);color:var(--error)}
+.context-menu-item.danger:hover svg{color:var(--error)}
+
+/* Diff Mode */
+.diff-toolbar{position:fixed;top:50px;left:50%;transform:translateX(-50%);background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:8px 16px;display:none;gap:12px;align-items:center;box-shadow:0 4px 20px rgba(0,0,0,.4);z-index:200}
+.diff-toolbar.visible{display:flex}
+.diff-toolbar-label{font-size:10px;color:var(--accent);font-weight:bold}
+.diff-toolbar-btn{padding:6px 12px;background:var(--bg);border:1px solid var(--border);border-radius:4px;color:var(--fg);font:inherit;font-size:10px;cursor:pointer}
+.diff-toolbar-btn:hover{border-color:var(--accent);color:var(--accent)}
+.diff-toolbar-btn.active{background:var(--accent);border-color:var(--accent);color:#000}
+
+/* Diff highlights */
+.text-line.diff-added{background:rgba(34,197,94,.15);border-left-color:var(--success)}
+.text-line.diff-removed{background:rgba(239,68,68,.15);border-left-color:var(--error)}
+.text-line.diff-changed{background:rgba(251,191,36,.15);border-left-color:var(--accent)}
+.column.diff-source{box-shadow:inset 0 0 0 2px var(--r1)}
+.column.diff-target{box-shadow:inset 0 0 0 2px var(--r2)}
+
+/* Prompt Panel */
+.prompt-panel{background:var(--bg2)}
+.prompt-panel .column-dot{background:var(--prompt)}
+.prompt-input{width:100%;padding:12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--fg);font:inherit;font-size:11px;resize:none;min-height:100px;margin-bottom:8px}
+.prompt-input:focus{outline:none;border-color:var(--accent)}
+.prompt-context{padding:12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;margin-bottom:12px;max-height:150px;overflow-y:auto}
+.prompt-context-label{font-size:9px;color:var(--muted);text-transform:uppercase;margin-bottom:6px}
+.prompt-context-text{font-size:10px;color:var(--dim);line-height:1.5}
+.prompt-actions{display:flex;gap:8px}
+.prompt-btn{flex:1;padding:12px;background:var(--accent);border:none;border-radius:6px;color:#000;font:inherit;font-size:11px;font-weight:bold;cursor:pointer}
+.prompt-btn:hover{background:var(--accent2)}
+.prompt-btn.secondary{background:var(--bg);border:1px solid var(--border);color:var(--fg)}
+
 /* Cards - Compact */
 .unit{margin-bottom:8px;padding:10px;background:var(--panel);border:1px solid var(--border);border-radius:4px;cursor:pointer;transition:all .1s;position:relative}
 .unit:hover{border-color:var(--border2)}
@@ -165,31 +243,146 @@ body{font-family:'Courier New',monospace;background:var(--bg);color:var(--fg);ov
 /* Help */
 .help{position:fixed;bottom:12px;right:20px;font-size:9px;color:var(--muted);background:var(--panel);padding:6px 12px;border-radius:4px;border:1px solid var(--border)}
 
-/* Add Panel Modal */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:300;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+/* Add Panel Modal - Redesigned */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:300;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
 .modal-overlay.open{display:flex}
-.modal{background:var(--panel);border:1px solid var(--border);border-radius:12px;width:90%;max-width:500px;max-height:80vh;overflow:hidden;animation:modalIn .25s ease}
+.modal{background:var(--panel);border:1px solid var(--border);border-radius:12px;width:95%;max-width:600px;max-height:85vh;overflow:hidden;animation:modalIn .25s ease}
 @keyframes modalIn{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
-.modal-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
-.modal-title{font-size:14px;color:var(--accent);font-weight:bold;letter-spacing:.05em}
+.modal-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.modal-title{font-size:13px;color:var(--accent);font-weight:bold;letter-spacing:.05em}
 .modal-close{background:none;border:none;color:var(--muted);font-size:24px;cursor:pointer;padding:0 4px;transition:color .15s}
 .modal-close:hover{color:var(--fg)}
-.modal-body{padding:20px 24px;max-height:50vh;overflow-y:auto}
-.modal-section{margin-bottom:20px}
-.modal-section-title{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px}
+
+/* Modal Tabs */
+.modal-tabs{display:flex;border-bottom:1px solid var(--border);background:var(--bg2)}
+.modal-tab{flex:1;padding:12px 16px;background:transparent;border:none;color:var(--muted);font:inherit;font-size:10px;cursor:pointer;text-transform:uppercase;letter-spacing:.05em;transition:all .15s;border-bottom:2px solid transparent}
+.modal-tab:hover{color:var(--dim);background:var(--bg)}
+.modal-tab.active{color:var(--accent);border-bottom-color:var(--accent);background:var(--panel)}
+
+/* Modal Search */
+.modal-search{padding:12px 20px;border-bottom:1px solid var(--border)}
+.modal-search input{width:100%;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--fg);font:inherit;font-size:12px}
+.modal-search input:focus{outline:none;border-color:var(--accent)}
+.modal-search input::placeholder{color:var(--muted)}
+
+.modal-body{padding:16px 20px;max-height:55vh;overflow-y:auto}
+.modal-section{margin-bottom:16px}
+.modal-section-title{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.modal-section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* Quick Add Buttons */
+.quick-add{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.quick-btn{padding:10px 16px;background:var(--bg);border:1px solid var(--border);border-radius:6px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--fg)}
+.quick-btn:hover{border-color:var(--accent);background:rgba(212,168,83,.05)}
+.quick-btn svg{width:14px;height:14px;color:var(--accent)}
+.quick-btn.primary{background:var(--accent);border-color:var(--accent);color:#000}
+.quick-btn.primary:hover{background:var(--accent2)}
+
+/* Source Grid */
 .source-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-.source-btn{padding:12px 16px;background:var(--bg);border:1px solid var(--border);border-radius:6px;cursor:pointer;transition:all .15s;text-align:left}
-.source-btn:hover{border-color:var(--accent);background:rgba(212,168,83,.03)}
-.source-btn-name{font-size:11px;color:var(--fg);margin-bottom:4px}
+.source-btn{padding:14px 16px;background:var(--bg);border:1px solid var(--border);border-radius:6px;cursor:pointer;transition:all .15s;text-align:left;position:relative}
+.source-btn:hover{border-color:var(--accent);background:rgba(212,168,83,.05)}
+.source-btn.selected{border-color:var(--accent);background:rgba(212,168,83,.1)}
+.source-btn-name{font-size:11px;color:var(--fg);margin-bottom:4px;font-weight:600}
 .source-btn-count{font-size:9px;color:var(--muted)}
-.witness-list{display:flex;flex-direction:column;gap:6px;max-height:200px;overflow-y:auto}
-.witness-item{padding:12px 16px;background:var(--bg);border:1px solid var(--border);border-radius:6px;cursor:pointer;transition:all .15s;display:flex;justify-content:space-between;align-items:center}
-.witness-item:hover{border-color:var(--accent);background:rgba(212,168,83,.03)}
-.witness-item-info{flex:1}
-.witness-item-title{font-size:11px;color:var(--fg);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:300px}
+.source-btn-check{position:absolute;top:8px;right:8px;width:16px;height:16px;background:var(--accent);border-radius:50%;display:none;align-items:center;justify-content:center}
+.source-btn.selected .source-btn-check{display:flex}
+.source-btn-check svg{width:10px;height:10px;color:#000}
+
+/* Witness List */
+.witness-list{display:flex;flex-direction:column;gap:6px;max-height:250px;overflow-y:auto}
+.witness-item{padding:12px 16px;background:var(--bg);border:1px solid var(--border);border-radius:6px;cursor:pointer;transition:all .15s;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.witness-item:hover{border-color:var(--accent);background:rgba(212,168,83,.05)}
+.witness-item.selected{border-color:var(--accent);background:rgba(212,168,83,.1)}
+.witness-item-info{flex:1;min-width:0}
+.witness-item-title{font-size:11px;color:var(--fg);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .witness-item-meta{font-size:9px;color:var(--muted)}
-.witness-item-add{font-size:9px;padding:4px 10px;background:var(--accent);border:none;border-radius:3px;color:#000;cursor:pointer;font-weight:bold}
-.modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+.witness-item-add{font-size:9px;padding:6px 14px;background:var(--accent);border:none;border-radius:4px;color:#000;cursor:pointer;font-weight:bold;white-space:nowrap}
+.witness-item-add:hover{background:var(--accent2)}
+
+/* Paste Area */
+.paste-area{border:2px dashed var(--border);border-radius:8px;padding:24px;text-align:center;cursor:pointer;transition:all .2s}
+.paste-area:hover,.paste-area.over{border-color:var(--accent);background:rgba(212,168,83,.03)}
+.paste-area-icon{font-size:32px;color:var(--muted);margin-bottom:12px}
+.paste-area-text{font-size:11px;color:var(--dim);margin-bottom:8px}
+.paste-area-hint{font-size:9px;color:var(--muted)}
+.paste-area textarea{width:100%;height:120px;margin-top:12px;padding:12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--fg);font:inherit;font-size:11px;resize:none}
+.paste-area textarea:focus{outline:none;border-color:var(--accent)}
+
+.modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:8px}
+.modal-footer-info{font-size:9px;color:var(--muted)}
+.modal-footer-actions{display:flex;gap:8px}
+.btn{padding:10px 18px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--dim);font:inherit;font-size:10px;cursor:pointer;transition:all .15s}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#000;font-weight:bold}
+.btn-primary:hover{background:var(--accent2)}
+
+/* Onboarding Tutorial */
+.onboarding{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px}
+.onboarding.hidden{display:none}
+.onboard-card{background:var(--panel);border:1px solid var(--border);border-radius:16px;width:100%;max-width:480px;overflow:hidden;animation:modalIn .4s ease}
+.onboard-header{padding:24px 24px 16px;text-align:center;border-bottom:1px solid var(--border)}
+.onboard-logo{font-size:32px;margin-bottom:12px}
+.onboard-title{font-size:16px;color:var(--accent);font-weight:bold;letter-spacing:.1em;margin-bottom:8px}
+.onboard-subtitle{font-size:11px;color:var(--dim)}
+.onboard-steps{padding:20px 24px}
+.onboard-step{display:flex;gap:16px;padding:14px 0;border-bottom:1px solid var(--border)}
+.onboard-step:last-child{border-bottom:none}
+.onboard-num{width:28px;height:28px;background:var(--accent);color:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;flex-shrink:0}
+.onboard-text{flex:1}
+.onboard-text h4{font-size:12px;color:var(--fg);margin-bottom:4px}
+.onboard-text p{font-size:10px;color:var(--dim);line-height:1.5}
+.onboard-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:12px}
+.onboard-skip{background:none;border:none;color:var(--muted);font:inherit;font-size:10px;cursor:pointer}
+.onboard-skip:hover{color:var(--fg)}
+.onboard-start{padding:12px 28px;background:var(--accent);border:none;border-radius:8px;color:#000;font:inherit;font-size:12px;font-weight:bold;cursor:pointer}
+.onboard-start:hover{background:var(--accent2)}
+.onboard-check{display:flex;align-items:center;gap:8px;font-size:10px;color:var(--muted)}
+.onboard-check input{accent-color:var(--accent)}
+
+/* Help Panel */
+.help-panel{position:fixed;top:44px;right:0;bottom:0;width:320px;background:var(--panel);border-left:1px solid var(--border);transform:translateX(100%);transition:transform .3s ease;z-index:200;display:flex;flex-direction:column}
+.help-panel.open{transform:translateX(0)}
+.help-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.help-title{font-size:12px;color:var(--accent);font-weight:bold;letter-spacing:.05em}
+.help-close{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:0}
+.help-close:hover{color:var(--fg)}
+.help-content{flex:1;overflow-y:auto;padding:16px 20px}
+.help-section{margin-bottom:20px}
+.help-section-title{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.help-section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.help-item{padding:10px 0;border-bottom:1px solid var(--border);font-size:11px}
+.help-item:last-child{border-bottom:none}
+.help-item strong{color:var(--accent)}
+.help-item p{color:var(--dim);margin-top:4px;line-height:1.5}
+.help-shortcut{display:flex;justify-content:space-between;padding:8px 0}
+.help-shortcut kbd{background:var(--bg);border:1px solid var(--border);padding:2px 8px;border-radius:4px;font-size:10px;color:var(--fg)}
+
+/* Mobile FAB */
+.mobile-fab{position:fixed;bottom:20px;right:20px;display:none;flex-direction:column;gap:10px;z-index:150}
+.fab-btn{width:56px;height:56px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,0,0,.4);transition:all .2s}
+.fab-btn svg{width:24px;height:24px}
+.fab-btn.primary{background:var(--accent);color:#000}
+.fab-btn.primary:hover{transform:scale(1.05)}
+.fab-btn.secondary{background:var(--panel);border:1px solid var(--border);color:var(--fg)}
+.fab-btn.secondary:hover{border-color:var(--accent)}
+
+/* Mobile action bar */
+.mobile-bar{position:fixed;bottom:0;left:0;right:0;height:60px;background:var(--panel);border-top:1px solid var(--border);display:none;justify-content:space-around;align-items:center;z-index:100;padding:0 10px}
+.mobile-bar-btn{flex:1;height:100%;background:none;border:none;color:var(--muted);font:inherit;font-size:9px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.mobile-bar-btn:hover,.mobile-bar-btn.active{color:var(--accent)}
+.mobile-bar-btn svg{width:20px;height:20px}
+
+@media(max-width:600px){
+  .mobile-fab{display:flex}
+  .mobile-bar{display:flex}
+  .scroll-container{height:calc(100vh - 100px);margin-bottom:60px}
+  .help{display:none}
+  .help-panel{width:100%;top:40px}
+  .column.control-panel{min-width:85vw;width:85vw}
+  .selection-toolbar{bottom:140px;left:10px;right:10px;transform:translateX(0) translateY(100px)}
+  .selection-toolbar.visible{transform:translateX(0) translateY(0)}
+}
 
 /* Column toolbar */
 .column-toolbar{display:flex;gap:2px;padding:8px 12px;background:var(--bg2);border-bottom:1px solid var(--border)}
@@ -228,22 +421,27 @@ input[type="file"]{display:none}
   .panel-count{display:none}
   .icon-btn{width:28px;height:28px}
   .icon-btn svg{width:12px;height:12px}
-  .scroll-container{height:calc(100vh - 40px);margin-top:40px}
-  .column{min-width:280px;width:280px}
+  .scroll-container{height:calc(100vh - 100px);margin-top:40px}
+  .column{min-width:85vw;width:85vw;scroll-snap-align:center}
   .column.collapsed{min-width:32px;width:32px}
   .column-tab{width:32px;font-size:7px}
   .column-header{height:36px;padding:0 8px}
   .column-title{font-size:9px}
-  .col-btn{width:22px;height:22px}
-  .col-btn svg{width:10px;height:10px}
-  .column-content{padding:8px}
-  .unit{padding:8px;margin-bottom:6px}
-  .unit-text{font-size:10px}
+  .col-btn{width:28px;height:28px}
+  .col-btn svg{width:12px;height:12px}
+  .column-content{padding:12px}
+  .unit{padding:12px;margin-bottom:8px}
+  .unit-text{font-size:11px}
   .lined-content{font-size:10px}
   .line-num{width:24px;font-size:8px}
+  .modal{max-width:95%;max-height:90vh}
+  .modal-tab{padding:14px 12px;font-size:9px}
+  .witness-item{padding:14px 12px}
+  .witness-item-add{padding:10px 16px;font-size:10px}
+  .scroll-container{scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
 }
 @media(max-width:400px){
-  .column{min-width:100vw;width:100vw}
+  .column{min-width:92vw;width:92vw}
   .search-bar{max-width:100px}
 }
 </style>
@@ -275,25 +473,60 @@ input[type="file"]{display:none}
   </div>
 </header>
 
-<!-- Add Panel Modal -->
+<!-- Add Panel Modal - Redesigned -->
 <div class="modal-overlay" id="add-modal">
   <div class="modal">
     <div class="modal-header">
-      <span class="modal-title">★ ADD COMPARISON PANEL</span>
+      <span class="modal-title">★ ADD PANEL</span>
       <button class="modal-close" id="modal-close">&times;</button>
     </div>
+    <div class="modal-tabs">
+      <button class="modal-tab active" data-tab="cases">Cases</button>
+      <button class="modal-tab" data-tab="witnesses">Witnesses</button>
+      <button class="modal-tab" data-tab="paste">Paste Text</button>
+    </div>
+    <div class="modal-search">
+      <input type="text" id="modal-search" placeholder="Search cases and witnesses...">
+    </div>
     <div class="modal-body">
-      <div class="modal-section">
-        <div class="modal-section-title">Select Source</div>
-        <div class="source-grid" id="source-grid"></div>
+      <!-- Cases Tab -->
+      <div class="modal-tab-content" id="tab-cases">
+        <div class="quick-add" id="quick-cases"></div>
+        <div class="modal-section">
+          <div class="modal-section-title">All Cases</div>
+          <div class="witness-list" id="case-list"></div>
+        </div>
       </div>
-      <div class="modal-section" id="witness-section" style="display:none">
-        <div class="modal-section-title">Select Witness to Add</div>
-        <div class="witness-list" id="witness-list"></div>
+      <!-- Witnesses Tab -->
+      <div class="modal-tab-content" id="tab-witnesses" style="display:none">
+        <div class="modal-section">
+          <div class="modal-section-title">Select Source First</div>
+          <div class="source-grid" id="source-grid"></div>
+        </div>
+        <div class="modal-section" id="witness-section" style="display:none">
+          <div class="modal-section-title">Available Witnesses</div>
+          <div class="witness-list" id="witness-list"></div>
+        </div>
+      </div>
+      <!-- Paste Tab -->
+      <div class="modal-tab-content" id="tab-paste" style="display:none">
+        <div class="paste-area" id="paste-area">
+          <div class="paste-area-icon">📋</div>
+          <div class="paste-area-text">Click to paste or type text directly</div>
+          <div class="paste-area-hint">Paste screenplay text, dialogue, or any content to compare</div>
+          <textarea id="paste-text" placeholder="Paste or type your text here..."></textarea>
+        </div>
+        <div style="margin-top:12px">
+          <input type="text" id="paste-title" placeholder="Panel title (optional)" style="width:100%;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--fg);font:inherit;font-size:12px">
+        </div>
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn" id="modal-cancel">Cancel</button>
+      <div class="modal-footer-info" id="modal-info">Select an item to add</div>
+      <div class="modal-footer-actions">
+        <button class="btn" id="modal-cancel">Cancel</button>
+        <button class="btn btn-primary" id="modal-add" style="display:none">+ Add Panel</button>
+      </div>
     </div>
   </div>
 </div>
@@ -326,6 +559,180 @@ input[type="file"]{display:none}
 </div>
 <div class="toast" id="toast">COPIED</div>
 <div class="help">C=copy H=help ←→=scroll</div>
+
+<!-- Selection Toolbar -->
+<div class="selection-toolbar" id="selection-toolbar">
+  <span class="selection-toolbar-count" id="selection-count">0 lines</span>
+  <button class="selection-toolbar-btn primary" id="sel-copy">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+    Copy
+  </button>
+  <button class="selection-toolbar-btn" id="sel-all">Select All</button>
+  <button class="selection-toolbar-btn" id="sel-clear">Clear</button>
+</div>
+
+<!-- Context Menu -->
+<div class="context-menu" id="context-menu">
+  <div class="context-menu-header">Actions</div>
+  <div class="context-menu-item" id="ctx-copy">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+    Copy Selected
+  </div>
+  <div class="context-menu-divider"></div>
+  <div class="context-menu-item" id="ctx-branch">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 009 9"/></svg>
+    Branch from Selection
+  </div>
+  <div class="context-menu-item" id="ctx-prompt">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+    Use as Prompt →
+  </div>
+  <div class="context-menu-divider"></div>
+  <div class="context-menu-item" id="ctx-diff">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3h5v5M8 3H3v5M3 16v5h5M21 16v5h-5M12 8v8M8 12h8"/></svg>
+    Compare with Panel...
+  </div>
+  <div class="context-menu-item" id="ctx-highlight">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    Highlight Differences
+  </div>
+</div>
+
+<!-- Diff Toolbar -->
+<div class="diff-toolbar" id="diff-toolbar">
+  <span class="diff-toolbar-label">DIFF MODE</span>
+  <button class="diff-toolbar-btn" id="diff-prev">← Prev</button>
+  <span id="diff-count">0 differences</span>
+  <button class="diff-toolbar-btn" id="diff-next">Next →</button>
+  <button class="diff-toolbar-btn" id="diff-exit">Exit Diff</button>
+</div>
+
+<!-- Onboarding Tutorial -->
+<div class="onboarding" id="onboarding">
+  <div class="onboard-card">
+    <div class="onboard-header">
+      <div class="onboard-logo">★</div>
+      <div class="onboard-title">COMPARISON READER</div>
+      <div class="onboard-subtitle">Compare prompts & responses across multiple sources</div>
+    </div>
+    <div class="onboard-steps">
+      <div class="onboard-step">
+        <div class="onboard-num">1</div>
+        <div class="onboard-text">
+          <h4>Load Your Data</h4>
+          <p>Drop JSON files into the Cases panel, or use the pre-loaded sample data to explore.</p>
+        </div>
+      </div>
+      <div class="onboard-step">
+        <div class="onboard-num">2</div>
+        <div class="onboard-text">
+          <h4>Select a Case</h4>
+          <p>Click any case to see its prompt and all witness responses side-by-side in columns.</p>
+        </div>
+      </div>
+      <div class="onboard-step">
+        <div class="onboard-num">3</div>
+        <div class="onboard-text">
+          <h4>Add More Panels</h4>
+          <p>Tap the <b>+</b> button to add cases, witnesses, or paste your own text to compare.</p>
+        </div>
+      </div>
+      <div class="onboard-step">
+        <div class="onboard-num">4</div>
+        <div class="onboard-text">
+          <h4>Copy & Export</h4>
+          <p>Double-tap any panel to copy. Long-press on mobile. Use toolbar buttons to export.</p>
+        </div>
+      </div>
+    </div>
+    <div class="onboard-footer">
+      <label class="onboard-check">
+        <input type="checkbox" id="onboard-remember"> Don't show again
+      </label>
+      <button class="onboard-start" id="onboard-start">GET STARTED →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Help Panel -->
+<div class="help-panel" id="help-panel">
+  <div class="help-header">
+    <span class="help-title">★ HELP & SHORTCUTS</span>
+    <button class="help-close" id="help-close">&times;</button>
+  </div>
+  <div class="help-content">
+    <div class="help-section">
+      <div class="help-section-title">Getting Started</div>
+      <div class="help-item">
+        <strong>Load Data</strong>
+        <p>Drop JSON files into the Cases panel or click the drop zone to browse files.</p>
+      </div>
+      <div class="help-item">
+        <strong>Select a Case</strong>
+        <p>Click any case card to view its prompt and all witness responses in side-by-side columns.</p>
+      </div>
+      <div class="help-item">
+        <strong>Add Panels</strong>
+        <p>Click the + button to add more cases, witnesses from a source, or paste custom text.</p>
+      </div>
+    </div>
+    <div class="help-section">
+      <div class="help-section-title">Keyboard Shortcuts</div>
+      <div class="help-shortcut"><span>Copy selected</span><kbd>C</kbd></div>
+      <div class="help-shortcut"><span>Toggle help</span><kbd>H</kbd></div>
+      <div class="help-shortcut"><span>Search</span><kbd>⌘/Ctrl + F</kbd></div>
+      <div class="help-shortcut"><span>Scroll panels</span><kbd>← →</kbd></div>
+      <div class="help-shortcut"><span>Close modal</span><kbd>Esc</kbd></div>
+    </div>
+    <div class="help-section">
+      <div class="help-section-title">Mobile Gestures</div>
+      <div class="help-item">
+        <strong>Swipe</strong>
+        <p>Swipe left/right to navigate between panels.</p>
+      </div>
+      <div class="help-item">
+        <strong>Long Press</strong>
+        <p>Hold on any panel to copy its contents to clipboard.</p>
+      </div>
+      <div class="help-item">
+        <strong>Double Tap</strong>
+        <p>Double-tap a panel to quickly copy it.</p>
+      </div>
+    </div>
+    <div class="help-section">
+      <div class="help-section-title">Tips</div>
+      <div class="help-item">
+        <strong>Collapse Panels</strong>
+        <p>Click the collapse button or the vertical tab to minimize panels you don't need.</p>
+      </div>
+      <div class="help-item">
+        <strong>Search</strong>
+        <p>Use the search bar to find text across all panels. Click results to jump to matches.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile Bottom Bar -->
+<div class="mobile-bar" id="mobile-bar">
+  <button class="mobile-bar-btn" id="mob-add">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+    Add
+  </button>
+  <button class="mobile-bar-btn" id="mob-search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    Search
+  </button>
+  <button class="mobile-bar-btn" id="mob-help">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/></svg>
+    Help
+  </button>
+  <button class="mobile-bar-btn" id="mob-copy">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+    Copy
+  </button>
+</div>
+
 <script>
 const $=s=>document.querySelector(s);
 const $$=s=>document.querySelectorAll(s);
@@ -522,11 +929,470 @@ function formatWithLines(text,type){
   lines.forEach((line,i)=>{
     const num=i+1;
     const escaped=esc(line)||'&nbsp;';
-    html+=`<div class="text-line" data-line="${num}"><span class="line-num">${num}</span><span class="line-text">${escaped}</span></div>`;
+    html+=`<div class="text-line" data-line="${num}"><span class="line-select"></span><span class="line-num">${num}</span><span class="line-text">${escaped}</span></div>`;
   });
   html+='</div>';
   return html;
 }
+
+// Multi-select state
+const selection={lines:[],lastClick:null};
+
+function updateSelectionToolbar(){
+  const toolbar=$('#selection-toolbar');
+  const count=$('#selection-count');
+  if(selection.lines.length>0){
+    toolbar.classList.add('visible');
+    count.textContent=`${selection.lines.length} line${selection.lines.length>1?'s':''}`;
+  }else{
+    toolbar.classList.remove('visible');
+  }
+}
+
+function getSelectedText(){
+  return selection.lines.map(l=>l.querySelector('.line-text')?.textContent||'').join('\n');
+}
+
+function clearSelection(){
+  selection.lines.forEach(l=>l.classList.remove('selected'));
+  selection.lines=[];
+  selection.lastClick=null;
+  updateSelectionToolbar();
+}
+
+function toggleLineSelection(line,e){
+  if(e?.shiftKey&&selection.lastClick){
+    // Range selection
+    const allLines=[...document.querySelectorAll('.text-line')];
+    const start=allLines.indexOf(selection.lastClick);
+    const end=allLines.indexOf(line);
+    const [from,to]=[Math.min(start,end),Math.max(start,end)];
+    for(let i=from;i<=to;i++){
+      if(!selection.lines.includes(allLines[i])){
+        selection.lines.push(allLines[i]);
+        allLines[i].classList.add('selected');
+      }
+    }
+  }else{
+    if(selection.lines.includes(line)){
+      selection.lines=selection.lines.filter(l=>l!==line);
+      line.classList.remove('selected');
+    }else{
+      selection.lines.push(line);
+      line.classList.add('selected');
+    }
+  }
+  selection.lastClick=line;
+  updateSelectionToolbar();
+}
+
+// Selection toolbar handlers
+$('#sel-copy')?.addEventListener('click',()=>{
+  const text=getSelectedText();
+  if(text){
+    copyText(text);
+    toast(`Copied ${selection.lines.length} lines!`,'success');
+  }
+});
+
+$('#sel-clear')?.addEventListener('click',clearSelection);
+
+$('#sel-all')?.addEventListener('click',()=>{
+  const activeColumn=document.querySelector('.column:not(.collapsed):not([data-type="cases"]):not(.control-panel)');
+  if(activeColumn){
+    const lines=activeColumn.querySelectorAll('.text-line');
+    lines.forEach(l=>{
+      if(!selection.lines.includes(l)){
+        selection.lines.push(l);
+        l.classList.add('selected');
+      }
+    });
+    updateSelectionToolbar();
+  }
+});
+
+// ============ CONTEXT MENU ============
+const contextMenu=$('#context-menu');
+let contextTarget=null;
+let contextColumn=null;
+
+function showContextMenu(x,y,target){
+  contextTarget=target;
+  contextColumn=target?.closest('.column');
+  
+  // Position menu
+  const menuWidth=200;
+  const menuHeight=280;
+  const posX=Math.min(x,window.innerWidth-menuWidth-10);
+  const posY=Math.min(y,window.innerHeight-menuHeight-10);
+  
+  contextMenu.style.left=posX+'px';
+  contextMenu.style.top=posY+'px';
+  contextMenu.classList.add('open');
+}
+
+function hideContextMenu(){
+  contextMenu.classList.remove('open');
+  contextTarget=null;
+  contextColumn=null;
+}
+
+// Right-click handler
+document.addEventListener('contextmenu',e=>{
+  const line=e.target.closest('.text-line');
+  const unit=e.target.closest('.unit');
+  const column=e.target.closest('.column');
+  
+  if(line||unit){
+    e.preventDefault();
+    showContextMenu(e.clientX,e.clientY,line||unit);
+  }
+});
+
+// Long press for mobile
+let longPressTimer;
+let longPressTarget;
+document.addEventListener('touchstart',e=>{
+  const line=e.target.closest('.text-line');
+  const unit=e.target.closest('.unit');
+  if(line||unit){
+    longPressTarget=line||unit;
+    longPressTimer=setTimeout(()=>{
+      const touch=e.touches[0];
+      showContextMenu(touch.clientX,touch.clientY,longPressTarget);
+    },500);
+  }
+},{passive:true});
+document.addEventListener('touchend',()=>{clearTimeout(longPressTimer);},{passive:true});
+document.addEventListener('touchmove',()=>{clearTimeout(longPressTimer);},{passive:true});
+
+// Close menu on click outside
+document.addEventListener('click',e=>{
+  if(!contextMenu.contains(e.target)){
+    hideContextMenu();
+  }
+});
+
+// Context menu actions
+$('#ctx-copy')?.addEventListener('click',()=>{
+  const text=selection.lines.length>0?getSelectedText():
+    (contextTarget?.querySelector('.line-text')?.textContent||
+     decodeURIComponent(contextTarget?.closest('.unit')?.dataset.text||''));
+  if(text){copyText(text);toast('Copied!','success');}
+  hideContextMenu();
+});
+
+$('#ctx-branch')?.addEventListener('click',()=>{
+  const text=selection.lines.length>0?getSelectedText():
+    (contextTarget?.querySelector('.line-text')?.textContent||'');
+  if(text){
+    createBranchPanel(text);
+  }
+  hideContextMenu();
+});
+
+$('#ctx-prompt')?.addEventListener('click',()=>{
+  const text=selection.lines.length>0?getSelectedText():
+    (contextTarget?.querySelector('.line-text')?.textContent||
+     decodeURIComponent(contextTarget?.closest('.unit')?.dataset.text||''));
+  if(text){
+    createPromptPanel(text);
+  }
+  hideContextMenu();
+});
+
+$('#ctx-diff')?.addEventListener('click',()=>{
+  if(contextColumn){
+    startDiffSelection(contextColumn);
+  }
+  hideContextMenu();
+});
+
+$('#ctx-highlight')?.addEventListener('click',()=>{
+  // Auto-diff with next panel
+  if(contextColumn){
+    const nextCol=contextColumn.nextElementSibling;
+    if(nextCol&&nextCol.classList.contains('column')&&!nextCol.classList.contains('control-panel')){
+      runDiff(contextColumn,nextCol);
+    }else{
+      toast('Need adjacent panel to compare','error');
+    }
+  }
+  hideContextMenu();
+});
+
+// ============ BRANCH & PROMPT PANELS ============
+function createBranchPanel(sourceText){
+  const colorIdx=(state.colIndex%6)+1;
+  const col=document.createElement('div');
+  col.className='column prompt-panel new';
+  col.dataset.type='branch';
+  
+  col.innerHTML=`
+    <div class="column-tab"><div class="column-tab-dot"></div>BRANCH</div>
+    <div class="column-header">
+      <div class="column-info">
+        <div class="column-dot"></div>
+        <div><div class="column-title">★ BRANCH</div></div>
+      </div>
+      <div class="column-actions">
+        <button class="col-btn close" title="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="column-content">
+      <div class="prompt-context">
+        <div class="prompt-context-label">Branching from:</div>
+        <div class="prompt-context-text">${esc(sourceText.slice(0,200))}${sourceText.length>200?'...':''}</div>
+      </div>
+      <textarea class="prompt-input" placeholder="Continue, modify, or expand on this text..."></textarea>
+      <div class="prompt-actions">
+        <button class="prompt-btn secondary branch-copy">Copy All</button>
+        <button class="prompt-btn branch-create">Create Panel →</button>
+      </div>
+    </div>
+  `;
+  
+  $('#scroll').appendChild(col);
+  
+  // Bind actions
+  col.querySelector('.col-btn.close').onclick=()=>{
+    col.classList.add('removing');
+    setTimeout(()=>{col.remove();updatePanelCount();},250);
+  };
+  col.querySelector('.column-tab').onclick=()=>col.classList.toggle('collapsed');
+  
+  col.querySelector('.branch-copy').onclick=()=>{
+    const combined=sourceText+'\\n\\n'+col.querySelector('.prompt-input').value;
+    copyText(combined);
+    toast('Copied combined text!','success');
+  };
+  
+  col.querySelector('.branch-create').onclick=()=>{
+    const newText=col.querySelector('.prompt-input').value;
+    if(newText.length<3){toast('Enter some text','error');return;}
+    const combined=sourceText+'\\n\\n---\\n\\n'+newText;
+    addColumn('witness','BRANCHED',`${combined.split('\\n').length} lines`,`
+      <div class="unit" data-text="${encodeURIComponent(combined)}">
+        <button class="copy-btn">COPY</button>
+        <div class="unit-header">
+          <div class="unit-id">BRANCHED</div>
+          <div class="unit-badge">${combined.split('\\n').length} lines</div>
+        </div>
+        ${formatWithLines(combined,'witness')}
+      </div>
+    `,colorIdx);
+    bindLastPanelCopy();
+    col.remove();
+    updatePanelCount();
+    toast('Branch created!','success');
+  };
+  
+  updatePanelCount();
+  setTimeout(()=>{
+    col.classList.remove('new');
+    col.querySelector('.prompt-input').focus();
+    $('#scroll').scrollLeft=$('#scroll').scrollWidth;
+  },50);
+}
+
+function createPromptPanel(contextText){
+  const colorIdx=(state.colIndex%6)+1;
+  const col=document.createElement('div');
+  col.className='column prompt-panel new';
+  col.dataset.type='prompt-gen';
+  
+  col.innerHTML=`
+    <div class="column-tab"><div class="column-tab-dot"></div>PROMPT</div>
+    <div class="column-header">
+      <div class="column-info">
+        <div class="column-dot"></div>
+        <div><div class="column-title">★ NEW PROMPT</div></div>
+      </div>
+      <div class="column-actions">
+        <button class="col-btn close" title="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="column-content">
+      <div class="prompt-context">
+        <div class="prompt-context-label">Context:</div>
+        <div class="prompt-context-text">${esc(contextText.slice(0,200))}${contextText.length>200?'...':''}</div>
+      </div>
+      <textarea class="prompt-input" placeholder="Write your prompt here... The context above will be included."></textarea>
+      <div class="prompt-actions">
+        <button class="prompt-btn secondary prompt-copy">Copy Prompt</button>
+        <button class="prompt-btn prompt-generate">Generate → Panel</button>
+      </div>
+      <div style="margin-top:12px;padding:12px;background:var(--bg);border-radius:6px;font-size:9px;color:var(--muted)">
+        <strong>Note:</strong> This creates a placeholder panel. In a full system, this would send to an AI API.
+      </div>
+    </div>
+  `;
+  
+  $('#scroll').appendChild(col);
+  
+  // Bind actions
+  col.querySelector('.col-btn.close').onclick=()=>{
+    col.classList.add('removing');
+    setTimeout(()=>{col.remove();updatePanelCount();},250);
+  };
+  col.querySelector('.column-tab').onclick=()=>col.classList.toggle('collapsed');
+  
+  col.querySelector('.prompt-copy').onclick=()=>{
+    const prompt='CONTEXT:\\n'+contextText+'\\n\\nPROMPT:\\n'+col.querySelector('.prompt-input').value;
+    copyText(prompt);
+    toast('Prompt copied!','success');
+  };
+  
+  col.querySelector('.prompt-generate').onclick=()=>{
+    const promptText=col.querySelector('.prompt-input').value;
+    if(promptText.length<3){toast('Enter a prompt','error');return;}
+    
+    // Create response panel (placeholder - in real system this would call API)
+    const response='[Generated response would appear here]\\n\\nBased on context and prompt:\\n\\n'+promptText.slice(0,100)+'...\\n\\n(In a production system, this would connect to an AI API like Claude, GPT, etc.)';
+    
+    addColumn('witness','RESPONSE',`Generated`,`
+      <div class="unit" data-text="${encodeURIComponent(response)}">
+        <button class="copy-btn">COPY</button>
+        <div class="unit-header">
+          <div class="unit-id">GENERATED</div>
+          <div class="unit-badge">${response.split('\\n').length} lines</div>
+        </div>
+        ${formatWithLines(response,'witness')}
+      </div>
+    `,colorIdx);
+    bindLastPanelCopy();
+    toast('Response panel created!','success');
+  };
+  
+  updatePanelCount();
+  setTimeout(()=>{
+    col.classList.remove('new');
+    col.querySelector('.prompt-input').focus();
+    $('#scroll').scrollLeft=$('#scroll').scrollWidth;
+  },50);
+}
+
+// ============ DIFF MODE ============
+let diffState={active:false,source:null,target:null,diffs:[],currentIdx:0};
+
+function startDiffSelection(sourceCol){
+  toast('Click another panel to compare','');
+  diffState.source=sourceCol;
+  sourceCol.classList.add('diff-source');
+  
+  // One-time click handler for target selection
+  const handler=e=>{
+    const targetCol=e.target.closest('.column');
+    if(targetCol&&targetCol!==sourceCol&&!targetCol.classList.contains('control-panel')&&targetCol.dataset.type!=='cases'){
+      runDiff(sourceCol,targetCol);
+    }
+    document.removeEventListener('click',handler);
+    sourceCol.classList.remove('diff-source');
+  };
+  setTimeout(()=>document.addEventListener('click',handler),100);
+}
+
+function runDiff(sourceCol,targetCol){
+  diffState.active=true;
+  diffState.source=sourceCol;
+  diffState.target=targetCol;
+  diffState.diffs=[];
+  diffState.currentIdx=0;
+  
+  sourceCol.classList.add('diff-source');
+  targetCol.classList.add('diff-target');
+  
+  // Get text from both panels
+  const sourceLines=[...sourceCol.querySelectorAll('.text-line')].map(l=>l.querySelector('.line-text')?.textContent||'');
+  const targetLines=[...targetCol.querySelectorAll('.text-line')].map(l=>l.querySelector('.line-text')?.textContent||'');
+  
+  // Simple line-by-line diff
+  const maxLen=Math.max(sourceLines.length,targetLines.length);
+  const sourceDom=sourceCol.querySelectorAll('.text-line');
+  const targetDom=targetCol.querySelectorAll('.text-line');
+  
+  for(let i=0;i<maxLen;i++){
+    const srcLine=sourceLines[i]||'';
+    const tgtLine=targetLines[i]||'';
+    
+    if(i>=sourceLines.length){
+      // Added in target
+      if(targetDom[i]){
+        targetDom[i].classList.add('diff-added');
+        diffState.diffs.push({type:'added',line:targetDom[i]});
+      }
+    }else if(i>=targetLines.length){
+      // Removed from source
+      if(sourceDom[i]){
+        sourceDom[i].classList.add('diff-removed');
+        diffState.diffs.push({type:'removed',line:sourceDom[i]});
+      }
+    }else if(srcLine!==tgtLine){
+      // Changed
+      if(sourceDom[i])sourceDom[i].classList.add('diff-changed');
+      if(targetDom[i])targetDom[i].classList.add('diff-changed');
+      diffState.diffs.push({type:'changed',source:sourceDom[i],target:targetDom[i]});
+    }
+  }
+  
+  // Show diff toolbar
+  $('#diff-toolbar').classList.add('visible');
+  $('#diff-count').textContent=`${diffState.diffs.length} difference${diffState.diffs.length!==1?'s':''}`;
+  
+  if(diffState.diffs.length>0){
+    scrollToDiff(0);
+  }else{
+    toast('No differences found!','success');
+  }
+}
+
+function scrollToDiff(idx){
+  if(idx<0||idx>=diffState.diffs.length)return;
+  diffState.currentIdx=idx;
+  
+  const diff=diffState.diffs[idx];
+  const line=diff.line||diff.target||diff.source;
+  if(line){
+    line.scrollIntoView({behavior:'smooth',block:'center'});
+    // Flash highlight
+    line.style.transition='background .2s';
+    line.style.background='rgba(212,168,83,.4)';
+    setTimeout(()=>{line.style.background='';},500);
+  }
+  
+  $('#diff-count').textContent=`${idx+1}/${diffState.diffs.length} differences`;
+}
+
+function exitDiff(){
+  diffState.active=false;
+  diffState.source?.classList.remove('diff-source');
+  diffState.target?.classList.remove('diff-target');
+  
+  // Clear all diff highlights
+  document.querySelectorAll('.diff-added,.diff-removed,.diff-changed').forEach(el=>{
+    el.classList.remove('diff-added','diff-removed','diff-changed');
+  });
+  
+  $('#diff-toolbar').classList.remove('visible');
+  diffState={active:false,source:null,target:null,diffs:[],currentIdx:0};
+}
+
+$('#diff-prev')?.addEventListener('click',()=>scrollToDiff(diffState.currentIdx-1));
+$('#diff-next')?.addEventListener('click',()=>scrollToDiff(diffState.currentIdx+1));
+$('#diff-exit')?.addEventListener('click',exitDiff);
+
+// Keyboard navigation for diff
+document.addEventListener('keydown',e=>{
+  if(diffState.active){
+    if(e.key==='ArrowUp'||e.key==='k'){scrollToDiff(diffState.currentIdx-1);e.preventDefault();}
+    if(e.key==='ArrowDown'||e.key==='j'){scrollToDiff(diffState.currentIdx+1);e.preventDefault();}
+    if(e.key==='Escape'){exitDiff();}
+  }
+});
 
 function selectCase(id){
   state.activeCase=id;
@@ -580,14 +1446,30 @@ function selectCase(id){
     u.ondblclick=()=>{const txt=decodeURIComponent(u.dataset.text||'');copyText(txt);};
   });
   
-  // Line click handlers
+  // Line click handlers with multi-select
   document.querySelectorAll('.text-line').forEach(line=>{
+    const checkbox=line.querySelector('.line-select');
+    if(checkbox){
+      checkbox.onclick=e=>{
+        e.stopPropagation();
+        toggleLineSelection(line,e);
+      };
+    }
     line.onclick=e=>{
       e.stopPropagation();
-      document.querySelectorAll('.text-line.highlight').forEach(l=>l.classList.remove('highlight'));
-      line.classList.add('highlight');
+      // If clicking the checkbox area, toggle selection
+      if(e.target.classList.contains('line-select')){
+        toggleLineSelection(line,e);
+      }else{
+        // Highlight for reading
+        document.querySelectorAll('.text-line.highlight').forEach(l=>l.classList.remove('highlight'));
+        line.classList.add('highlight');
+      }
     };
   });
+  
+  // Clear selection when switching cases
+  clearSelection();
 }
 
 function addColumn(type,title,subtitle,content,colorIdx=0,sourceData=null){
@@ -767,6 +1649,15 @@ async function autoLoad(){
     }catch(e){}
   }
   build();renderStats();renderCases();
+  
+  // Auto-select first case to get users started immediately
+  setTimeout(()=>{
+    const firstCase=[...state.cases.keys()][0];
+    if(firstCase){
+      selectCase(firstCase);
+      toast('First case loaded - explore!','success');
+    }
+  },500);
 }
 
 // Events
@@ -787,38 +1678,393 @@ $('#files').onchange=async e=>{
 $('#collapse-all').onclick=()=>document.querySelectorAll('.column').forEach(c=>c.classList.add('collapsed'));
 $('#expand-all').onclick=()=>document.querySelectorAll('.column').forEach(c=>c.classList.remove('collapsed'));
 
-// Add panel modal
-$('#add-panel').onclick=()=>openAddModal();
+// Add panel - now creates inline control panel column
+$('#add-panel').onclick=()=>toggleControlPanel();
 $('#modal-close').onclick=()=>closeAddModal();
 $('#modal-cancel').onclick=()=>closeAddModal();
 $('#add-modal').onclick=e=>{if(e.target===$('#add-modal'))closeAddModal();};
 
+// Control Panel as Column (WYSIWYG approach)
+function toggleControlPanel(){
+  // Check if control panel already exists
+  const existing=document.querySelector('.column.control-panel');
+  if(existing){
+    existing.remove();
+    updatePanelCount();
+    return;
+  }
+  createControlPanel();
+}
+
+function createControlPanel(){
+  const col=document.createElement('div');
+  col.className='column control-panel new';
+  col.dataset.type='control';
+  
+  col.innerHTML=`
+    <div class="column-tab"><div class="column-tab-dot"></div>+ ADD</div>
+    <div class="column-header">
+      <div class="column-info">
+        <div class="column-dot"></div>
+        <div><div class="column-title">★ ADD PANEL</div></div>
+      </div>
+      <div class="column-actions">
+        <button class="col-btn close" title="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="control-tabs">
+      <button class="control-tab active" data-tab="cases">Cases</button>
+      <button class="control-tab" data-tab="sources">Sources</button>
+      <button class="control-tab" data-tab="paste">Paste</button>
+    </div>
+    <div class="column-content" style="padding:0">
+      <div class="control-content active" id="ctrl-cases">
+        <div class="control-search"><input type="text" placeholder="Search cases..." id="ctrl-search-cases"></div>
+        <div class="control-list" id="ctrl-case-list"></div>
+      </div>
+      <div class="control-content" id="ctrl-sources">
+        <div class="control-search"><input type="text" placeholder="Search sources..." id="ctrl-search-sources"></div>
+        <div class="control-list" id="ctrl-source-list"></div>
+      </div>
+      <div class="control-content" id="ctrl-paste">
+        <div class="control-paste">
+          <textarea id="ctrl-paste-text" placeholder="Paste or type text to compare..."></textarea>
+          <input type="text" id="ctrl-paste-title" placeholder="Panel title (optional)">
+          <button class="control-item-btn" id="ctrl-paste-add">+ Add as Panel</button>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  // Insert after cases column
+  const scroll=$('#scroll');
+  const casesCol=scroll.querySelector('[data-type="cases"]');
+  if(casesCol&&casesCol.nextSibling){
+    scroll.insertBefore(col,casesCol.nextSibling);
+  }else{
+    scroll.appendChild(col);
+  }
+  
+  // Bind close
+  col.querySelector('.col-btn.close').onclick=()=>{
+    col.classList.add('removing');
+    setTimeout(()=>{col.remove();updatePanelCount();},250);
+  };
+  col.querySelector('.column-tab').onclick=()=>col.classList.toggle('collapsed');
+  
+  // Tab switching
+  col.querySelectorAll('.control-tab').forEach(tab=>{
+    tab.onclick=()=>{
+      col.querySelectorAll('.control-tab').forEach(t=>t.classList.remove('active'));
+      tab.classList.add('active');
+      col.querySelectorAll('.control-content').forEach(c=>c.classList.remove('active'));
+      col.querySelector(`#ctrl-${tab.dataset.tab}`).classList.add('active');
+    };
+  });
+  
+  // Populate cases
+  populateControlCases(col);
+  populateControlSources(col);
+  
+  // Search handlers
+  col.querySelector('#ctrl-search-cases').oninput=e=>{
+    const q=e.target.value.toLowerCase();
+    col.querySelectorAll('#ctrl-case-list .control-item').forEach(item=>{
+      item.style.display=item.textContent.toLowerCase().includes(q)?'block':'none';
+    });
+  };
+  col.querySelector('#ctrl-search-sources').oninput=e=>{
+    const q=e.target.value.toLowerCase();
+    col.querySelectorAll('#ctrl-source-list .control-item').forEach(item=>{
+      item.style.display=item.textContent.toLowerCase().includes(q)?'block':'none';
+    });
+  };
+  
+  // Paste handler
+  col.querySelector('#ctrl-paste-add').onclick=()=>{
+    const text=col.querySelector('#ctrl-paste-text').value;
+    const title=col.querySelector('#ctrl-paste-title').value||'Pasted';
+    if(text.length<5){toast('Enter some text','error');return;}
+    const colorIdx=(state.colIndex%6)+1;
+    addColumn('witness',title,`${text.split('\\n').length} lines`,`
+      <div class="unit" data-text="${encodeURIComponent(text)}">
+        <button class="copy-btn">COPY</button>
+        <div class="unit-header">
+          <div class="unit-id">PASTED</div>
+          <div class="unit-badge">${text.split('\\n').length} lines</div>
+        </div>
+        ${formatWithLines(text,'witness')}
+      </div>
+    `,colorIdx);
+    bindLastPanelCopy();
+    col.querySelector('#ctrl-paste-text').value='';
+    col.querySelector('#ctrl-paste-title').value='';
+    toast('Panel added!','success');
+  };
+  
+  updatePanelCount();
+  setTimeout(()=>col.classList.remove('new'),50);
+}
+
+function populateControlCases(col){
+  let html='';
+  let i=0;
+  for(const[k,c]of state.cases){
+    i++;
+    const title=c.prompt.split('\\n').find(l=>l.trim())||'Untitled';
+    html+=`<div class="control-item" data-case="${k}">
+      <div class="control-item-title">${esc(title.slice(0,50))}</div>
+      <div class="control-item-meta">${c.witnesses.length} witness${c.witnesses.length>1?'es':''}</div>
+      <button class="control-item-btn">+ Add Case</button>
+    </div>`;
+  }
+  col.querySelector('#ctrl-case-list').innerHTML=html||'<div style="color:var(--muted);padding:16px;text-align:center">No cases loaded</div>';
+  
+  col.querySelectorAll('#ctrl-case-list .control-item-btn').forEach(btn=>{
+    btn.onclick=e=>{
+      e.stopPropagation();
+      const item=btn.closest('.control-item');
+      const caseId=item.dataset.case;
+      const c=state.cases.get(caseId);
+      if(!c)return;
+      selectCase(caseId);
+      toast('Case loaded!','success');
+    };
+  });
+}
+
+function populateControlSources(col){
+  const sourceCounts=new Map();
+  const sourceWitnesses=new Map();
+  for(const[k,c]of state.cases){
+    c.witnesses.forEach(w=>{
+      sourceCounts.set(w.source,(sourceCounts.get(w.source)||0)+1);
+      if(!sourceWitnesses.has(w.source))sourceWitnesses.set(w.source,[]);
+      sourceWitnesses.get(w.source).push({caseId:k,witness:w,caseTitle:c.prompt.split('\\n')[0]?.slice(0,40)||'Untitled'});
+    });
+  }
+  
+  let html='';
+  for(const[source,count]of sourceCounts){
+    html+=`<div class="control-item" data-source="${esc(source)}">
+      <div class="control-item-title">${esc(source)}</div>
+      <div class="control-item-meta">${count} witnesses</div>
+      <div class="control-witnesses" style="display:none;margin-top:8px;border-top:1px solid var(--border);padding-top:8px"></div>
+    </div>`;
+  }
+  col.querySelector('#ctrl-source-list').innerHTML=html||'<div style="color:var(--muted);padding:16px">No sources</div>';
+  
+  // Click to expand witnesses
+  col.querySelectorAll('#ctrl-source-list .control-item').forEach(item=>{
+    item.onclick=()=>{
+      const witnessDiv=item.querySelector('.control-witnesses');
+      if(witnessDiv.style.display==='none'){
+        const source=item.dataset.source;
+        const witnesses=sourceWitnesses.get(source)||[];
+        witnessDiv.innerHTML=witnesses.map((w,i)=>`
+          <div style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+            <div style="flex:1;min-width:0">
+              <div style="font-size:10px;color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(w.caseTitle)}</div>
+              <div style="font-size:9px;color:var(--muted)">${w.witness.text.split('\\n').length} lines</div>
+            </div>
+            <button class="control-item-btn" style="width:auto;margin:0;padding:6px 10px" data-idx="${i}">+ Add</button>
+          </div>
+        `).join('');
+        witnessDiv.style.display='block';
+        
+        // Bind add buttons
+        witnessDiv.querySelectorAll('button').forEach((btn,idx)=>{
+          btn.onclick=e=>{
+            e.stopPropagation();
+            const w=witnesses[idx];
+            const colorIdx=(state.colIndex%6)+1;
+            addColumn('witness',w.witness.source,`From: ${w.caseTitle.slice(0,30)}`,`
+              <div class="unit" data-text="${encodeURIComponent(w.witness.text)}">
+                <button class="copy-btn">COPY</button>
+                <div class="unit-header">
+                  <div class="unit-id">SOURCE: ${esc(w.witness.fname)}</div>
+                  <div class="unit-badge">${w.witness.text.split('\\n').length} lines</div>
+                </div>
+                ${formatWithLines(w.witness.text,'witness')}
+              </div>
+            `,colorIdx);
+            bindLastPanelCopy();
+            toast('Witness added!','success');
+          };
+        });
+      }else{
+        witnessDiv.style.display='none';
+      }
+    };
+  });
+}
+
+let modalState={tab:'cases',selectedCase:null,selectedWitness:null,pasteText:''};
+
+// Tab switching
+$$('.modal-tab').forEach(tab=>{
+  tab.onclick=()=>{
+    $$('.modal-tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    modalState.tab=tab.dataset.tab;
+    $$('.modal-tab-content').forEach(c=>c.style.display='none');
+    $(`#tab-${tab.dataset.tab}`).style.display='block';
+    updateModalFooter();
+  };
+});
+
+// Modal search
+$('#modal-search').oninput=e=>{
+  const q=e.target.value.toLowerCase();
+  filterModalItems(q);
+};
+
+function filterModalItems(q){
+  if(modalState.tab==='cases'){
+    $$('#case-list .witness-item').forEach(item=>{
+      const text=item.textContent.toLowerCase();
+      item.style.display=text.includes(q)?'flex':'none';
+    });
+  }else if(modalState.tab==='witnesses'){
+    $$('#witness-list .witness-item').forEach(item=>{
+      const text=item.textContent.toLowerCase();
+      item.style.display=text.includes(q)?'flex':'none';
+    });
+  }
+}
+
+function updateModalFooter(){
+  const info=$('#modal-info');
+  const addBtn=$('#modal-add');
+  if(modalState.tab==='paste'){
+    const text=$('#paste-text')?.value||'';
+    if(text.length>10){
+      info.textContent=`${text.split('\\n').length} lines ready`;
+      addBtn.style.display='block';
+    }else{
+      info.textContent='Enter text to add as panel';
+      addBtn.style.display='none';
+    }
+  }else{
+    info.textContent=`${state.cases.size} cases • ${state.sources.length} sources`;
+    addBtn.style.display='none';
+  }
+}
+
+// Paste tab handlers
+$('#paste-text')?.addEventListener('input',updateModalFooter);
+$('#modal-add')?.addEventListener('click',()=>{
+  const text=$('#paste-text')?.value||'';
+  const title=$('#paste-title')?.value||'Pasted Text';
+  if(text.length<5){toast('Enter some text first','error');return;}
+  const colorIdx=(state.colIndex%6)+1;
+  addColumn('witness',title,`${text.split('\\n').length} lines`,`
+    <div class="unit" data-text="${encodeURIComponent(text)}">
+      <button class="copy-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>COPY</button>
+      <div class="unit-header">
+        <div class="unit-id">PASTED</div>
+        <div class="unit-badge">${text.split('\\n').length} lines</div>
+      </div>
+      ${formatWithLines(text,'witness')}
+    </div>
+  `,colorIdx);
+  bindLastPanelCopy();
+  closeAddModal();
+  toast('Panel added!','success');
+});
+
+function bindLastPanelCopy(){
+  const newUnit=document.querySelector('.column:last-child .unit');
+  if(newUnit){
+    const copyBtn=newUnit.querySelector('.copy-btn');
+    if(copyBtn){
+      copyBtn.onclick=e=>{
+        e.stopPropagation();
+        copyWithFeedback(decodeURIComponent(newUnit.dataset.text||''),copyBtn);
+      };
+    }
+  }
+}
+
 function openAddModal(){
-  if(state.cases.size===0){toast('No cases loaded','error');return;}
+  // Reset state
+  modalState={tab:'cases',selectedCase:null,selectedWitness:null};
+  $$('.modal-tab').forEach(t=>t.classList.remove('active'));
+  $('.modal-tab[data-tab="cases"]').classList.add('active');
+  $$('.modal-tab-content').forEach(c=>c.style.display='none');
+  $('#tab-cases').style.display='block';
+  $('#modal-search').value='';
+  $('#paste-text').value='';
+  $('#paste-title').value='';
+  
+  // Build cases list
+  let caseHtml='';
+  let i=0;
+  for(const[k,c]of state.cases){
+    i++;
+    const title=c.prompt.split('\\n').find(l=>l.trim())||'Untitled';
+    caseHtml+=`<div class="witness-item" data-case="${k}">
+      <div class="witness-item-info">
+        <div class="witness-item-title">${esc(title.slice(0,60))}</div>
+        <div class="witness-item-meta">${c.witnesses.length} witness${c.witnesses.length>1?'es':''}</div>
+      </div>
+      <button class="witness-item-add">+ ADD</button>
+    </div>`;
+  }
+  $('#case-list').innerHTML=caseHtml||'<div style="color:var(--muted);padding:16px;text-align:center">No cases loaded</div>';
+  
+  // Bind case add buttons
+  $$('#case-list .witness-item-add').forEach(btn=>{
+    btn.onclick=e=>{
+      e.stopPropagation();
+      const item=btn.closest('.witness-item');
+      const caseId=item.dataset.case;
+      const c=state.cases.get(caseId);
+      if(!c)return;
+      const colorIdx=(state.colIndex%6)+1;
+      addColumn('prompt','CASE',c.id,`
+        <div class="unit" data-text="${encodeURIComponent(c.prompt)}">
+          <button class="copy-btn">COPY</button>
+          <div class="unit-header"><div class="unit-id">CASE ${c.id}</div></div>
+          ${formatWithLines(c.prompt,'prompt')}
+        </div>
+      `,colorIdx);
+      bindLastPanelCopy();
+      closeAddModal();
+      toast('Case added!','success');
+    };
+  });
   
   // Build source grid
-  let html='';
+  let sourceHtml='';
   const sourceCounts=new Map();
   for(const[k,c]of state.cases){
     c.witnesses.forEach(w=>{
       sourceCounts.set(w.source,(sourceCounts.get(w.source)||0)+1);
     });
   }
-  
   for(const[source,count]of sourceCounts){
-    html+=`<button class="source-btn" data-source="${esc(source)}">
+    sourceHtml+=`<button class="source-btn" data-source="${esc(source)}">
       <div class="source-btn-name">${esc(source)}</div>
       <div class="source-btn-count">${count} witnesses</div>
+      <div class="source-btn-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></div>
     </button>`;
   }
-  $('#source-grid').innerHTML=html;
+  $('#source-grid').innerHTML=sourceHtml;
   
   // Bind source buttons
   $$('.source-btn').forEach(btn=>{
-    btn.onclick=()=>selectSource(btn.dataset.source);
+    btn.onclick=()=>{
+      $$('.source-btn').forEach(b=>b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectSource(btn.dataset.source);
+    };
   });
   
   $('#witness-section').style.display='none';
+  updateModalFooter();
   $('#add-modal').classList.add('open');
 }
 
@@ -834,7 +2080,7 @@ function selectSource(sourceName){
       if(w.source===sourceName){
         witnesses.push({
           caseId:k,
-          title:c.prompt.split('\n')[0]?.slice(0,60)||'Untitled',
+          title:c.prompt.split('\\n')[0]?.slice(0,60)||'Untitled',
           witness:w,
           idx:i
         });
@@ -847,17 +2093,17 @@ function selectSource(sourceName){
     html+=`<div class="witness-item" data-idx="${i}">
       <div class="witness-item-info">
         <div class="witness-item-title">${esc(w.title)}</div>
-        <div class="witness-item-meta">${w.witness.text.split('\n').length} lines</div>
+        <div class="witness-item-meta">${w.witness.text.split('\\n').length} lines • ${esc(w.witness.fname)}</div>
       </div>
       <button class="witness-item-add">+ ADD</button>
     </div>`;
   });
   
-  $('#witness-list').innerHTML=html;
+  $('#witness-list').innerHTML=html||'<div style="color:var(--muted);padding:16px">No witnesses from this source</div>';
   $('#witness-section').style.display='block';
   
   // Bind add buttons
-  $$('.witness-item-add').forEach((btn,i)=>{
+  $$('#witness-list .witness-item-add').forEach((btn,i)=>{
     btn.onclick=e=>{
       e.stopPropagation();
       const w=witnesses[i];
@@ -867,26 +2113,14 @@ function selectSource(sourceName){
           <button class="copy-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>COPY</button>
           <div class="unit-header">
             <div class="unit-id">SOURCE: ${esc(w.witness.fname)}</div>
-            <div class="unit-badge">${w.witness.text.split('\n').length} lines</div>
+            <div class="unit-badge">${w.witness.text.split('\\n').length} lines</div>
           </div>
           ${formatWithLines(w.witness.text,'witness')}
         </div>
       `,colorIdx,{source:w.witness.source,caseId:w.caseId});
-      
-      // Rebind copy button
-      const newUnit=document.querySelector('.column:last-child .unit');
-      if(newUnit){
-        const copyBtn=newUnit.querySelector('.copy-btn');
-        if(copyBtn){
-          copyBtn.onclick=e=>{
-            e.stopPropagation();
-            copyWithFeedback(decodeURIComponent(newUnit.dataset.text||''),copyBtn);
-          };
-        }
-      }
-      
+      bindLastPanelCopy();
       closeAddModal();
-      toast('Panel added!','success');
+      toast('Witness added!','success');
     };
   });
 }
@@ -919,6 +2153,75 @@ document.addEventListener('touchstart',e=>{
 });
 document.addEventListener('touchend',()=>clearTimeout(pressTimer));
 document.addEventListener('touchmove',()=>clearTimeout(pressTimer));
+
+// Onboarding
+const onboarding=$('#onboarding');
+const hasSeenOnboard=localStorage.getItem('compare-onboarded');
+if(hasSeenOnboard){
+  onboarding.classList.add('hidden');
+}
+
+$('#onboard-start').onclick=()=>{
+  if($('#onboard-remember').checked){
+    localStorage.setItem('compare-onboarded','true');
+  }
+  onboarding.classList.add('hidden');
+};
+
+// Help panel
+const helpPanel=$('#help-panel');
+$('#help-close').onclick=()=>helpPanel.classList.remove('open');
+
+function toggleHelp(){
+  helpPanel.classList.toggle('open');
+}
+
+// Mobile bar handlers
+$('#mob-add')?.addEventListener('click',()=>openAddModal());
+$('#mob-search')?.addEventListener('click',()=>{
+  searchInput.focus();
+  searchInput.scrollIntoView({behavior:'smooth'});
+});
+$('#mob-help')?.addEventListener('click',toggleHelp);
+$('#mob-copy')?.addEventListener('click',()=>{
+  if(state.selectedText){
+    copyText(state.selectedText);
+  }else{
+    // Copy first visible panel
+    const firstUnit=document.querySelector('.column:not(.collapsed):not([data-type="cases"]) .unit[data-text]');
+    if(firstUnit){
+      copyText(decodeURIComponent(firstUnit.dataset.text||''));
+    }else{
+      toast('Select a panel first','error');
+    }
+  }
+});
+
+// Update keyboard shortcuts to include help toggle
+const origKeydown=document.onkeydown;
+document.onkeydown=e=>{
+  if(e.key==='h'&&!e.ctrlKey&&!e.metaKey){
+    toggleHelp();
+    e.preventDefault();
+    return;
+  }
+  if(e.key==='Escape'){
+    helpPanel.classList.remove('open');
+  }
+  if(origKeydown)origKeydown(e);
+};
+
+// Add help button to header actions
+const headerActions=document.querySelector('.header-actions');
+if(headerActions){
+  const helpBtn=document.createElement('button');
+  helpBtn.className='icon-btn';
+  helpBtn.id='help-toggle';
+  helpBtn.title='Help';
+  helpBtn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/></svg>';
+  helpBtn.onclick=toggleHelp;
+  headerActions.insertBefore(helpBtn,headerActions.firstChild);
+}
 
 autoLoad();
 updatePanelCount();

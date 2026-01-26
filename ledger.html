@@ -7,37 +7,35 @@
 <link rel="icon" type="image/svg+xml" href="favicon-ledger.svg">
 <style>
 :root{
---bg:#0a0a0a;--bg2:#111;--fg:#c4c4c4;--fg2:#666;--border:#222;
+--bg:#0a0a0a;--bg2:#0f0f0f;--bg3:#151515;--panel:#161616;--fg:#e8e8e8;--fg-dim:#a0a0a0;--fg-muted:#606060;--border:#222;
 --accent:#cc5500;--accent2:#d8a25a;--mark-ledger:#444;--mark-cases:#cc5500;--mark-prompt:#1f4e7a;--mark-witness:#2d5a3d;--mark-compare:#6b3030;
---col-w:340px;--col-collapsed:48px;--unit-hover:#161616;--unit-active:#1a1a1a;
+--col-w:320px;--col-collapsed:36px;--unit-hover:#161616;--unit-active:#1a1a1a;
 --ease:cubic-bezier(.4,0,.2,1);--scanline:rgba(0,0,0,.03)
 }
-[data-theme="phosphor"]{--bg:#050a05;--bg2:#0a120a;--fg:#33ff33;--fg2:#1a801a;--border:#0f1f0f;--accent:#33ff33;--accent2:#66ff66;--mark-cases:#33ff33;--mark-prompt:#22aa22;--mark-witness:#44cc44;--mark-compare:#118811;--unit-hover:#0a150a;--unit-active:#0f1a0f}
-[data-theme="bluesteel"]{--bg:#050508;--bg2:#0a0a10;--fg:#a0c0d0;--fg2:#405060;--border:#151520;--accent:#4080b0;--accent2:#60a0d0;--mark-cases:#4080b0;--mark-prompt:#3070a0;--mark-witness:#5090c0;--mark-compare:#206090;--unit-hover:#0a0a12;--unit-active:#0f0f18}
-[data-theme="ledger"]{--bg:#f5f0e6;--bg2:#ebe5d8;--fg:#2a2520;--fg2:#8a8070;--border:#d5d0c0;--accent:#8b4513;--accent2:#a0522d;--mark-ledger:#c0b8a0;--mark-cases:#8b4513;--mark-prompt:#4a4a6a;--mark-witness:#3a5a3a;--mark-compare:#6a3a3a;--unit-hover:#efe8da;--unit-active:#e8e0d0;--scanline:rgba(0,0,0,.01)}
+[data-theme="light"]{--bg:#f5f0e6;--bg2:#ebe5d8;--bg3:#e0dbd0;--panel:#fff;--fg:#1a1a1a;--fg-dim:#4a4a4a;--fg-muted:#888;--border:#d5d0c0;--accent:#8b4513;--accent2:#a67c52;--mark-ledger:#c0b8a0;--mark-cases:#8b4513;--mark-prompt:#4a4a6a;--mark-witness:#3a5a3a;--mark-compare:#6a3a3a;--unit-hover:#efe8da;--unit-active:#e8e0d0;--scanline:rgba(0,0,0,.01)}
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{height:100%;overflow:hidden;font-family:'Courier New',Courier,monospace;font-size:12px;background:var(--bg);color:var(--fg)}
+html,body{height:100%;overflow:hidden;font-family:'Courier New',monospace;font-size:11px;background:var(--bg);color:var(--fg);transition:background .3s,color .3s}
 body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,var(--scanline) 2px,var(--scanline) 4px);pointer-events:none;z-index:9999}
 .scroll-container{display:flex;height:100%;overflow-x:auto;overflow-y:hidden;scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
 .scroll-container::-webkit-scrollbar{height:6px}
 .scroll-container::-webkit-scrollbar-track{background:var(--bg)}
 .scroll-container::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 .scroll-container::-webkit-scrollbar-thumb:hover{background:var(--fg2)}
-.column{flex-shrink:0;width:var(--col-w);height:100%;border-right:1px solid var(--border);display:flex;flex-direction:column;background:var(--bg);transition:width .3s var(--ease);position:relative;overflow:hidden}
+.column{flex-shrink:0;width:var(--col-w);height:100%;border-right:1px solid var(--border);display:flex;flex-direction:column;background:var(--bg);transition:width .2s var(--ease);position:relative;overflow:hidden}
 .column.collapsed{width:var(--col-collapsed)}
 .column.collapsed .column-header,.column.collapsed .column-content{opacity:0;pointer-events:none}
 .column.collapsed .column-tab{opacity:1;pointer-events:auto}
-.column-tab{position:absolute;top:0;left:0;width:var(--col-collapsed);height:100%;writing-mode:vertical-rl;text-orientation:mixed;display:flex;align-items:center;justify-content:center;font-size:10px;letter-spacing:2px;color:var(--fg2);cursor:pointer;opacity:0;transition:opacity .2s;text-transform:uppercase;background:linear-gradient(90deg,var(--bg2),var(--bg))}
+.column-tab{position:absolute;top:0;left:0;width:var(--col-collapsed);height:100%;writing-mode:vertical-rl;text-orientation:mixed;display:flex;align-items:center;justify-content:center;font-size:8px;letter-spacing:1px;color:var(--fg-muted);cursor:pointer;opacity:0;transition:opacity .2s;text-transform:uppercase;background:var(--bg2)}
 .column-tab:hover{color:var(--fg)}
-.column-header{padding:16px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,var(--bg2),var(--bg));display:flex;align-items:flex-start;gap:10px;min-height:60px}
+.column-header{padding:12px;border-bottom:1px solid var(--border);background:var(--panel);display:flex;align-items:flex-start;gap:8px;min-height:48px}
 .column-marker{width:8px;height:8px;flex-shrink:0;margin-top:3px}
 .column-marker.ledger{background:var(--mark-ledger)}
 .column-marker.cases{background:var(--mark-cases)}
 .column-marker.prompt{background:var(--mark-prompt)}
 .column-marker.witness{background:var(--mark-witness)}
 .column-marker.compare{background:var(--mark-compare)}
-.column-title{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--fg2)}
-.column-title span{display:block;font-size:9px;margin-top:4px;color:var(--fg2);opacity:.6}
+.column-title{font-size:9px;letter-spacing:.5px;text-transform:uppercase;color:var(--fg-dim)}
+.column-title span{display:block;font-size:8px;margin-top:3px;color:var(--fg-muted)}
 .column-content{flex:1;overflow-y:auto;padding:12px}
 .column-content::-webkit-scrollbar{width:4px}
 .column-content::-webkit-scrollbar-track{background:transparent}
@@ -68,7 +66,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .theme-label{font-size:8px;color:var(--fg2);opacity:.5;margin-top:8px}
 input[type="file"]{display:none}
 .empty{padding:20px;text-align:center;color:var(--fg2);font-size:10px}
-.breadcrumb{position:fixed;top:0;left:0;right:0;height:32px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;font-size:10px;color:var(--fg2);z-index:100;gap:8px}
+.breadcrumb{position:fixed;top:0;left:0;right:0;height:36px;background:var(--panel);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 12px;font-size:9px;color:var(--fg-muted);z-index:100;gap:6px}
 .breadcrumb-item{color:var(--fg2);cursor:pointer;transition:color .2s}
 .breadcrumb-item:hover{color:var(--fg)}
 .breadcrumb-item.active{color:var(--accent)}
