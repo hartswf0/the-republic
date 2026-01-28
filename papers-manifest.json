@@ -1,0 +1,206 @@
+{
+  "generated": "2026-01-27",
+  "papers": [
+    {
+      "id": "deep-play-shield",
+      "title": "Deep Play: The Prompted Shield of Achilles and the Culture of the Generative Model",
+      "shortTitle": "Deep Play: Shield, Prompts, Culture",
+      "prompt": "pro-Deep Play: Shield, Prompts, Culture_Deep Play: The Prompted Shield of Achilles and the Culture of the Generative Model.md",
+      "completion": "Deep Play_ Shield, Prompts, Culture_Deep Play_ The Prompted Shield of Achilles and the Culture of the Generative Model.md",
+      "status": "complete",
+      "theme": "Geertzian Analysis"
+    },
+    {
+      "id": "deep-remediation-protocol",
+      "title": "Deep Remediation: The Protocol of Refusal and the Simulacral Materiality of the Shield of Achilles",
+      "shortTitle": "Deep Remediation: Protocol of Refusal",
+      "prompt": "pro-Deep Remediation: Protocol of Refusal_Deep Remediation: The Protocol of Refusal and the Simulacral Materiality of the Shield of Achilles.md",
+      "completion": "Deep Remediation_ Protocol of Refusal_Deep Remediation_ The Protocol of Refusal and the Simulacral Materiality of the Shield of Achilles.md",
+      "status": "complete",
+      "theme": "Protocol Theory"
+    },
+    {
+      "id": "forging-shield-executable",
+      "title": "The Executable Emblem: Forging the Shield of Achilles as an Operative Protocol",
+      "shortTitle": "Forging Achilles' Shield: Executable Protocol",
+      "prompt": null,
+      "completion": "Forging Achilles' Shield_ Executable Protocol_The Executable Emblem_ Forging the Shield of Achilles as an Operative Protocol.md",
+      "status": "completion-only",
+      "theme": "Protocol Theory"
+    },
+    {
+      "id": "operative-ekphrasis-frontier",
+      "title": "Operative Ekphrasis: From Imagetext to Worldtext",
+      "shortTitle": "Operative Ekphrasis: AI's New Frontier",
+      "prompt": null,
+      "completion": "Operative Ekphrasis_ AI's New Frontier_Operative Ekphrasis_ From Imagetext to Worldtext.md",
+      "status": "completion-only",
+      "theme": "Ekphrasis Theory"
+    },
+    {
+      "id": "operative-ekphrasis-method",
+      "title": "Operative Ekphrasis and the Architecture of Thick Prompting: A Design-Studies Approach to Multimodal Semiotics",
+      "shortTitle": "Prompting as Operative Ekphrasis Method",
+      "prompt": "pro-Prompting as Operative Ekphrasis Method_Operative Ekphrasis and the Architecture of Thick Prompting: A Design-Studies Approach to Multimodal Semiotics.md",
+      "completion": "Prompting as Operative Ekphrasis Method_Operative Ekphrasis and the Architecture of Thick Prompting_ A Design-Studies Approach to Multimodal Semiotics.md",
+      "status": "complete",
+      "theme": "Design Studies"
+    },
+    {
+      "id": "protocol-refusal-governance",
+      "title": "The Protocol of Refusal: Prompting, Governance, and Co-Authorship in the Latent Space",
+      "shortTitle": "Prompting as Protocol: Refusal, Governance",
+      "prompt": null,
+      "completion": "Prompting as Protocol_ Refusal, Governance_The Protocol of Refusal_ Prompting, Governance, and Co-Authorship in the Latent Space.md",
+      "status": "completion-only",
+      "theme": "Protocol Theory"
+    },
+    {
+      "id": "probabilistic-bard",
+      "title": "The Probabilistic Bard and the Latent Shield: Operative Ekphrasis, Experimental Models, and the Architecture of Artificial Memory",
+      "shortTitle": "Prompting, Models, and Worldbuilding",
+      "prompt": null,
+      "completion": "Prompting, Models, and Worldbuilding_The Probabilistic Bard and the Latent Shield_ Operative Ekphrasis, Experimental Models, and the Architecture of Artificial Memory.md",
+      "status": "completion-only",
+      "theme": "AI Theory"
+    },
+    {
+      "id": "homer-to-ai",
+      "title": "The Architecture of the Muse: From Homeric Formulas to Generative Models",
+      "shortTitle": "Prompting: From Homer to AI",
+      "prompt": null,
+      "completion": "Prompting_ From Homer to AI_The Architecture of the Muse_ From Homeric Formulas to Generative Models.md",
+      "status": "completion-only",
+      "theme": "Classical Reception"
+    },
+    {
+      "id": "refining-ai-paper-architecture",
+      "title": "Thick Prompting: From Homeric Ekphrasis to Operative World-Building in Multimodal Latent Space",
+      "shortTitle": "Refining AI Paper Architecture",
+      "prompt": "pro-Refining AI Paper Architecture_Thick Prompting: From Homeric Ekphrasis to Operative World-Building in Multimodal Latent Space.md",
+      "completion": "Refining AI Paper Architecture_Thick Prompting_ From Homeric Ekphrasis to Operative World-Building in Multimodal Latent Space.md",
+      "status": "complete",
+      "theme": "Methodology"
+    },
+    {
+      "id": "thick-prompting-humanistic-framework",
+      "title": "The Forge and the Web: Thick Prompting, Ekphrasis, and the Creation of Inhabitable Latent Worlds",
+      "shortTitle": "Thick Prompting: A Humanistic Framework",
+      "prompt": "pro-Thick Prompting: A Humanistic Framework_The Forge and the Web: Thick Prompting, Ekphrasis, and the Creation of Inhabitable Latent Worlds.md",
+      "completion": "Thick Prompting_ A Humanistic Framework_The Forge and the Web_ Thick Prompting, Ekphrasis, and the Creation of Inhabitable Latent Worlds.md",
+      "status": "complete",
+      "theme": "Humanistic Framework"
+    },
+    {
+      "id": "thick-prompting-new-method",
+      "title": "Thick Prompting: Ekphrasis, Worldtexts, and the Ritual of Multimodal Generation",
+      "shortTitle": "Thick Prompting: A New Method",
+      "prompt": "pro-Thick Prompting: A New Method_Thick Prompting: Ekphrasis, Worldtexts, and the Ritual of Multimodal Generation.md",
+      "completion": "Thick Prompting_ A New Method_Thick Prompting_ Ekphrasis, Worldtexts, and the Ritual of Multimodal Generation.md",
+      "status": "complete",
+      "theme": "Methodology"
+    },
+    {
+      "id": "theoretical-framework",
+      "title": "The Architecture of Meaning in the Latent Space: Toward a Theoretical Framework for Thick Prompting",
+      "shortTitle": "Thick Prompting: A Theoretical Framework",
+      "prompt": null,
+      "completion": "Thick Prompting_ A Theoretical Framework_The Architecture of Meaning in the Latent Space_ Toward a Theoretical Framework for Thick Prompting.md",
+      "status": "completion-only",
+      "theme": "Theory"
+    },
+    {
+      "id": "world-modeling-framework",
+      "title": "Thick Prompting, Operative Ekphrasis, and World-Modeling: A Philosophical and Historical Framework for Generative AI",
+      "shortTitle": "Thick Prompting: AI World-Modeling Framework",
+      "prompt": null,
+      "completion": "Thick Prompting_ AI World-Modeling Framework_Thick Prompting, Operative Ekphrasis, and World-Modeling_ A Philosophical and Historical Framework for Generative AI.md",
+      "status": "completion-only",
+      "theme": "Philosophy"
+    },
+    {
+      "id": "ekphrasis-ritual-design",
+      "title": "THICK PROMPTING: REIMAGINING EKPHRASIS AND GEERTZIAN RITUAL FOR MULTIMODAL DESIGN",
+      "shortTitle": "Thick Prompting: Ekphrasis, Ritual, Design",
+      "prompt": "pro-Thick Prompting: Ekphrasis, Ritual, Design_THICK PROMPTING: REIMAGINING EKPHRASIS AND GEERTZIAN RITUAL FOR MULTIMODAL DESIGN.md",
+      "completion": "Thick Prompting_ Ekphrasis, Ritual, Design_THICK PROMPTING_ REIMAGINING EKPHRASIS AND GEERTZIAN RITUAL FOR MULTIMODAL DESIGN.md",
+      "status": "complete",
+      "theme": "Design Studies"
+    },
+    {
+      "id": "generative-ai-worldmaking",
+      "title": "THICK PROMPTING: AN OPERATIVE METHOD FOR VISUAL WORLDMAKING WITH GENERATIVE AI",
+      "shortTitle": "Thick Prompting: Generative AI Worldmaking",
+      "prompt": "pro-Thick Prompting_ Generative AI Worldmaking_THICK PROMPTING_ AN OPERATIVE METHOD FOR VISUAL WORLDMAKING WITH GENERATIVE AI.md",
+      "completion": "Thick Prompting_ Generative AI Worldmaking_THICK PROMPTING_ AN OPERATIVE METHOD FOR VISUAL WORLDMAKING WITH GENERATIVE AI.md",
+      "status": "complete",
+      "theme": "Visual Worldmaking"
+    },
+    {
+      "id": "operative-ekphrasis-design-studies",
+      "title": "THICK PROMPTING AS OPERATIVE EKPHRASIS: A DESIGN-STUDIES METHOD FOR GENERATIVE VISUAL ARTIFACTS AND WORLDTEXTS",
+      "shortTitle": "Thick Prompting: Operative Ekphrasis Method",
+      "prompt": "pro-Thick Prompting_ Operative Ekphrasis Method_THICK PROMPTING AS OPERATIVE EKPHRASIS_ A DESIGN-STUDIES METHOD FOR GENERATIVE VISUAL ARTIFACTS AND WORLDTEXTS.md",
+      "completion": "Thick Prompting_ Operative Ekphrasis Method_THICK PROMPTING AS OPERATIVE EKPHRASIS_ A DESIGN-STUDIES METHOD FOR GENERATIVE VISUAL ARTIFACTS AND WORLDTEXTS.md",
+      "status": "complete",
+      "theme": "Design Studies"
+    },
+    {
+      "id": "latent-worlds-architecture",
+      "title": "Thick Prompting and the Architecture of Latent Worlds: Operative Ekphrasis, Experimental Modeling, and the Generative Turn",
+      "shortTitle": "Thick Prompting, Ekphrasis, World-Modeling",
+      "prompt": null,
+      "completion": "Thick Prompting, Ekphrasis, World-Modeling_Thick Prompting and the Architecture of Latent Worlds_ Operative Ekphrasis, Experimental Modeling, and the Generative Turn.md",
+      "status": "completion-only",
+      "theme": "AI Theory"
+    },
+    {
+      "id": "world-building-ai",
+      "title": "Operative World-Building: The Epistemological Architecture of Thick Prompting",
+      "shortTitle": "Thick Prompting: World-Building AI",
+      "prompt": "prompt_Thick Prompting_ World-Building AI_Operative World-Building_ The Epistemological Architecture of Thick Prompting.md",
+      "completion": "complete_Thick Prompting_ World-Building AI_Operative World-Building_ The Epistemological Architecture of Thick Prompting.md",
+      "status": "complete",
+      "theme": "Epistemology"
+    },
+    {
+      "id": "ai-art-exploration",
+      "title": "Thick Prompting: Ekphrasis, Ritual, and the Design of Visual Worlds with Generative AI",
+      "shortTitle": "Thick Prompting: AI Art Exploration",
+      "prompt": "pro-Thick Prompting: AI Art Exploration_Thick Prompting: Ekphrasis, Ritual, and the Design of Visual Worlds with Generative AI.md",
+      "completion": null,
+      "status": "prompt-only",
+      "theme": "Visual Arts"
+    },
+    {
+      "id": "wittgenstein-musical-analogy",
+      "title": "The Logical Architecture of Sound: The Musical Score, The Gramophone, and the Law of Projection in Wittgenstein's Early Thought (1912-1914)",
+      "shortTitle": "Wittgenstein's Musical Analogy Explained",
+      "prompt": null,
+      "completion": "Wittgenstein's Musical Analogy Explained_The Logical Architecture of Sound_ The Musical Score, The Gramophone, and the Law of Projection in Wittgenstein's Early Thought (1912–1914).md",
+      "status": "completion-only",
+      "theme": "Philosophy"
+    }
+  ],
+  "themes": [
+    {"id": "protocol-theory", "name": "Protocol Theory", "count": 3},
+    {"id": "ekphrasis-theory", "name": "Ekphrasis Theory", "count": 1},
+    {"id": "design-studies", "name": "Design Studies", "count": 3},
+    {"id": "geertzian-analysis", "name": "Geertzian Analysis", "count": 1},
+    {"id": "methodology", "name": "Methodology", "count": 2},
+    {"id": "humanistic-framework", "name": "Humanistic Framework", "count": 1},
+    {"id": "ai-theory", "name": "AI Theory", "count": 2},
+    {"id": "classical-reception", "name": "Classical Reception", "count": 1},
+    {"id": "philosophy", "name": "Philosophy", "count": 2},
+    {"id": "visual-worldmaking", "name": "Visual Worldmaking", "count": 1},
+    {"id": "epistemology", "name": "Epistemology", "count": 1},
+    {"id": "visual-arts", "name": "Visual Arts", "count": 1},
+    {"id": "theory", "name": "Theory", "count": 1}
+  ],
+  "stats": {
+    "total": 20,
+    "complete": 11,
+    "promptOnly": 1,
+    "completionOnly": 8
+  }
+}

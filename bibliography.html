@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BIBLIOGRAPHY — Unified Reference Corpus</title>
+<style>
+:root{
+  --bg:#0a0a0a;--bg2:#111;--panel:#161616;
+  --fg:#f0f0f0;--dim:#a0a0a0;--muted:#606060;
+  --accent:#d4a853;--accent2:#e8c47a;
+  --r1:#34d399;--r2:#a78bfa;--r3:#fbbf24;--r4:#f472b6;--r5:#22d3ee;--r6:#fb923c;
+  --border:#2a2a2a;--border2:#3a3a3a;
+  --success:#22c55e;--error:#ef4444;
+  --shadow:rgba(0,0,0,.4);
+}
+[data-theme="light"]{
+  --bg:#faf9f7;--bg2:#f0efec;--panel:#fff;
+  --fg:#1a1a1a;--dim:#4a4a4a;--muted:#888;
+  --accent:#8b5a2b;--accent2:#a67c52;
+  --border:#e0ddd8;--border2:#d0cdc8;
+  --shadow:rgba(0,0,0,.1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Courier New',monospace;background:var(--bg);color:var(--fg);overflow:hidden;font-size:13px;line-height:1.75}
+
+.header{position:fixed;top:0;left:0;right:0;height:44px;background:var(--panel);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 12px;z-index:100;gap:12px}
+.logo{font-weight:600;font-size:11px;color:var(--accent);display:flex;align-items:center;gap:6px}
+.logo svg{width:16px;height:16px}
+.title{font-size:10px;color:var(--dim);letter-spacing:.05em}
+.search-bar{flex:1;max-width:300px;position:relative}
+.search-bar input{width:100%;padding:6px 10px 6px 28px;background:var(--bg);border:1px solid var(--border);border-radius:4px;color:var(--fg);font:inherit;font-size:10px}
+.search-bar input:focus{outline:none;border-color:var(--accent)}
+.search-bar svg{position:absolute;left:8px;top:50%;transform:translateY(-50%);width:12px;height:12px;color:var(--muted)}
+.header-actions{margin-left:auto;display:flex;gap:4px}
+.icon-btn{width:32px;height:32px;background:var(--bg);border:1px solid var(--border);color:var(--muted);cursor:pointer;border-radius:4px;display:flex;align-items:center;justify-content:center}
+.icon-btn:hover{border-color:var(--accent);color:var(--accent)}
+.icon-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(212,168,83,.1)}
+.icon-btn svg{width:14px;height:14px}
+
+.main{display:flex;height:calc(100vh - 44px);margin-top:44px}
+
+.sidebar{width:280px;border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
+.sidebar-header{padding:12px;border-bottom:1px solid var(--border);background:var(--panel)}
+.sidebar-title{font-size:9px;color:var(--accent);letter-spacing:.1em;font-weight:600;margin-bottom:8px}
+.view-tabs{display:flex;gap:4px}
+.view-tab{flex:1;padding:6px 8px;background:var(--bg);border:1px solid var(--border);color:var(--muted);font:inherit;font-size:8px;cursor:pointer;border-radius:4px;text-align:center}
+.view-tab:hover{border-color:var(--accent);color:var(--dim)}
+.view-tab.active{background:var(--accent);border-color:var(--accent);color:#000;font-weight:600}
+.sidebar-content{flex:1;overflow-y:auto;padding:8px}
+.sidebar-content::-webkit-scrollbar{width:4px}
+.sidebar-content::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+.content{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.content-header{padding:12px 16px;border-bottom:1px solid var(--border);background:var(--panel);display:flex;align-items:center;justify-content:space-between}
+.content-title{font-size:11px;color:var(--accent);font-weight:600}
+.content-stats{font-size:9px;color:var(--muted)}
+.content-area{flex:1;overflow-y:auto;padding:16px}
+.content-area::-webkit-scrollbar{width:6px}
+.content-area::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* Paper item in sidebar */
+.paper-item{padding:10px 12px;background:var(--panel);border:1px solid var(--border);border-radius:6px;margin-bottom:6px;cursor:pointer;transition:all .15s}
+.paper-item:hover{border-color:var(--accent)}
+.paper-item.active{border-color:var(--accent);background:rgba(212,168,83,.1)}
+.paper-title{font-size:10px;font-weight:600;color:var(--fg);margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.paper-meta{font-size:8px;color:var(--muted);display:flex;gap:8px}
+.paper-refs{color:var(--accent)}
+
+/* Reference item */
+.ref-item{padding:12px;background:var(--panel);border:1px solid var(--border);border-radius:6px;margin-bottom:8px;transition:all .15s}
+.ref-item:hover{border-color:var(--accent)}
+.ref-item.shared{border-left:3px solid var(--r1)}
+.ref-num{font-size:10px;color:var(--accent);font-weight:600;margin-right:8px}
+.ref-key{font-size:9px;color:var(--r2);font-family:monospace;margin-right:8px}
+.ref-title{font-size:11px;color:var(--fg);line-height:1.5}
+.ref-url{font-size:9px;color:var(--muted);word-break:break-all;margin-top:4px}
+.ref-url a{color:var(--r5)}
+.ref-provenance{margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+.ref-provenance-label{font-size:8px;color:var(--muted);letter-spacing:.05em;margin-bottom:4px}
+.ref-papers{display:flex;flex-wrap:wrap;gap:4px}
+.ref-paper-tag{font-size:8px;padding:2px 6px;background:var(--bg);border:1px solid var(--border);border-radius:3px;color:var(--dim)}
+.ref-paper-tag:hover{border-color:var(--accent);color:var(--accent)}
+
+/* Taxonomy section */
+.taxonomy-section{margin-bottom:16px}
+.taxonomy-header{font-size:9px;color:var(--accent);letter-spacing:.1em;font-weight:600;padding:8px 12px;background:var(--bg2);border-radius:4px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.taxonomy-count{font-size:8px;color:var(--muted);background:var(--panel);padding:2px 6px;border-radius:3px}
+
+/* Visualization */
+.viz-container{padding:16px;background:var(--panel);border:1px solid var(--border);border-radius:6px;margin-bottom:16px}
+.viz-title{font-size:10px;color:var(--accent);font-weight:600;margin-bottom:12px}
+.viz-bar{display:flex;align-items:center;margin-bottom:8px}
+.viz-label{width:120px;font-size:9px;color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.viz-track{flex:1;height:16px;background:var(--bg);border-radius:3px;overflow:hidden;margin:0 8px}
+.viz-fill{height:100%;border-radius:3px;transition:width .3s}
+.viz-value{width:40px;font-size:9px;color:var(--muted);text-align:right}
+
+/* Matrix view */
+.matrix{width:100%;border-collapse:collapse;font-size:10px}
+.matrix th,.matrix td{padding:8px;border:1px solid var(--border);text-align:left}
+.matrix th{background:var(--bg2);color:var(--accent);font-weight:600;font-size:9px}
+.matrix td{background:var(--panel)}
+.matrix tr:hover td{background:var(--bg2)}
+.matrix-dot{width:12px;height:12px;border-radius:50%;display:inline-block}
+
+/* Network view placeholder */
+.network-placeholder{text-align:center;padding:60px 20px;color:var(--muted)}
+.network-placeholder svg{width:48px;height:48px;margin-bottom:12px;color:var(--accent)}
+
+/* Stats cards */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.stat-card{padding:16px;background:var(--panel);border:1px solid var(--border);border-radius:6px;text-align:center}
+.stat-value{font-size:24px;color:var(--accent);font-weight:600}
+.stat-label{font-size:9px;color:var(--muted);margin-top:4px}
+
+/* Domain taxonomy */
+.domain-tag{display:inline-block;font-size:8px;padding:2px 6px;border-radius:3px;margin:2px;cursor:pointer}
+.domain-tag.academic{background:rgba(167,139,250,.2);color:var(--r2)}
+.domain-tag.news{background:rgba(251,191,36,.2);color:var(--r3)}
+.domain-tag.tech{background:rgba(34,211,238,.2);color:var(--r5)}
+.domain-tag.social{background:rgba(244,114,182,.2);color:var(--r4)}
+.domain-tag.org{background:rgba(52,211,153,.2);color:var(--r1)}
+
+/* Toast */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--panel);border:1px solid var(--border);padding:12px 16px;border-radius:6px;font-size:11px;z-index:400;transform:translateY(100px);opacity:0;transition:all .3s}
+.toast.visible{transform:translateY(0);opacity:1}
+
+/* Export Modal */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:500;display:flex;align-items:center;justify-content:center}
+.modal{background:var(--panel);border:1px solid var(--border);border-radius:8px;width:90%;max-width:700px;max-height:85vh;display:flex;flex-direction:column}
+.modal-header{padding:16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.modal-title{font-size:12px;font-weight:600;color:var(--accent);letter-spacing:.05em}
+.modal-close{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px 8px}
+.modal-close:hover{color:var(--fg)}
+.modal-body{padding:16px;flex:1;overflow:hidden;display:flex;flex-direction:column}
+.export-tabs{display:flex;gap:4px;margin-bottom:12px}
+.export-tab{flex:1;padding:8px;background:var(--bg);border:1px solid var(--border);color:var(--muted);font:inherit;font-size:9px;cursor:pointer;border-radius:4px}
+.export-tab:hover{border-color:var(--accent)}
+.export-tab.active{background:var(--accent);border-color:var(--accent);color:#000;font-weight:600}
+.export-info{padding:12px;background:var(--bg);border:1px solid var(--border);border-radius:4px;margin-bottom:12px;font-size:11px;color:var(--dim)}
+.export-preview{flex:1;min-height:250px;padding:12px;background:var(--bg);border:1px solid var(--border);border-radius:4px;color:var(--fg);font-family:'Courier New',monospace;font-size:10px;resize:none;overflow:auto}
+.export-stats{padding:8px 0;font-size:9px;color:var(--muted);display:flex;gap:16px}
+.export-actions{display:flex;gap:8px;margin-top:12px}
+.export-btn{flex:1;padding:12px;background:var(--bg);border:1px solid var(--border);color:var(--fg);font:inherit;font-size:11px;cursor:pointer;border-radius:4px}
+.export-btn:hover{border-color:var(--accent)}
+.export-btn.primary{background:var(--accent);border-color:var(--accent);color:#000;font-weight:600}
+
+/* Onboarding */
+.onboard-card{padding:24px;background:var(--panel);border:1px solid var(--border);border-radius:8px;margin-bottom:16px}
+.onboard-step{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px}
+.onboard-num{width:28px;height:28px;background:var(--accent);color:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0}
+.onboard-text h4{color:var(--fg);font-size:11px;margin-bottom:4px}
+.onboard-text p{color:var(--muted);font-size:10px}
+.onboard-btn{margin-top:16px;padding:14px 28px;background:var(--accent);border:none;color:#000;font:inherit;font-size:12px;cursor:pointer;border-radius:6px;font-weight:600;width:100%}
+.onboard-btn:hover{background:var(--accent2)}
+
+/* Loading */
+.loading{text-align:center;padding:40px;color:var(--muted)}
+.loading-spinner{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:768px){
+  .sidebar{width:100%;position:fixed;bottom:0;height:50vh;border-right:none;border-top:1px solid var(--border);z-index:50}
+  .main{flex-direction:column}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+    BIBLIOGRAPHY
+  </div>
+  <div class="title">Unified Reference Corpus</div>
+  <div class="search-bar">
+    <input type="text" id="search" placeholder="Search references...">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+  </div>
+  <div class="header-actions">
+    <button class="icon-btn" id="load-all" title="Load All Papers">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+    </button>
+    <button class="icon-btn" id="export-bibtex" title="Export as BibTeX (for Zotero)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+    </button>
+    <button class="icon-btn" id="download-bib" title="Download .bib file">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+    </button>
+    <button class="icon-btn" id="theme-toggle" title="Toggle Theme">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+    </button>
+  </div>
+</div>
+
+<div class="main">
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title">VIEW MODE</div>
+      <div class="view-tabs">
+        <button class="view-tab active" data-view="papers">Papers</button>
+        <button class="view-tab" data-view="refs">Refs</button>
+        <button class="view-tab" data-view="domains">Domains</button>
+        <button class="view-tab" data-view="shared">Shared</button>
+      </div>
+    </div>
+    <div class="sidebar-content" id="sidebar-content">
+      <div class="loading">
+        <div class="loading-spinner"></div>
+        Loading papers...
+      </div>
+    </div>
+  </div>
+  
+  <div class="content">
+    <div class="content-header">
+      <div class="content-title" id="content-title">CORPUS OVERVIEW</div>
+      <div class="content-stats" id="content-stats"></div>
+    </div>
+    <div class="content-area" id="content-area">
+      <div class="loading">
+        <div class="loading-spinner"></div>
+        Extracting references from all papers...
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Export Modal -->
+<div class="modal-overlay" id="export-modal" style="display:none">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Export Bibliography</span>
+      <button class="modal-close" onclick="closeExportModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="export-tabs">
+        <button class="export-tab active" data-format="bibtex">BibTeX (Zotero)</button>
+        <button class="export-tab" data-format="markdown">Markdown</button>
+        <button class="export-tab" data-format="json">JSON</button>
+      </div>
+      <div class="export-info">
+        <p><strong>BibTeX Format</strong> — Import directly into Zotero via File → Import or "Import from Clipboard"</p>
+        <p style="margin-top:8px;font-size:10px;color:var(--muted)">Each entry includes: title, author (extracted), URL, access date, provenance notes, and thick description context.</p>
+      </div>
+      <textarea class="export-preview" id="export-preview" readonly></textarea>
+      <div class="export-stats" id="export-stats"></div>
+      <div class="export-actions">
+        <button class="export-btn" onclick="copyExport()">📋 Copy to Clipboard</button>
+        <button class="export-btn primary" onclick="downloadExport()">⬇️ Download .bib File</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const state = {
+  papers: [],
+  allRefs: [],           // All references with provenance
+  refsByUrl: {},         // Deduplicated by URL
+  refsByTitle: {},       // Deduplicated by title similarity
+  domains: {},           // Grouped by domain
+  sharedRefs: [],        // Refs used in multiple papers
+  currentView: 'papers',
+  selectedPaper: null,
+  manifest: null
+};
+
+async function init() {
+  await loadManifest();
+  setupEventListeners();
+}
+
+async function loadManifest() {
+  try {
+    const res = await fetch('papers-manifest.json');
+    if (!res.ok) throw new Error('No manifest');
+    state.manifest = await res.json();
+    renderSidebarPapers();
+    renderOverview();
+  } catch (e) {
+    toast('Error loading manifest: ' + e.message);
+  }
+}
+
+async function loadAllPapers() {
+  if (!state.manifest) return;
+  
+  state.papers = [];
+  state.allRefs = [];
+  
+  const total = state.manifest.papers.length;
+  let loaded = 0;
+  
+  for (const entry of state.manifest.papers) {
+    try {
+      // Load completion (main paper)
+      if (entry.completion) {
+        const res = await fetch(encodeURIComponent(entry.completion));
+        if (res.ok) {
+          const content = await res.text();
+          const refs = extractCitations(content);
+          state.papers.push({
+            id: entry.id,
+            title: entry.title,
+            shortTitle: entry.shortTitle,
+            theme: entry.theme,
+            type: 'completion',
+            refs: refs
+          });
+          refs.forEach(r => {
+            state.allRefs.push({ ...r, paperId: entry.id, paperTitle: entry.shortTitle });
+          });
+        }
+      }
+      
+      // Load prompt
+      if (entry.prompt) {
+        const res = await fetch(encodeURIComponent(entry.prompt));
+        if (res.ok) {
+          const content = await res.text();
+          const refs = extractCitations(content);
+          if (refs.length > 0) {
+            state.papers.push({
+              id: entry.id + '-prompt',
+              title: entry.shortTitle + ' (Prompt)',
+              shortTitle: entry.shortTitle,
+              theme: entry.theme,
+              type: 'prompt',
+              refs: refs
+            });
+            refs.forEach(r => {
+              state.allRefs.push({ ...r, paperId: entry.id + '-prompt', paperTitle: entry.shortTitle + ' (Prompt)' });
+            });
+          }
+        }
+      }
+      
+      loaded++;
+      if (loaded % 3 === 0) toast(`Loaded ${loaded}/${total}...`);
+    } catch (e) {
+      console.error('Error loading:', entry.id, e);
+    }
+  }
+  
+  processReferences();
+  renderSidebarPapers();
+  renderOverview();
+  toast(`Loaded ${state.papers.length} papers with ${state.allRefs.length} total references`);
+}
+
+function extractCitations(content) {
+  let refs = [];
+  
+  // Pattern 1: Markdown headers like "#### **Works cited**"
+  const citesMatch = content.match(/#{1,4}\s*\*{0,2}Works cited\*{0,2}\s*\n([\s\S]+?)(?:\n#{1,4}\s|\n\[image|\n---|\n```|$)/i);
+  if (citesMatch) {
+    refs = parseNumberedRefs(citesMatch[1]);
+    if (refs.length > 0) return refs;
+  }
+  
+  // Pattern 2: Markdown headers for References/Bibliography
+  const altMatch = content.match(/#{1,4}\s*\*{0,2}(?:References|Bibliography)\*{0,2}\s*\n([\s\S]+?)(?:\n#{1,4}\s|\n\[image|\n---|\n```|$)/i);
+  if (altMatch) {
+    refs = parseNumberedRefs(altMatch[1]);
+    if (refs.length > 0) return refs;
+  }
+  
+  // Pattern 3: Plain "REFERENCES" header with decorative lines
+  const plainRefMatch = content.match(/[═=]+\s*\n\s*REFERENCES\s*\n[═=]+\s*\n([\s\S]+?)(?:\n[═=]+|\n#{1,4}\s|\n\[image|$)/i);
+  if (plainRefMatch) {
+    refs = parseCitationKeyRefs(plainRefMatch[1]);
+    if (refs.length > 0) return refs;
+  }
+  
+  // Pattern 4: Plain "REFERENCES" without decorative lines
+  const simpleRefMatch = content.match(/^REFERENCES\s*\n([\s\S]+?)(?:\n#{1,4}\s|\n\[image|\n---|$)/im);
+  if (simpleRefMatch) {
+    refs = parseCitationKeyRefs(simpleRefMatch[1]);
+    if (refs.length > 0) return refs;
+  }
+  
+  return refs;
+}
+
+function parseNumberedRefs(section) {
+  const refs = [];
+  const lines = section.split('\n');
+  
+  for (const line of lines) {
+    let match;
+    
+    match = line.match(/^(\d+)\.\s*(.+?),\s*accessed[^,]*,\s*\[([^\]]*)\]\((https?:\/\/[^\s\)]+)\)/);
+    if (match) {
+      refs.push({ num: parseInt(match[1]), title: match[2].trim(), url: match[4].trim() });
+      continue;
+    }
+    
+    match = line.match(/^(\d+)\.\s*(.+?),\s*accessed[^,]*,\s*(https?:\/\/[^\s\)]+)/);
+    if (match) {
+      refs.push({ num: parseInt(match[1]), title: match[2].trim(), url: match[3].trim() });
+      continue;
+    }
+    
+    match = line.match(/^(\d+)\.\s*(.+?)\s*\[([^\]]*)\]\((https?:\/\/[^\s\)]+)\)/);
+    if (match) {
+      refs.push({ num: parseInt(match[1]), title: match[2].trim(), url: match[4].trim() });
+      continue;
+    }
+    
+    match = line.match(/^(\d+)\.\s*(.+?)\s+(https?:\/\/[^\s\)]+)/);
+    if (match) {
+      refs.push({ num: parseInt(match[1]), title: match[2].trim(), url: match[3].trim() });
+      continue;
+    }
+  }
+  
+  return refs;
+}
+
+function parseCitationKeyRefs(section) {
+  const refs = [];
+  const lines = section.split('\n');
+  let num = 1;
+  
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    
+    const match = trimmed.match(/^\[([^\]]+)\]\s*(.+)/);
+    if (match) {
+      refs.push({ num: num++, title: match[2].trim(), url: '', key: match[1] });
+    }
+  }
+  
+  return refs;
+}
+
+function processReferences() {
+  // Group by URL (for refs with URLs)
+  state.refsByUrl = {};
+  state.refsByTitle = {};
+  state.domains = {};
+  
+  state.allRefs.forEach(ref => {
+    // By URL
+    if (ref.url) {
+      const key = ref.url.toLowerCase().replace(/\/$/, '');
+      if (!state.refsByUrl[key]) {
+        state.refsByUrl[key] = { ...ref, papers: [] };
+      }
+      state.refsByUrl[key].papers.push({ id: ref.paperId, title: ref.paperTitle });
+      
+      // Extract domain
+      try {
+        const url = new URL(ref.url);
+        const domain = url.hostname.replace('www.', '');
+        if (!state.domains[domain]) state.domains[domain] = [];
+        state.domains[domain].push(ref);
+      } catch (e) {}
+    }
+    
+    // By title (normalized)
+    const titleKey = ref.title.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 40);
+    if (titleKey.length > 10) {
+      if (!state.refsByTitle[titleKey]) {
+        state.refsByTitle[titleKey] = { ...ref, papers: [] };
+      }
+      state.refsByTitle[titleKey].papers.push({ id: ref.paperId, title: ref.paperTitle });
+    }
+  });
+  
+  // Find shared refs (used in multiple papers)
+  state.sharedRefs = Object.values(state.refsByUrl).filter(r => r.papers.length > 1);
+  
+  // Also check by title for refs without URLs
+  Object.values(state.refsByTitle).forEach(r => {
+    if (r.papers.length > 1 && !r.url) {
+      state.sharedRefs.push(r);
+    }
+  });
+  
+  state.sharedRefs.sort((a, b) => b.papers.length - a.papers.length);
+}
+
+function renderSidebarPapers() {
+  const container = document.getElementById('sidebar-content');
+  
+  if (state.papers.length === 0 && state.manifest) {
+    container.innerHTML = `
+      <div style="text-align:center;padding:20px;color:var(--muted);font-size:10px">
+        <p>Click "Load All" to extract references from ${state.manifest.stats.total} papers</p>
+        <button onclick="loadAllPapers()" style="margin-top:12px;padding:10px 20px;background:var(--accent);border:none;color:#000;font:inherit;font-size:10px;cursor:pointer;border-radius:4px;font-weight:600">Load All Papers</button>
+      </div>
+    `;
+    return;
+  }
+  
+  if (state.currentView === 'papers') {
+    container.innerHTML = state.papers.map(p => `
+      <div class="paper-item ${state.selectedPaper === p.id ? 'active' : ''}" onclick="selectPaper('${p.id}')">
+        <div class="paper-title">${escapeHtml(p.title)}</div>
+        <div class="paper-meta">
+          <span class="paper-refs">${p.refs.length} refs</span>
+          <span>${p.theme}</span>
+        </div>
+      </div>
+    `).join('');
+  } else if (state.currentView === 'domains') {
+    const sortedDomains = Object.entries(state.domains).sort((a, b) => b[1].length - a[1].length);
+    container.innerHTML = sortedDomains.map(([domain, refs]) => `
+      <div class="paper-item" onclick="filterByDomain('${domain}')">
+        <div class="paper-title">${domain}</div>
+        <div class="paper-meta">
+          <span class="paper-refs">${refs.length} refs</span>
+          <span>${getDomainType(domain)}</span>
+        </div>
+      </div>
+    `).join('');
+  } else if (state.currentView === 'shared') {
+    container.innerHTML = state.sharedRefs.slice(0, 50).map((r, i) => `
+      <div class="paper-item" onclick="showSharedRef(${i})">
+        <div class="paper-title">${escapeHtml(r.title.substring(0, 60))}...</div>
+        <div class="paper-meta">
+          <span class="paper-refs">${r.papers.length} papers</span>
+        </div>
+      </div>
+    `).join('') || '<div style="padding:20px;text-align:center;color:var(--muted)">No shared references found</div>';
+  } else if (state.currentView === 'refs') {
+    const uniqueRefs = Object.values(state.refsByUrl).slice(0, 100);
+    container.innerHTML = uniqueRefs.map((r, i) => `
+      <div class="paper-item" onclick="showRef(${i})">
+        <div class="paper-title">${escapeHtml(r.title.substring(0, 50))}...</div>
+        <div class="paper-meta">
+          <span class="paper-refs">${r.papers?.length || 1} citation${r.papers?.length > 1 ? 's' : ''}</span>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+function renderOverview() {
+  const area = document.getElementById('content-area');
+  const uniqueRefs = Object.keys(state.refsByUrl).length;
+  const totalRefs = state.allRefs.length;
+  const sharedCount = state.sharedRefs.length;
+  const domainCount = Object.keys(state.domains).length;
+  
+  document.getElementById('content-title').textContent = 'CORPUS OVERVIEW';
+  document.getElementById('content-stats').textContent = `${state.papers.length} papers loaded`;
+  
+  if (state.papers.length === 0) {
+    area.innerHTML = `
+      <div class="onboard-card">
+        <h3 style="color:var(--accent);font-size:14px;margin-bottom:16px">📚 Unified Bibliography Tool</h3>
+        <p style="color:var(--dim);font-size:11px;margin-bottom:20px">Extract, analyze, and export all references from your research corpus. Perfect for building a unified Zotero library.</p>
+        
+        <div class="onboard-step">
+          <div class="onboard-num">1</div>
+          <div class="onboard-text">
+            <h4>Load All Papers</h4>
+            <p>Click the button below to scan all ${state.manifest?.stats?.total || 20} papers and extract references</p>
+          </div>
+        </div>
+        
+        <div class="onboard-step">
+          <div class="onboard-num">2</div>
+          <div class="onboard-text">
+            <h4>Explore & Filter</h4>
+            <p>Browse by paper, domain, or find shared references cited across multiple papers</p>
+          </div>
+        </div>
+        
+        <div class="onboard-step">
+          <div class="onboard-num">3</div>
+          <div class="onboard-text">
+            <h4>Export to Zotero</h4>
+            <p>Download as BibTeX with rich metadata: author, URL, provenance, and thick description</p>
+          </div>
+        </div>
+        
+        <button class="onboard-btn" onclick="loadAllPapers()">Load All Papers & Extract References</button>
+      </div>
+      
+      <div class="viz-container" style="text-align:center;padding:30px">
+        <h4 style="color:var(--accent);margin-bottom:8px">What You'll Get</h4>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px">
+          <div style="padding:16px;background:var(--bg);border-radius:6px">
+            <div style="font-size:24px;margin-bottom:4px">📖</div>
+            <div style="font-size:10px;color:var(--dim)">Full BibTeX entries for Zotero import</div>
+          </div>
+          <div style="padding:16px;background:var(--bg);border-radius:6px">
+            <div style="font-size:24px;margin-bottom:4px">🔗</div>
+            <div style="font-size:10px;color:var(--dim)">Cross-reference analysis (shared citations)</div>
+          </div>
+          <div style="padding:16px;background:var(--bg);border-radius:6px">
+            <div style="font-size:24px;margin-bottom:4px">📊</div>
+            <div style="font-size:10px;color:var(--dim)">Domain taxonomy visualization</div>
+          </div>
+        </div>
+      </div>
+    `;
+    return;
+  }
+  
+  // Stats cards
+  let html = `
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value">${state.papers.length}</div>
+        <div class="stat-label">PAPERS</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">${totalRefs}</div>
+        <div class="stat-label">TOTAL CITATIONS</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">${uniqueRefs}</div>
+        <div class="stat-label">UNIQUE REFS</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">${sharedCount}</div>
+        <div class="stat-label">SHARED REFS</div>
+      </div>
+    </div>
+  `;
+  
+  // Top domains visualization
+  const topDomains = Object.entries(state.domains).sort((a, b) => b[1].length - a[1].length).slice(0, 10);
+  const maxDomainCount = topDomains[0]?.[1].length || 1;
+  
+  html += `
+    <div class="viz-container">
+      <div class="viz-title">TOP CITATION DOMAINS</div>
+      ${topDomains.map(([domain, refs]) => `
+        <div class="viz-bar">
+          <div class="viz-label" title="${domain}">${domain}</div>
+          <div class="viz-track">
+            <div class="viz-fill" style="width:${(refs.length / maxDomainCount) * 100}%;background:var(--${getDomainColor(domain)})"></div>
+          </div>
+          <div class="viz-value">${refs.length}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  
+  // Shared references
+  if (state.sharedRefs.length > 0) {
+    html += `
+      <div class="viz-container">
+        <div class="viz-title">MOST SHARED REFERENCES (used in multiple papers)</div>
+        ${state.sharedRefs.slice(0, 8).map(r => `
+          <div class="ref-item shared">
+            <div class="ref-title">${escapeHtml(r.title)}</div>
+            ${r.url ? `<div class="ref-url"><a href="${r.url}" target="_blank">${r.url}</a></div>` : ''}
+            <div class="ref-provenance">
+              <div class="ref-provenance-label">CITED IN ${r.papers.length} PAPERS:</div>
+              <div class="ref-papers">
+                ${r.papers.map(p => `<span class="ref-paper-tag">${escapeHtml(p.title)}</span>`).join('')}
+              </div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+  
+  // Papers by reference count
+  const papersByRefs = [...state.papers].sort((a, b) => b.refs.length - a.refs.length).slice(0, 10);
+  const maxPaperRefs = papersByRefs[0]?.refs.length || 1;
+  
+  html += `
+    <div class="viz-container">
+      <div class="viz-title">PAPERS BY CITATION COUNT</div>
+      ${papersByRefs.map(p => `
+        <div class="viz-bar">
+          <div class="viz-label" title="${p.title}">${p.shortTitle}</div>
+          <div class="viz-track">
+            <div class="viz-fill" style="width:${(p.refs.length / maxPaperRefs) * 100}%;background:var(--accent)"></div>
+          </div>
+          <div class="viz-value">${p.refs.length}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  
+  area.innerHTML = html;
+}
+
+function selectPaper(id) {
+  state.selectedPaper = id;
+  const paper = state.papers.find(p => p.id === id);
+  if (!paper) return;
+  
+  document.getElementById('content-title').textContent = paper.title;
+  document.getElementById('content-stats').textContent = `${paper.refs.length} references`;
+  
+  const area = document.getElementById('content-area');
+  area.innerHTML = paper.refs.map(r => `
+    <div class="ref-item">
+      ${r.key ? `<span class="ref-key">[${r.key}]</span>` : `<span class="ref-num">[${r.num}]</span>`}
+      <span class="ref-title">${escapeHtml(r.title)}</span>
+      ${r.url ? `<div class="ref-url"><a href="${r.url}" target="_blank">${r.url}</a></div>` : ''}
+    </div>
+  `).join('') || '<div style="padding:20px;text-align:center;color:var(--muted)">No references found in this paper</div>';
+  
+  renderSidebarPapers();
+}
+
+function filterByDomain(domain) {
+  const refs = state.domains[domain] || [];
+  
+  document.getElementById('content-title').textContent = `DOMAIN: ${domain}`;
+  document.getElementById('content-stats').textContent = `${refs.length} references`;
+  
+  const area = document.getElementById('content-area');
+  area.innerHTML = refs.map(r => `
+    <div class="ref-item">
+      <span class="ref-num">[${r.num}]</span>
+      <span class="ref-title">${escapeHtml(r.title)}</span>
+      <div class="ref-url"><a href="${r.url}" target="_blank">${r.url}</a></div>
+      <div class="ref-provenance">
+        <div class="ref-provenance-label">FROM PAPER:</div>
+        <div class="ref-papers">
+          <span class="ref-paper-tag">${escapeHtml(r.paperTitle)}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function showSharedRef(index) {
+  const ref = state.sharedRefs[index];
+  if (!ref) return;
+  
+  document.getElementById('content-title').textContent = 'SHARED REFERENCE';
+  document.getElementById('content-stats').textContent = `Used in ${ref.papers.length} papers`;
+  
+  const area = document.getElementById('content-area');
+  area.innerHTML = `
+    <div class="ref-item shared" style="border-left-width:4px">
+      <div class="ref-title" style="font-size:14px;margin-bottom:8px">${escapeHtml(ref.title)}</div>
+      ${ref.url ? `<div class="ref-url" style="font-size:11px"><a href="${ref.url}" target="_blank">${ref.url}</a></div>` : ''}
+      <div class="ref-provenance" style="margin-top:16px">
+        <div class="ref-provenance-label">PROVENANCE — CITED IN ${ref.papers.length} PAPERS:</div>
+        <div style="margin-top:8px">
+          ${ref.papers.map(p => `
+            <div class="paper-item" onclick="selectPaper('${p.id}')" style="margin-bottom:4px">
+              <div class="paper-title">${escapeHtml(p.title)}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function showRef(index) {
+  const refs = Object.values(state.refsByUrl);
+  const ref = refs[index];
+  if (!ref) return;
+  
+  document.getElementById('content-title').textContent = 'REFERENCE DETAIL';
+  document.getElementById('content-stats').textContent = ref.papers?.length > 1 ? `Shared across ${ref.papers.length} papers` : 'Single citation';
+  
+  const area = document.getElementById('content-area');
+  area.innerHTML = `
+    <div class="ref-item ${ref.papers?.length > 1 ? 'shared' : ''}">
+      <div class="ref-title" style="font-size:14px;margin-bottom:8px">${escapeHtml(ref.title)}</div>
+      ${ref.url ? `<div class="ref-url" style="font-size:11px"><a href="${ref.url}" target="_blank">${ref.url}</a></div>` : ''}
+      ${ref.papers ? `
+        <div class="ref-provenance" style="margin-top:16px">
+          <div class="ref-provenance-label">CITED IN:</div>
+          <div class="ref-papers" style="margin-top:8px">
+            ${ref.papers.map(p => `<span class="ref-paper-tag" onclick="selectPaper('${p.id}')">${escapeHtml(p.title)}</span>`).join('')}
+          </div>
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+function getDomainType(domain) {
+  if (domain.includes('.edu') || domain.includes('arxiv') || domain.includes('researchgate') || domain.includes('semanticscholar') || domain.includes('jstor') || domain.includes('muse.jhu')) return 'academic';
+  if (domain.includes('medium') || domain.includes('reddit') || domain.includes('twitter')) return 'social';
+  if (domain.includes('github') || domain.includes('dev.to') || domain.includes('dzone')) return 'tech';
+  if (domain.includes('.org')) return 'org';
+  return 'news';
+}
+
+function getDomainColor(domain) {
+  const type = getDomainType(domain);
+  const colors = { academic: 'r2', social: 'r4', tech: 'r5', org: 'r1', news: 'r3' };
+  return colors[type] || 'accent';
+}
+
+let currentExportFormat = 'bibtex';
+let currentExportText = '';
+
+function openExportModal() {
+  if (state.allRefs.length === 0) {
+    toast('Load papers first to export bibliography');
+    return;
+  }
+  document.getElementById('export-modal').style.display = 'flex';
+  generateExport('bibtex');
+}
+
+function closeExportModal() {
+  document.getElementById('export-modal').style.display = 'none';
+}
+
+function generateExport(format) {
+  currentExportFormat = format;
+  const uniqueRefs = Object.values(state.refsByUrl);
+  let text = '';
+  
+  if (format === 'bibtex') {
+    text = generateBibTeX(uniqueRefs);
+  } else if (format === 'markdown') {
+    text = generateMarkdown(uniqueRefs);
+  } else if (format === 'json') {
+    text = generateJSON(uniqueRefs);
+  }
+  
+  currentExportText = text;
+  document.getElementById('export-preview').value = text;
+  document.getElementById('export-stats').innerHTML = `
+    <span><strong>${uniqueRefs.length}</strong> unique references</span>
+    <span><strong>${state.allRefs.length}</strong> total citations</span>
+    <span><strong>${state.papers.length}</strong> source papers</span>
+  `;
+}
+
+function generateBibTeX(refs) {
+  const today = new Date().toISOString().split('T')[0];
+  let bib = `% UNIFIED BIBLIOGRAPHY - Thick Prompting Research Corpus
+% Generated: ${today}
+% Papers: ${state.papers.length} | References: ${refs.length}
+% Import into Zotero: File → Import or "Import from Clipboard"
+
+`;
+  
+  refs.forEach((ref, i) => {
+    const key = generateBibKey(ref, i);
+    const parsed = parseRefMetadata(ref);
+    const provenance = ref.papers ? ref.papers.map(p => p.title).join('; ') : ref.paperTitle;
+    const domainType = ref.url ? getDomainType(extractDomain(ref.url)) : 'unknown';
+    
+    bib += `@misc{${key},
+  title = {${escapeBibTeX(parsed.title)}},
+  author = {${escapeBibTeX(parsed.author)}},
+  year = {${parsed.year}},
+  url = {${ref.url || ''}},
+  urldate = {${parsed.accessDate}},
+  note = {Cited in: ${escapeBibTeX(provenance)}},
+  keywords = {${domainType}, thick-prompting-corpus${ref.papers?.length > 1 ? ', shared-reference' : ''}},
+  abstract = {Source type: ${domainType}. ${ref.papers?.length > 1 ? `Shared across ${ref.papers.length} papers in corpus. ` : ''}Part of Thick Prompting / Operative Ekphrasis research corpus.}
+}
+
+`;
+  });
+  
+  return bib;
+}
+
+function generateBibKey(ref, index) {
+  const parsed = parseRefMetadata(ref);
+  const authorPart = parsed.author.split(/[,\s]/)[0].toLowerCase().replace(/[^a-z]/g, '') || 'unknown';
+  const yearPart = parsed.year || 'nd';
+  const titleWord = parsed.title.split(/\s+/)[0].toLowerCase().replace(/[^a-z]/g, '').substring(0, 10) || 'ref';
+  return `${authorPart}_${titleWord}_${yearPart}_${index}`;
+}
+
+function parseRefMetadata(ref) {
+  const title = ref.title || 'Unknown Title';
+  let author = 'Unknown';
+  let year = new Date().getFullYear().toString();
+  let accessDate = '2026-01-27';
+  
+  // Try to extract author from title patterns
+  // Pattern: "Author Name - Title" or "Author Name: Title"
+  const authorMatch = title.match(/^([A-Z][a-zA-Z.\s]+?)\s*[-–:]\s*/);
+  if (authorMatch) {
+    author = authorMatch[1].trim();
+  }
+  
+  // Pattern: "Title by Author" or "Title | Author"
+  const byMatch = title.match(/\s+by\s+([A-Z][a-zA-Z.\s]+?)$/i);
+  if (byMatch) {
+    author = byMatch[1].trim();
+  }
+  
+  // Try to extract year from title or URL
+  const yearMatch = title.match(/(19|20)\d{2}/) || (ref.url && ref.url.match(/(19|20)\d{2}/));
+  if (yearMatch) {
+    year = yearMatch[0];
+  }
+  
+  // Extract access date if present in title
+  const dateMatch = title.match(/accessed\s+([A-Za-z]+\s+\d+,?\s+\d{4})/i);
+  if (dateMatch) {
+    try {
+      const d = new Date(dateMatch[1]);
+      if (!isNaN(d)) accessDate = d.toISOString().split('T')[0];
+    } catch(e) {}
+  }
+  
+  // Clean title (remove "accessed" part)
+  const cleanTitle = title.replace(/,?\s*accessed\s+[^,]+,?/i, '').trim();
+  
+  // If citation key format [author_title_year], parse it
+  if (ref.key) {
+    const keyParts = ref.key.split('_');
+    if (keyParts.length >= 2) {
+      author = keyParts[0].charAt(0).toUpperCase() + keyParts[0].slice(1);
+      if (keyParts[keyParts.length - 1].match(/^\d{4}$/)) {
+        year = keyParts[keyParts.length - 1];
+      }
+    }
+  }
+  
+  return { title: cleanTitle, author, year, accessDate };
+}
+
+function escapeBibTeX(str) {
+  return String(str)
+    .replace(/\\/g, '\\textbackslash{}')
+    .replace(/[&%$#_{}]/g, '\\$&')
+    .replace(/~/g, '\\textasciitilde{}')
+    .replace(/\^/g, '\\textasciicircum{}');
+}
+
+function extractDomain(url) {
+  try {
+    return new URL(url).hostname.replace('www.', '');
+  } catch(e) {
+    return 'unknown';
+  }
+}
+
+function generateMarkdown(refs) {
+  let md = `# Unified Bibliography\n\n`;
+  md += `> Generated from ${state.papers.length} papers | ${refs.length} unique references\n\n`;
+  
+  // Group by domain type
+  const byType = {};
+  refs.forEach(ref => {
+    const type = ref.url ? getDomainType(extractDomain(ref.url)) : 'other';
+    if (!byType[type]) byType[type] = [];
+    byType[type].push(ref);
+  });
+  
+  Object.entries(byType).forEach(([type, typeRefs]) => {
+    md += `## ${type.charAt(0).toUpperCase() + type.slice(1)} Sources (${typeRefs.length})\n\n`;
+    typeRefs.forEach(ref => {
+      const parsed = parseRefMetadata(ref);
+      md += `- **${parsed.title}**\n`;
+      if (parsed.author !== 'Unknown') md += `  - Author: ${parsed.author}\n`;
+      if (ref.url) md += `  - URL: ${ref.url}\n`;
+      if (ref.papers?.length > 1) md += `  - *Cited in ${ref.papers.length} papers*\n`;
+      md += `\n`;
+    });
+  });
+  
+  return md;
+}
+
+function generateJSON(refs) {
+  const data = {
+    metadata: {
+      generated: new Date().toISOString(),
+      paperCount: state.papers.length,
+      referenceCount: refs.length,
+      corpus: 'Thick Prompting / Operative Ekphrasis Research'
+    },
+    references: refs.map(ref => {
+      const parsed = parseRefMetadata(ref);
+      return {
+        title: parsed.title,
+        author: parsed.author,
+        year: parsed.year,
+        url: ref.url || null,
+        accessDate: parsed.accessDate,
+        citedIn: ref.papers?.map(p => p.title) || [ref.paperTitle],
+        citationCount: ref.papers?.length || 1,
+        domainType: ref.url ? getDomainType(extractDomain(ref.url)) : 'unknown',
+        isShared: (ref.papers?.length || 1) > 1
+      };
+    })
+  };
+  return JSON.stringify(data, null, 2);
+}
+
+function copyExport() {
+  navigator.clipboard.writeText(currentExportText);
+  toast(`Copied ${currentExportFormat.toUpperCase()} to clipboard - paste into Zotero!`);
+}
+
+function downloadExport() {
+  const ext = currentExportFormat === 'bibtex' ? 'bib' : currentExportFormat === 'json' ? 'json' : 'md';
+  const mime = currentExportFormat === 'json' ? 'application/json' : 'text/plain';
+  const blob = new Blob([currentExportText], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `thick-prompting-bibliography.${ext}`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast(`Downloaded thick-prompting-bibliography.${ext}`);
+}
+
+function setupEventListeners() {
+  // View tabs
+  document.querySelectorAll('.view-tab').forEach(tab => {
+    tab.onclick = () => {
+      document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      state.currentView = tab.dataset.view;
+      state.selectedPaper = null;
+      renderSidebarPapers();
+      if (state.currentView === 'papers' || state.currentView === 'refs') renderOverview();
+    };
+  });
+  
+  // Header buttons
+  document.getElementById('load-all').onclick = loadAllPapers;
+  document.getElementById('export-bibtex').onclick = openExportModal;
+  document.getElementById('download-bib').onclick = () => {
+    if (state.allRefs.length === 0) {
+      toast('Load papers first');
+      return;
+    }
+    currentExportFormat = 'bibtex';
+    currentExportText = generateBibTeX(Object.values(state.refsByUrl));
+    downloadExport();
+  };
+  
+  // Export format tabs
+  document.querySelectorAll('.export-tab').forEach(tab => {
+    tab.onclick = () => {
+      document.querySelectorAll('.export-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      generateExport(tab.dataset.format);
+    };
+  });
+  
+  // Close modal on overlay click
+  document.getElementById('export-modal').onclick = e => {
+    if (e.target.id === 'export-modal') closeExportModal();
+  };
+  document.getElementById('theme-toggle').onclick = () => {
+    const theme = document.body.getAttribute('data-theme') === 'light' ? '' : 'light';
+    document.body.setAttribute('data-theme', theme);
+    localStorage.setItem('bib-theme', theme);
+  };
+  
+  if (localStorage.getItem('bib-theme') === 'light') document.body.setAttribute('data-theme', 'light');
+  
+  // Search
+  document.getElementById('search').addEventListener('input', e => {
+    const q = e.target.value.toLowerCase();
+    document.querySelectorAll('.paper-item').forEach(item => {
+      const title = item.querySelector('.paper-title')?.textContent.toLowerCase() || '';
+      item.style.display = title.includes(q) ? '' : 'none';
+    });
+  });
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('visible');
+  setTimeout(() => t.classList.remove('visible'), 2500);
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+Given the detailed "JIGs" and the specific structural challenges you're navigating, here is the refined architecture for your paper. I've integrated the "thick prompting" definition as the core driver, using the operative nature of language as the bridge between Homeric tradition and modern latent space navigation.
+Revised Paper Title & Abstract
+Title
+Thick Prompting: From Homeric Ekphrasis to Operative World-Building in Multimodal Latent Space
+Abstract
+Contemporary generative AI is frequently evaluated through the narrow lens of representational fidelity—the prosaic accuracy of a visual output relative to its text prompt. This paper argues that such metrics fail to capture the expressive potential of multimodal models in art and design. We propose Thick Prompting, a method that treats prompts not as simple commands, but as "heterogeneous stacks" (comprising code, text, tags, and JSON structures) executed as a Geertzian ritual to navigate high-dimensional latent space. We first ground this practice in the literary history of ekphrasis, specifically Homer’s description of the Shield of Achilles, to show how language can "call forth a world" by foregrounding process and agency. We then demonstrate how this theoretical framework becomes operative in generative AI, transforming description into intervention. Through a series of design studies, we provide a taxonomy of prompting techniques—including inception prompts and differential analysis—to show how Thick Prompting produces richer, more compelling visual artifacts and 3D "worldtexts."
+Key Section Revisions
+1. The Hinge: From Theory to Practice (The "Operative" Bridge)
+Transition Statement (JIG #0):
+"If Sections 1 through 3 have served to name the historical and anthropological lineage of multimodal expression, Sections 5 and 6 demonstrate what these theories do when operationalized. The hinge between these domains is the concept of the operative. In the classical tradition, ekphrasis was a verbal 'representation' of a visual work; in the context of generative AI, however, Bajohr (2024) suggests that description becomes operative—it is the very mechanism of creation. Thick Prompting, therefore, is both an analytical lens for understanding how meaning is layered and a practical method for constructing those layers. By treating the prompt as a 'heterogeneous stack,' we move from the passive observation of 'thick description' (Geertz, 1973) to the active, ritualistic execution of a world-model."
+2. Defining "Thick Prompting" (JIG #1, #14, #21)
+Instead of framing "Thick Prompting" by its sensitivity to framing, we foreground it as a qualitative density of constraints.
+The Definition: Thick prompting is the practice of treating a prompt as a structured, heterogeneous stack (Code + Text + Tags + JSON) rather than a mere string of words.
+The Ritual: It is a Geertzian ritual where the "execution" of the prompt is an intervention into the model's latent space to produce a "rich" artifact.
+The JSON Layer: We use JSON structures not just for organization, but to make prompts version-controlled, parseable, and architecturally precise.
+3. The Homeric Anchor (JIG #4, #16, #17)
+Homer’s Shield of Achilles is no longer just an example; it is the theoretical blueprint.
+World over Object: The description doesn't just show a shield; it depicts a world (cities, wars, harvests) that serves as the backdrop for the Iliad. This mirrors how modern "worldtexts" compile into navigable 3D environments.
+Process over Product: Homer describes Hephaestus making the shield. Similarly, thick prompting foregrounds the "making" (the system prompts and meta-constraints) rather than just the final image.
+Visual Demonstration: We will illustrate this by showing a "Homeric" prompt evolution—starting with a simple representational prompt and "thickening" it with process-oriented constraints to show the visual difference in depth.
+Structural Roadmap
+SectionContentKey JIG Integration1. IntroScope: Visual artifacts for art/expression. Foreground "Thick Prompting."JIG #2, #142. TheoryThe history of text/image. Mitchell vs. Krieger on word/image boundaries.JIG #223. The AnchorHomer's Shield as the first "Operative Ekphrasis" and world-model.JIG #4, #164. MethodThick Prompting: Platform constraints, JSON, and Inception prompts.JIG #6, #9, #215. Design StudyPrompt Differentials: Illustrating Resilience, Option Space, and Obligation.JIG #10, #136. DiscussionBeyond Fidelity: Aesthetic judgment and the "Worldtext."JIG #5, #12Next Steps
+Would you like me to draft the specific 300-word transition (JIG #0) using Bajohr and Geertz as the primary sources?

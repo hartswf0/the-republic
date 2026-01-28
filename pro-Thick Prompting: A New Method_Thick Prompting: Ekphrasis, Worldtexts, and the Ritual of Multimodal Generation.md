@@ -1,0 +1,18 @@
+Title
+"Thick Prompting: Ekphrasis, Worldtexts, and the Ritual of Multimodal Generation"
+(Alternative: "Operative Descriptions: Thick Prompting as Method in Generative AI")
+Research Question
+How can multimodal prompting for visual artifacts be repositioned within the history of text-image relations (specifically Homeric ekphrasis and Geertzian thick description) to develop "thick prompting"—a methodological framework that treats generation as the ritual construction of navigable "worldtexts" rather than descriptive translation, and what design techniques emerge from executing heterogeneous prompt stacks (code + text + tags) under platform constraints?
+Abstract
+Current practice judges multimodal prompts by representational fidelity—the naive assumption that success means the image "looks like" the description. This paper argues instead for thick prompting, a method that treats AI generation as an operative practice situated within literary history and anthropology. Focusing specifically on visual artifacts for art, personal expression, and entertainment, we position prompting as a contemporary form of ekphrasis that composes inhabitable "worldtexts" (spatially navigable, procedurally structured media objects) rather than static illustrations.
+Drawing on Homer's Shield of Achilles as an archetype—where description foregrounds Hephaestus's process, depicts narrative action, and composes an entire world—we demonstrate how generative AI makes ekphrasis operative: descriptions now actually generate what they describe. We propose thick prompting as the execution of heterogeneous stacks (system prompts, inception prompts, JSON structures, and tags) as Geertzian ritual, creating layered constraints that navigate latent space beyond mere fidelity.
+Our dual contribution is theoretical and practical: first, establishing the continuity between computational interfaces and historical text-image practices (including the distinction between Mitchell's and Krieger's critiques of word-image separation); second, demonstrating how this perspective yields concrete design techniques—resilience, option space, and obligation—analyzed through Prompt Differentials (Δ and ΔΔ). Through visual demonstrations that emphasize continuity with traditional ekphrasis while acknowledging platform constraints (model architecture, safety filters, token limits), we show how thick prompting produces richer, more compelling artifacts by treating generation as world-building rather than picture-making.
+Key Structural Elements Indicated by JIGs:
+Theoretical Framework: Geertz's thick description (actual definition, not just sensitivity to framing), Homeric ekphrasis (process-foregrounding, world-composition), Mitchell vs. Krieger on word/image relations, "operative" (Bajohr)
+Core Method: Thick prompting = heterogeneous stacks (code + text + tags) + ritual execution; distinguished from "long prompting" (word count)
+Scope: Visual artifacts for art/personal expression/entertainment explicitly excludes code generation and chat
+Architecture: Theory (sections 1-3) → Homer example (world models, process) → Method taxonomy (derived from example) → Design studies (sections 5-6)
+Technical Components: System prompts (cultural frames), inception prompts (meta-prompting), JSON structures, platform constraints (model architecture, filters, parameters)
+Analytical Method: Prompt Differentials (Δ and ΔΔ) for analyzing constraints; concepts of resilience, option space, obligation
+Central Tension: Naive representational fidelity vs. operational effects (what the description does vs. what it depicts)
+Visual Evidence: Concrete illustrations showing prompts in action (not vague/auratic), potentially using shield generation as running example

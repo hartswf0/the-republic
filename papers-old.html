@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>THE REPUBLIC — Research Papers</title>
+<style>
+:root{
+  --bg:#0a0a0a;--bg2:#0f0f0f;--bg3:#151515;--panel:#161616;
+  --fg:#e8e8e8;--fg-dim:#a0a0a0;--fg-muted:#606060;
+  --accent:#cc5500;--accent2:#d8a25a;
+  --prompt:#60a5fa;--complete:#34d399;--draft:#fbbf24;
+  --cite:#a78bfa;--border:#222;--success:#22c55e;
+}
+[data-theme="light"]{
+  --bg:#f5f0e6;--bg2:#ebe5d8;--bg3:#e0dbd0;--panel:#fff;
+  --fg:#1a1a1a;--fg-dim:#4a4a4a;--fg-muted:#888;
+  --accent:#8b4513;--accent2:#a67c52;
+  --prompt:#2563eb;--complete:#059669;--draft:#d97706;
+  --cite:#7c3aed;--border:#d5d0c0;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Courier New',monospace;background:var(--bg);color:var(--fg);font-size:13px;line-height:1.6}
+.header{background:var(--bg2);border-bottom:1px solid var(--border);padding:8px 16px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100}
+.logo{font-weight:bold;color:var(--accent);font-size:14px}
+.header-actions{display:flex;gap:8px;margin-left:auto}
+.btn{background:var(--bg3);border:1px solid var(--border);color:var(--fg);padding:4px 12px;border-radius:4px;cursor:pointer;font-size:11px;font-family:inherit}
+.btn:hover{background:var(--accent);color:#000}
+.btn.active{background:var(--accent);color:#000}
+
+.container{display:flex;height:calc(100vh - 45px)}
+
+/* Sidebar */
+.sidebar{width:280px;background:var(--bg2);border-right:1px solid var(--border);overflow-y:auto;flex-shrink:0}
+.sidebar-section{border-bottom:1px solid var(--border)}
+.sidebar-header{padding:8px 12px;font-size:10px;text-transform:uppercase;color:var(--fg-muted);letter-spacing:1px;display:flex;justify-content:space-between;align-items:center}
+.paper-list{padding:4px 0}
+.paper-item{padding:8px 12px;cursor:pointer;border-left:3px solid transparent;transition:all .15s}
+.paper-item:hover{background:var(--bg3)}
+.paper-item.active{background:var(--bg3);border-left-color:var(--accent)}
+.paper-item .title{font-size:12px;color:var(--fg);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.paper-item .meta{font-size:10px;color:var(--fg-muted);display:flex;gap:8px}
+.paper-item .type{padding:1px 6px;border-radius:3px;font-size:9px;text-transform:uppercase}
+.paper-item .type.prompt{background:var(--prompt);color:#000}
+.paper-item .type.complete{background:var(--complete);color:#000}
+.paper-item .type.draft{background:var(--draft);color:#000}
+
+/* Chain indicator */
+.chain-group{border-left:2px solid var(--accent);margin-left:8px;padding-left:8px}
+.chain-arrow{color:var(--fg-muted);font-size:10px;padding:2px 12px}
+
+/* Main content */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.toolbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:8px 16px;display:flex;gap:12px;align-items:center}
+.toolbar .doc-title{font-size:14px;font-weight:bold;color:var(--fg)}
+.toolbar .doc-type{padding:2px 8px;border-radius:4px;font-size:10px;text-transform:uppercase;margin-left:8px}
+
+.content-area{flex:1;overflow-y:auto;padding:24px 32px}
+.content-area.split{display:flex;gap:0}
+.content-pane{flex:1;overflow-y:auto;padding:24px;border-right:1px solid var(--border)}
+.content-pane:last-child{border-right:none}
+.pane-header{font-size:10px;text-transform:uppercase;color:var(--fg-muted);letter-spacing:1px;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between}
+
+/* Paper rendering */
+.paper{max-width:800px;margin:0 auto}
+.paper h1{font-size:20px;color:var(--accent);margin-bottom:8px;line-height:1.3}
+.paper h2{font-size:16px;color:var(--accent2);margin:24px 0 12px;padding-bottom:4px;border-bottom:1px solid var(--border)}
+.paper h3{font-size:14px;color:var(--fg);margin:16px 0 8px}
+.paper p{margin-bottom:12px;text-align:justify}
+.paper ul,.paper ol{margin:12px 0 12px 24px}
+.paper li{margin-bottom:6px}
+.paper blockquote{border-left:3px solid var(--accent);padding-left:16px;margin:16px 0;color:var(--fg-dim);font-style:italic}
+.paper code{background:var(--bg3);padding:2px 6px;border-radius:3px;font-size:12px}
+.paper pre{background:var(--bg3);padding:16px;border-radius:6px;overflow-x:auto;margin:16px 0}
+.paper table{width:100%;border-collapse:collapse;margin:16px 0;font-size:12px}
+.paper th,.paper td{border:1px solid var(--border);padding:8px;text-align:left}
+.paper th{background:var(--bg3)}
+.paper hr{border:none;border-top:1px solid var(--border);margin:24px 0}
+
+/* Citations */
+.citation{color:var(--cite);cursor:pointer;font-size:10px;vertical-align:super}
+.citation:hover{text-decoration:underline}
+.cite-popup{position:absolute;background:var(--panel);border:1px solid var(--border);padding:12px;border-radius:6px;max-width:400px;font-size:11px;box-shadow:0 4px 12px rgba(0,0,0,.3);z-index:200}
+.cite-popup .cite-num{color:var(--cite);font-weight:bold}
+.cite-popup .cite-title{color:var(--fg);margin:4px 0}
+.cite-popup .cite-url{color:var(--fg-muted);font-size:10px;word-break:break-all}
+.cite-popup .cite-url a{color:var(--prompt)}
+
+/* References panel */
+.references-panel{width:320px;background:var(--bg2);border-left:1px solid var(--border);overflow-y:auto;display:none;flex-shrink:0}
+.references-panel.show{display:block}
+.ref-header{padding:12px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.ref-header h3{font-size:12px;color:var(--fg)}
+.ref-list{padding:8px}
+.ref-item{padding:8px;border-bottom:1px solid var(--border);font-size:11px}
+.ref-item:last-child{border-bottom:none}
+.ref-item .ref-num{color:var(--cite);font-weight:bold;margin-right:4px}
+.ref-item .ref-title{color:var(--fg);display:block;margin:4px 0}
+.ref-item .ref-url{color:var(--fg-muted);font-size:10px;word-break:break-all}
+.ref-item .ref-url a{color:var(--prompt)}
+
+/* Version history */
+.version-list{padding:8px 12px}
+.version-item{padding:6px 8px;font-size:11px;cursor:pointer;border-radius:4px;display:flex;justify-content:space-between}
+.version-item:hover{background:var(--bg3)}
+.version-item.current{background:var(--bg3);border-left:2px solid var(--accent)}
+.version-item .version-label{color:var(--fg)}
+.version-item .version-date{color:var(--fg-muted);font-size:10px}
+
+/* Empty state */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--fg-muted);text-align:center;padding:32px}
+.empty-state .icon{font-size:48px;margin-bottom:16px;opacity:.3}
+.empty-state p{max-width:300px}
+
+/* Toast */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--success);color:#000;padding:8px 16px;border-radius:4px;font-size:12px;opacity:0;transform:translateY(10px);transition:all .2s;z-index:300}
+.toast.show{opacity:1;transform:translateY(0)}
+
+/* Stats bar */
+.stats-bar{background:var(--bg3);padding:8px 16px;display:flex;gap:24px;font-size:11px;color:var(--fg-dim);border-top:1px solid var(--border)}
+.stat{display:flex;gap:6px;align-items:center}
+.stat-label{color:var(--fg-muted)}
+.stat-value{color:var(--fg);font-weight:bold}
+
+/* Comparison view */
+.diff-header{display:flex;gap:8px;margin-bottom:12px}
+.diff-select{background:var(--bg3);border:1px solid var(--border);color:var(--fg);padding:4px 8px;border-radius:4px;font-size:11px;font-family:inherit}
+
+/* Mobile */
+@media(max-width:768px){
+  .sidebar{width:100%;position:absolute;left:-100%;transition:left .3s;z-index:50;height:calc(100vh - 45px)}
+  .sidebar.open{left:0}
+  .references-panel{position:absolute;right:-100%;transition:right .3s;width:100%;height:calc(100vh - 45px)}
+  .references-panel.show{right:0}
+  .content-area{padding:16px}
+}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo">PAPERS</div>
+  <div class="header-actions">
+    <button class="btn" id="toggleSidebar">Docs</button>
+    <button class="btn" id="toggleRefs">Refs</button>
+    <button class="btn" id="toggleCompare">Compare</button>
+    <button class="btn" id="exportBib">Export Bib</button>
+    <button class="btn" id="addPaper">+ Add</button>
+    <button class="btn" id="themeToggle">◐</button>
+  </div>
+</div>
+
+<div class="container">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-header">
+        <span>Paper Chains</span>
+        <button class="btn" style="padding:2px 6px">↻</button>
+      </div>
+      <div class="paper-list" id="chainList"></div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-header">
+        <span>All Documents</span>
+        <span id="docCount">0</span>
+      </div>
+      <div class="paper-list" id="paperList"></div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-header">Versions</div>
+      <div class="version-list" id="versionList"></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="toolbar" id="toolbar" style="display:none">
+      <span class="doc-title" id="docTitle">—</span>
+      <span class="doc-type" id="docType" style="display:none">—</span>
+      <div style="margin-left:auto;display:flex;gap:8px">
+        <button class="btn" id="copyDoc">Copy</button>
+        <button class="btn" id="viewChain">Chain</button>
+        <button class="btn" id="extractCites">Extract Cites</button>
+      </div>
+    </div>
+    
+    <div class="content-area" id="contentArea">
+      <div class="empty-state" id="emptyState">
+        <div class="icon">[doc]</div>
+        <p>Drop markdown files here or click <strong>+ Add</strong> to load papers.<br><br>
+        Supports <code>prompt_*.md</code> → <code>complete_*.md</code> chains with citation extraction.</p>
+      </div>
+      <div class="paper" id="paperContent" style="display:none"></div>
+    </div>
+
+    <div class="stats-bar" id="statsBar" style="display:none">
+      <div class="stat"><span class="stat-label">Words:</span><span class="stat-value" id="wordCount">0</span></div>
+      <div class="stat"><span class="stat-label">Citations:</span><span class="stat-value" id="citeCount">0</span></div>
+      <div class="stat"><span class="stat-label">Sections:</span><span class="stat-value" id="sectionCount">0</span></div>
+      <div class="stat"><span class="stat-label">Type:</span><span class="stat-value" id="docTypeLabel">—</span></div>
+    </div>
+  </main>
+
+  <aside class="references-panel" id="refsPanel">
+    <div class="ref-header">
+      <h3>References (<span id="refCount">0</span>)</h3>
+      <button class="btn" id="closeRefs">✕</button>
+    </div>
+    <div class="ref-list" id="refList"></div>
+  </aside>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Add/Import Modal -->
+<div id="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:400;display:none;align-items:center;justify-content:center">
+  <div style="background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:24px;max-width:500px;width:90%">
+    <h3 style="margin-bottom:16px;color:var(--accent)">Add Paper</h3>
+    <div style="margin-bottom:16px">
+      <label style="display:block;font-size:11px;color:var(--fg-muted);margin-bottom:4px">Paper Type</label>
+      <select id="paperType" class="diff-select" style="width:100%">
+        <option value="prompt">Prompt (input)</option>
+        <option value="complete">Completion (output)</option>
+        <option value="draft">Draft (version)</option>
+      </select>
+    </div>
+    <div style="margin-bottom:16px">
+      <label style="display:block;font-size:11px;color:var(--fg-muted);margin-bottom:4px">Title / Identifier</label>
+      <input type="text" id="paperTitle" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--fg);padding:8px;border-radius:4px;font-family:inherit" placeholder="Thick Prompting Paper">
+    </div>
+    <div style="margin-bottom:16px">
+      <label style="display:block;font-size:11px;color:var(--fg-muted);margin-bottom:4px">Chain ID (links prompt→complete)</label>
+      <input type="text" id="chainId" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--fg);padding:8px;border-radius:4px;font-family:inherit" placeholder="thick-prompting-001">
+    </div>
+    <div style="margin-bottom:16px">
+      <label style="display:block;font-size:11px;color:var(--fg-muted);margin-bottom:4px">Content (paste markdown)</label>
+      <textarea id="paperContent" style="width:100%;height:200px;background:var(--bg3);border:1px solid var(--border);color:var(--fg);padding:8px;border-radius:4px;font-family:inherit;resize:vertical" placeholder="Paste markdown content..."></textarea>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn" id="cancelAdd">Cancel</button>
+      <button class="btn" id="confirmAdd" style="background:var(--accent);color:#000">Add Paper</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// State
+const state = {
+  papers: [],        // All loaded papers
+  chains: {},        // Chain ID -> [papers]
+  currentPaper: null,
+  bibliography: {},  // All citations across papers
+  compareMode: false
+};
+
+// Storage key
+const STORAGE_KEY = 'republic_papers';
+
+// Initialize
+function init() {
+  loadFromStorage();
+  renderSidebar();
+  setupEventListeners();
+  setupDragDrop();
+  loadManifest();
+}
+
+// Load papers from manifest
+async function loadManifest() {
+  try {
+    const res = await fetch('papers-manifest.json');
+    if (!res.ok) return;
+    const manifest = await res.json();
+    
+    // Show manifest info in empty state
+    const emptyState = document.getElementById('emptyState');
+    if (emptyState && state.papers.length === 0) {
+      emptyState.innerHTML = `
+        <div class="icon">[manifest]</div>
+        <p><strong>${manifest.stats.total} papers available</strong><br>
+        ${manifest.stats.complete} complete chains, ${manifest.stats.promptOnly} prompts pending<br><br>
+        <button class="btn" id="loadAllBtn" style="margin:8px">Load All Papers</button>
+        </p>
+        <div id="manifestList" style="text-align:left;max-height:300px;overflow-y:auto;margin-top:16px;font-size:11px"></div>
+      `;
+      
+      // Render manifest list
+      const manifestList = document.getElementById('manifestList');
+      manifestList.innerHTML = manifest.papers.map(p => `
+        <div style="padding:8px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="color:var(--fg)">${p.shortTitle}</div>
+            <div style="color:var(--fg-muted);font-size:10px">${p.status === 'complete' ? 'prompt + completion' : 'prompt only'}</div>
+          </div>
+          <button class="btn" onclick="loadPaperFromManifest('${p.id}')" style="padding:2px 8px">Load</button>
+        </div>
+      `).join('');
+      
+      // Load all button
+      document.getElementById('loadAllBtn').onclick = () => loadAllFromManifest(manifest);
+    }
+    
+    window.currentManifest = manifest;
+  } catch (e) {
+    console.log('No manifest found or error:', e);
+  }
+}
+
+// Load single paper from manifest
+async function loadPaperFromManifest(id) {
+  const manifest = window.currentManifest;
+  if (!manifest) return;
+  
+  const entry = manifest.papers.find(p => p.id === id);
+  if (!entry) return;
+  
+  // Load prompt
+  if (entry.prompt) {
+    try {
+      const res = await fetch(encodeURIComponent(entry.prompt));
+      if (res.ok) {
+        const content = await res.text();
+        addPaper('prompt', entry.shortTitle, id, content);
+      }
+    } catch (e) { console.error('Failed to load prompt:', e); }
+  }
+  
+  // Load completion
+  if (entry.completion) {
+    try {
+      const res = await fetch(encodeURIComponent(entry.completion));
+      if (res.ok) {
+        const content = await res.text();
+        addPaper('complete', entry.title, id, content);
+      }
+    } catch (e) { console.error('Failed to load completion:', e); }
+  }
+}
+window.loadPaperFromManifest = loadPaperFromManifest;
+
+// Load all papers from manifest
+async function loadAllFromManifest(manifest) {
+  toast('Loading all papers...');
+  for (const entry of manifest.papers) {
+    await loadPaperFromManifest(entry.id);
+  }
+  toast(`Loaded ${manifest.papers.length} paper chains`);
+}
+
+// Load from localStorage
+function loadFromStorage() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const data = JSON.parse(saved);
+      state.papers = data.papers || [];
+      state.chains = data.chains || {};
+      state.bibliography = data.bibliography || {};
+    }
+  } catch (e) {
+    console.error('Failed to load:', e);
+  }
+}
+
+// Save to localStorage
+function saveToStorage() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      papers: state.papers,
+      chains: state.chains,
+      bibliography: state.bibliography
+    }));
+  } catch (e) {
+    console.error('Failed to save:', e);
+  }
+}
+
+// Render sidebar
+function renderSidebar() {
+  const chainList = document.getElementById('chainList');
+  const paperList = document.getElementById('paperList');
+  const docCount = document.getElementById('docCount');
+  
+  docCount.textContent = state.papers.length;
+  
+  // Render chains
+  chainList.innerHTML = '';
+  Object.keys(state.chains).forEach(chainId => {
+    const papers = state.chains[chainId];
+    if (!papers || papers.length === 0) return;
+    
+    const group = document.createElement('div');
+    group.className = 'chain-group';
+    
+    papers.forEach((paperId, i) => {
+      const paper = state.papers.find(p => p.id === paperId);
+      if (!paper) return;
+      
+      if (i > 0) {
+        const arrow = document.createElement('div');
+        arrow.className = 'chain-arrow';
+        arrow.textContent = '↓ generates';
+        group.appendChild(arrow);
+      }
+      
+      const item = createPaperItem(paper);
+      group.appendChild(item);
+    });
+    
+    chainList.appendChild(group);
+  });
+  
+  // Render all papers
+  paperList.innerHTML = '';
+  state.papers.forEach(paper => {
+    paperList.appendChild(createPaperItem(paper));
+  });
+}
+
+// Create paper item
+function createPaperItem(paper) {
+  const div = document.createElement('div');
+  div.className = 'paper-item' + (state.currentPaper?.id === paper.id ? ' active' : '');
+  div.innerHTML = `
+    <div class="title">${escapeHtml(paper.title)}</div>
+    <div class="meta">
+      <span class="type ${paper.type}">${paper.type}</span>
+      <span>${paper.wordCount || 0} words</span>
+    </div>
+  `;
+  div.onclick = () => loadPaper(paper.id);
+  return div;
+}
+
+// Load paper
+function loadPaper(paperId) {
+  const paper = state.papers.find(p => p.id === paperId);
+  if (!paper) return;
+  
+  state.currentPaper = paper;
+  
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('paperContent').style.display = 'block';
+  document.getElementById('toolbar').style.display = 'flex';
+  document.getElementById('statsBar').style.display = 'flex';
+  
+  document.getElementById('docTitle').textContent = paper.title;
+  document.getElementById('docType').textContent = paper.type;
+  document.getElementById('docType').className = 'doc-type ' + paper.type;
+  document.getElementById('docType').style.display = 'inline';
+  document.getElementById('docType').style.background = `var(--${paper.type})`;
+  document.getElementById('docType').style.color = '#000';
+  
+  // Render paper
+  const html = renderMarkdown(paper.content);
+  document.getElementById('paperContent').innerHTML = html;
+  
+  // Stats
+  document.getElementById('wordCount').textContent = paper.wordCount || countWords(paper.content);
+  document.getElementById('citeCount').textContent = paper.citations?.length || 0;
+  document.getElementById('sectionCount').textContent = (paper.content.match(/^##?\s/gm) || []).length;
+  document.getElementById('docTypeLabel').textContent = paper.type;
+  
+  // Update references panel
+  renderReferences(paper);
+  
+  // Update versions
+  renderVersions(paper);
+  
+  renderSidebar();
+}
+
+// Render markdown to HTML
+function renderMarkdown(md) {
+  let html = escapeHtml(md);
+  
+  // Headers
+  html = html.replace(/^### \*\*(.+?)\*\*$/gm, '<h3>$1</h3>');
+  html = html.replace(/^## \*\*(.+?)\*\*$/gm, '<h2>$1</h2>');
+  html = html.replace(/^# \*\*(.+?)\*\*$/gm, '<h1>$1</h1>');
+  html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+  html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+  html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+  html = html.replace(/^═+$/gm, '<hr>');
+  
+  // Bold/italic
+  html = html.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
+  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+  
+  // Citations - numbered superscripts
+  html = html.replace(/(\d+)(?=[\s\.,;:]|$)/g, (match, num) => {
+    const numInt = parseInt(num);
+    if (numInt > 0 && numInt < 100) {
+      return `<span class="citation" data-cite="${num}" onclick="showCitation(${num})">[${num}]</span>`;
+    }
+    return match;
+  });
+  
+  // Code blocks
+  html = html.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+  
+  // Lists
+  html = html.replace(/^\* (.+)$/gm, '<li>$1</li>');
+  html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
+  html = html.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
+  
+  // Tables (basic)
+  html = html.replace(/\|(.+)\|/g, (match, content) => {
+    const cells = content.split('|').map(c => c.trim());
+    if (cells.every(c => c.match(/^[-:]+$/))) return ''; // separator row
+    const isHeader = cells.some(c => c.startsWith('**'));
+    const tag = isHeader ? 'th' : 'td';
+    return '<tr>' + cells.map(c => `<${tag}>${c.replace(/\*\*/g, '')}</${tag}>`).join('') + '</tr>';
+  });
+  
+  // Blockquotes
+  html = html.replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>');
+  
+  // Links
+  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+  
+  // Paragraphs
+  html = html.replace(/\n\n+/g, '</p><p>');
+  html = '<p>' + html + '</p>';
+  html = html.replace(/<p>\s*<(h[123]|ul|ol|pre|blockquote|hr|table)/g, '<$1');
+  html = html.replace(/<\/(h[123]|ul|ol|pre|blockquote|hr|table)>\s*<\/p>/g, '</$1>');
+  html = html.replace(/<p>\s*<\/p>/g, '');
+  
+  return html;
+}
+
+// Show citation popup
+function showCitation(num) {
+  const existing = document.querySelector('.cite-popup');
+  if (existing) existing.remove();
+  
+  const ref = state.currentPaper?.references?.find(r => r.num === num);
+  if (!ref && state.bibliography[num]) {
+    ref = state.bibliography[num];
+  }
+  
+  const popup = document.createElement('div');
+  popup.className = 'cite-popup';
+  popup.innerHTML = ref ? `
+    <div class="cite-num">[${num}]</div>
+    <div class="cite-title">${escapeHtml(ref.title || 'Unknown')}</div>
+    <div class="cite-url"><a href="${ref.url}" target="_blank">${ref.url || ''}</a></div>
+  ` : `<div class="cite-num">[${num}]</div><div class="cite-title">Reference not found</div>`;
+  
+  const citation = document.querySelector(`[data-cite="${num}"]`);
+  if (citation) {
+    const rect = citation.getBoundingClientRect();
+    popup.style.left = rect.left + 'px';
+    popup.style.top = (rect.bottom + 8) + 'px';
+  }
+  
+  document.body.appendChild(popup);
+  
+  setTimeout(() => {
+    document.addEventListener('click', function handler(e) {
+      if (!popup.contains(e.target)) {
+        popup.remove();
+        document.removeEventListener('click', handler);
+      }
+    });
+  }, 100);
+}
+window.showCitation = showCitation;
+
+// Render references
+function renderReferences(paper) {
+  const refList = document.getElementById('refList');
+  const refCount = document.getElementById('refCount');
+  
+  const refs = paper.references || [];
+  refCount.textContent = refs.length;
+  
+  refList.innerHTML = refs.map(r => `
+    <div class="ref-item">
+      <span class="ref-num">[${r.num}]</span>
+      <span class="ref-title">${escapeHtml(r.title || 'Unknown')}</span>
+      <span class="ref-url"><a href="${r.url}" target="_blank">${r.url || ''}</a></span>
+    </div>
+  `).join('') || '<div style="padding:16px;color:var(--fg-muted);text-align:center">No references extracted</div>';
+}
+
+// Render versions
+function renderVersions(paper) {
+  const versionList = document.getElementById('versionList');
+  
+  // Find papers with same chainId
+  const chainPapers = state.papers.filter(p => p.chainId === paper.chainId && p.type === 'draft');
+  
+  versionList.innerHTML = chainPapers.map(p => `
+    <div class="version-item ${p.id === paper.id ? 'current' : ''}" onclick="loadPaper('${p.id}')">
+      <span class="version-label">${p.version || 'v1'}</span>
+      <span class="version-date">${p.date || 'Unknown'}</span>
+    </div>
+  `).join('') || '<div style="padding:16px;color:var(--fg-muted);text-align:center;font-size:11px">No versions</div>';
+}
+window.loadPaper = loadPaper;
+
+// Extract citations from content
+function extractCitations(content) {
+  const refs = [];
+  
+  // Look for "Works cited" or "References" section
+  const citesMatch = content.match(/(?:Works cited|References|Bibliography)\s*\n([\s\S]+?)(?:\n---|\n#|$)/i);
+  if (!citesMatch) return refs;
+  
+  const citesSection = citesMatch[1];
+  
+  // Parse numbered references: 1. Title, accessed ..., URL
+  const refRegex = /^(\d+)\.\s*(.+?),\s*accessed.+?,\s*\[?(.+?)\]?\(?(https?:\/\/[^\s\)]+)\)?/gm;
+  let match;
+  while ((match = refRegex.exec(citesSection)) !== null) {
+    refs.push({
+      num: parseInt(match[1]),
+      title: match[2].trim(),
+      url: match[4].trim()
+    });
+  }
+  
+  // Alternative format: 1. Title ... URL
+  if (refs.length === 0) {
+    const altRegex = /^(\d+)\.\s*([^,\n]+).+?(https?:\/\/[^\s\)]+)/gm;
+    while ((match = altRegex.exec(citesSection)) !== null) {
+      refs.push({
+        num: parseInt(match[1]),
+        title: match[2].trim(),
+        url: match[3].trim()
+      });
+    }
+  }
+  
+  return refs;
+}
+
+// Add paper
+function addPaper(type, title, chainId, content, version) {
+  const id = 'paper_' + Date.now();
+  const refs = extractCitations(content);
+  const wordCount = countWords(content);
+  
+  const paper = {
+    id,
+    type,
+    title,
+    chainId: chainId || id,
+    content,
+    references: refs,
+    wordCount,
+    version: version || 'v1',
+    date: new Date().toISOString().split('T')[0]
+  };
+  
+  state.papers.push(paper);
+  
+  // Update chains
+  if (chainId) {
+    if (!state.chains[chainId]) {
+      state.chains[chainId] = [];
+    }
+    // Order: prompts first, then completes, then drafts
+    const order = { prompt: 0, complete: 1, draft: 2 };
+    state.chains[chainId].push(paper.id);
+    state.chains[chainId].sort((a, b) => {
+      const pa = state.papers.find(p => p.id === a);
+      const pb = state.papers.find(p => p.id === b);
+      return (order[pa?.type] || 99) - (order[pb?.type] || 99);
+    });
+  }
+  
+  // Update global bibliography
+  refs.forEach(r => {
+    if (!state.bibliography[r.num]) {
+      state.bibliography[r.num] = r;
+    }
+  });
+  
+  saveToStorage();
+  renderSidebar();
+  loadPaper(id);
+  toast('Paper added');
+  
+  return paper;
+}
+
+// Count words
+function countWords(text) {
+  return text.trim().split(/\s+/).filter(w => w.length > 0).length;
+}
+
+// Setup event listeners
+function setupEventListeners() {
+  // Theme toggle
+  document.getElementById('themeToggle').onclick = () => {
+    const theme = document.body.getAttribute('data-theme') === 'light' ? '' : 'light';
+    document.body.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  };
+  if (localStorage.getItem('theme') === 'light') {
+    document.body.setAttribute('data-theme', 'light');
+  }
+  
+  // Sidebar toggle
+  document.getElementById('toggleSidebar').onclick = () => {
+    document.getElementById('sidebar').classList.toggle('open');
+  };
+  
+  // References panel
+  document.getElementById('toggleRefs').onclick = () => {
+    document.getElementById('refsPanel').classList.toggle('show');
+  };
+  document.getElementById('closeRefs').onclick = () => {
+    document.getElementById('refsPanel').classList.remove('show');
+  };
+  
+  // Add paper modal
+  const modal = document.getElementById('modal');
+  document.getElementById('addPaper').onclick = () => {
+    modal.style.display = 'flex';
+  };
+  document.getElementById('cancelAdd').onclick = () => {
+    modal.style.display = 'none';
+  };
+  document.getElementById('confirmAdd').onclick = () => {
+    const type = document.getElementById('paperType').value;
+    const title = document.getElementById('paperTitle').value || 'Untitled';
+    const chainId = document.getElementById('chainId').value;
+    const content = document.getElementById('paperContent').value;
+    
+    if (!content.trim()) {
+      toast('Please add content');
+      return;
+    }
+    
+    addPaper(type, title, chainId, content);
+    modal.style.display = 'none';
+    
+    // Reset form
+    document.getElementById('paperTitle').value = '';
+    document.getElementById('chainId').value = '';
+    document.getElementById('paperContent').value = '';
+  };
+  
+  // Copy document
+  document.getElementById('copyDoc').onclick = () => {
+    if (state.currentPaper) {
+      navigator.clipboard.writeText(state.currentPaper.content);
+      toast('Copied to clipboard');
+    }
+  };
+  
+  // Extract citations
+  document.getElementById('extractCites').onclick = () => {
+    if (state.currentPaper) {
+      const refs = extractCitations(state.currentPaper.content);
+      state.currentPaper.references = refs;
+      refs.forEach(r => state.bibliography[r.num] = r);
+      saveToStorage();
+      renderReferences(state.currentPaper);
+      document.getElementById('refsPanel').classList.add('show');
+      toast(`Extracted ${refs.length} citations`);
+    }
+  };
+  
+  // Export bibliography
+  document.getElementById('exportBib').onclick = () => {
+    const bib = Object.values(state.bibliography);
+    const text = bib.map(r => `[${r.num}] ${r.title}\n    ${r.url}`).join('\n\n');
+    navigator.clipboard.writeText(text);
+    toast(`Exported ${bib.length} references`);
+  };
+}
+
+// Setup drag and drop
+function setupDragDrop() {
+  const contentArea = document.getElementById('contentArea');
+  
+  contentArea.addEventListener('dragover', e => {
+    e.preventDefault();
+    contentArea.style.background = 'var(--bg3)';
+  });
+  
+  contentArea.addEventListener('dragleave', () => {
+    contentArea.style.background = '';
+  });
+  
+  contentArea.addEventListener('drop', async e => {
+    e.preventDefault();
+    contentArea.style.background = '';
+    
+    const files = Array.from(e.dataTransfer.files).filter(f => f.name.endsWith('.md'));
+    
+    for (const file of files) {
+      const content = await file.text();
+      const name = file.name.replace('.md', '');
+      
+      // Detect type from filename
+      // Supports: pro-* (prompt), prompt_* (prompt), complete_* (complete), others (completion)
+      let type = 'complete';
+      if (name.startsWith('pro-')) type = 'prompt';
+      else if (name.startsWith('prompt_')) type = 'prompt';
+      else if (name.startsWith('complete_')) type = 'complete';
+      
+      // Extract chain ID from filename (normalize the base name)
+      const baseName = name.replace(/^(pro-|prompt_|complete_)/, '');
+      // Normalize: replace special chars, collapse underscores/colons to single dash
+      const chainId = baseName.replace(/[_:]+/g, '-').replace(/[^a-zA-Z0-9-]/g, '').toLowerCase().substring(0, 60);
+      
+      // Extract title from content or filename
+      let title = baseName.replace(/_/g, ' ');
+      const h1Match = content.match(/^#\s*\*?\*?(.+?)\*?\*?\s*$/m);
+      if (h1Match) title = h1Match[1].replace(/\*\*/g, '');
+      
+      addPaper(type, title, chainId, content);
+    }
+  });
+}
+
+// Toast notification
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// Escape HTML
+function escapeHtml(str) {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// Init
+init();
+</script>
+</body>
+</html>
